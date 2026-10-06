@@ -40,3 +40,6 @@ graphify-out/
 spikes/m0/seeded.txt
 spikes/m0/known-txns.txt
 video/out/
+
+# internal review notes (contain local paths; never published)
+docs/DESIGN_REVIEW.md
