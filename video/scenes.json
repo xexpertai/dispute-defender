@@ -12,7 +12,8 @@
       "lines": [
         "For every dollar a US online seller loses to fraud, the real cost is about five dollars.",
         "Chargeback fraud is part of that bill."
-      ]
+      ],
+      "visual": "Title card: **$5.13 per $1 lost**, with the source on screen (LexisNexis® Risk Solutions, 2026 True Cost of Fraud™ Study for Retail and Ecommerce, press release 24 June 2026)."
     },
     {
       "id": "problem",
@@ -20,7 +21,8 @@
       "lines": [
         "A PayPal dispute opens. A deadline starts.",
         "It's easy to refund when you could have won, or to fight when the buyer is right."
-      ]
+      ],
+      "visual": "Phone take (390 px): the case board scrolls; deadlines and money at risk are visible."
     },
     {
       "id": "dashboard",
@@ -28,7 +30,8 @@
       "lines": [
         "This is Dispute Defender.",
         "It reads your PayPal disputes and shows what's at risk, and which deadline matters most."
-      ]
+      ],
+      "visual": "Desktop case board: the docket strip ($ at risk, your move, next deadline, kept/refunded), open cases as case files; cursor on \"Watch the agent work a case\"."
     },
     {
       "id": "agent",
@@ -37,16 +40,8 @@
         "One click, and the agent gets to work.",
         "It reads the dispute, the order and the tracking from PayPal.",
         "Every step is a real PayPal API call."
-      ]
-    },
-    {
-      "id": "refund",
-      "take": "refund",
-      "lines": [
-        "Here the package is still on its way, and the case is for nine dollars fifty.",
-        "Fighting would cost more of your time than the refund.",
-        "So it says: refund. It tells you when a fight isn't worth it."
-      ]
+      ],
+      "visual": "Click it: the agent trace runs; evidence cards drop into the case file, claims tie to their records with drawn lines, and the DEFEND stamp lands."
     },
     {
       "id": "draft",
@@ -55,7 +50,8 @@
         "On this case, tracking shows delivery to the right ZIP code.",
         "Claude drafts the response, and every claim links to its source.",
         "The buyer wrote in Spanish, so the reply is in Spanish."
-      ]
+      ],
+      "visual": "Same case: the AI-written (recorded) response types in; the buyer wrote in Spanish, so the reply is Spanish with an English gloss."
     },
     {
       "id": "sources",
@@ -63,7 +59,8 @@
       "lines": [
         "Tap a source to see the exact record behind a claim.",
         "Nothing is invented. Our server checks every claim before you see it."
-      ]
+      ],
+      "visual": "Tap a plain-language source chip (\"USPS scan · Delivered 5 Oct\"): the page jumps to that record in the evidence timeline and highlights it."
     },
     {
       "id": "paypal",
@@ -71,7 +68,18 @@
       "lines": [
         "Before anything is sent, you see exactly what PayPal will receive.",
         "The request, and the evidence pack."
-      ]
+      ],
+      "visual": "\"What PayPal receives\": the exact POST endpoint and JSON body on a perforated slip (plus the evidence-pack PDF for provide-evidence)."
+    },
+    {
+      "id": "refund",
+      "take": "refund",
+      "lines": [
+        "Here the package is still on its way, and the case is for nine dollars fifty.",
+        "Fighting would cost more of your time than the refund.",
+        "So it says: refund. It tells you when a fight isn't worth it."
+      ],
+      "visual": "The second case ($9.50, still in transit): the REFUND stamp lands; \"you could defend this once delivered, but your time costs more than the refund\"."
     },
     {
       "id": "outcome",
@@ -79,7 +87,8 @@
       "lines": [
         "You approve, and it goes through PayPal's dispute API.",
         "Then you see the outcome. In the sandbox, this one was won."
-      ]
+      ],
+      "visual": "History of the earlier real sandbox submission (200, debug_id), then /outcomes: kept vs refunded with WON / LOST stamps."
     },
     {
       "id": "insights",
@@ -87,7 +96,8 @@
       "lines": [
         "Then it helps you prevent the next dispute.",
         "Patterns across your cases, each with its evidence, and what to change."
-      ]
+      ],
+      "visual": "/insights: numbered patterns with their cases, and suggested changes (AI · recorded) linking to the patterns."
     },
     {
       "id": "architecture",
@@ -95,7 +105,8 @@
       "lines": [
         "Under the hood: six PayPal APIs, and PayPal's Agent Toolkit, which we extended with six dispute tools and also serve over MCP.",
         "Claude writes. Code checks. You decide."
-      ]
+      ],
+      "visual": "Architecture card (same image as docs/architecture.png): 6 PayPal APIs, the 9-step loop, honesty guarantees."
     },
     {
       "id": "close",
@@ -103,7 +114,8 @@
       "lines": [
         "Dispute Defender. Win the disputes worth fighting, and settle the rest fairly.",
         "Try the demo store. No login needed."
-      ]
+      ],
+      "visual": "Close card: tagline + \"Try the demo store: no login\". Add the hosted URL once deployed."
     },
     {
       "id": "endcard",
@@ -111,7 +123,8 @@
       "lines": [
         "Thanks for watching."
       ],
-      "minSeconds": 3.2
+      "minSeconds": 3.2,
+      "visual": "End card (text only): \"Thanks for watching\", \"Built by Harsha Shinde · xexpertai\", demo URL and repo URL (placeholders until approved)."
     }
   ]
 }

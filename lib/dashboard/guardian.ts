@@ -104,7 +104,9 @@ export function rank(rows: GuardianRow[]): GuardianRow[] {
 export function summarize(disputes: DisputeRecord[], now: Date): GuardianSummary {
   const rows = disputes.map((d) => toRow(d, now));
   const open = rank(rows.filter((r) => r.outcome === "open"));
-  const closed = rows.filter((r) => r.outcome !== "open").sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+  const OUTCOME_ORDER = { won: 0, settled: 1, lost: 2, open: 3 } as const;
+  // Wins first (what the seller kept), then newest first.
+  const closed = rows.filter((r) => r.outcome !== "open").sort((a, b) => OUTCOME_ORDER[a.outcome] - OUTCOME_ORDER[b.outcome] || (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
   const won = closed.filter((r) => r.outcome === "won");
   const lost = closed.filter((r) => r.outcome === "lost");
   return {

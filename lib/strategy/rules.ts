@@ -222,7 +222,12 @@ export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new 
     why.push("Strong evidence supports the seller.");
   } else if (ctx.amount <= costToFight) {
     strategy = "REFUND";
-    why.push(`At ${ctx.currency} ${ctx.amount.toFixed(2)}, fighting (~${ctx.currency} ${costToFight.toFixed(2)} of your time) costs more than refunding.`);
+    const moving = reasons.some((r) => r.id === "in_transit");
+    why.push(
+      moving
+        ? `Tracking is on file and the package is moving, so you could defend this once it's delivered. But at ${ctx.currency} ${ctx.amount.toFixed(2)}, your time (~${ctx.currency} ${costToFight.toFixed(2)}) costs more than the refund.`
+        : `At ${ctx.currency} ${ctx.amount.toFixed(2)}, fighting (~${ctx.currency} ${costToFight.toFixed(2)} of your time) costs more than refunding.`,
+    );
   } else if (level === "MEDIUM") {
     strategy = "OFFER";
     why.push("Evidence is mixed; a fair offer usually resolves this faster than a claim.");

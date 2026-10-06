@@ -1,79 +1,88 @@
 @import "tailwindcss";
 
 /*
- * Dispute Defender design tokens: a modern, trustworthy payments look. Deep navy ink, one blue for
- * primary actions, cool greys, green/red only for won/lost and money at risk, amber only for
- * deadlines, cyan reserved for PayPal API call badges. Every text/background pair is WCAG AA
- * (>= 4.5:1). Light is the default; dark follows the OS unless the user picks a theme.
+ * Dispute Defender: "case file" identity inside a payments palette.
+ *  - ink navy for actions and text, paper-white case cards on a cool grey desk
+ *  - manila: folder tabs (decorative) and, in dark mode, the action colour
+ *  - green/red only for won/lost and money at risk, amber only for deadlines, cyan only for
+ *    PayPal API calls, violet only for AI labels
+ * Every text/background pair is WCAG AA (>= 4.5:1; focus ring >= 3:1). Light is the default; dark
+ * follows the OS unless the user picks a theme.
  */
 :root {
-  --bg: #f4f6fa;
-  --surface: #ffffff;
-  --surface-2: #eef2f7;
-  --ink: #0b1b33;
-  --ink-2: #3b4a61;
-  --muted: #5b677a;
-  --line: #e1e7ef;
-  --line-strong: #c8d2df;
-  --primary: #2453d4;
-  --primary-soft: #e6edff;
+  --bg: #e7ebf0;
+  --surface: #fffefb;
+  --surface-2: #f1f3f6;
+  --ink: #101c33;
+  --ink-2: #3a4659;
+  --muted: #596476;
+  --line: #dbe1e9;
+  --line-strong: #c1cad6;
+  --primary: #14284b;
+  --primary-soft: #e4e9f2;
   --on-primary: #ffffff;
+  --manila: #ecd593;
+  --manila-ink: #4a3a12;
   --amber: #a35a00;
-  --amber-soft: #fff3dc;
+  --amber-soft: #fdf1d8;
   --win: #147a3d;
-  --win-soft: #e3f5ea;
+  --win-soft: #e2f3e8;
   --loss: #c0262d;
-  --loss-soft: #fde8e8;
+  --loss-soft: #fbe6e6;
   --pp: #0e6f8a;
-  --pp-soft: #e2f4f8;
+  --pp-soft: #e1f2f6;
   --ai: #6a2fd0;
   --ai-soft: #efe8fd;
-  --focus: #2453d4;
-  --shadow: 0 1px 2px rgb(11 27 51 / 0.06), 0 8px 24px -16px rgb(11 27 51 / 0.25);
+  --focus: #b07a12;
+  --shadow: 0 1px 0 rgb(16 28 51 / 0.05), 0 6px 18px -12px rgb(16 28 51 / 0.28);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-  --bg: #0a1220;
-  --surface: #111b2e;
-  --surface-2: #17233a;
-  --ink: #e7edf6;
-  --ink-2: #b6c2d4;
-  --muted: #8f9bb0;
-  --line: #22304a;
-  --line-strong: #31415f;
-  --primary: #7aa2ff;
-  --primary-soft: #1a2950;
-  --on-primary: #0a1220;
-  --amber: #f2b450;
-  --amber-soft: #33260f;
-  --win: #4cc98a;
-  --win-soft: #0f2e20;
-  --loss: #ff7a80;
-  --loss-soft: #3a1519;
-  --pp: #5cc8e0;
-  --pp-soft: #0f2b35;
-  --ai: #b79cff;
-  --ai-soft: #251d45;
-  --focus: #7aa2ff;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -16px rgb(0 0 0 / 0.8);
+    --bg: #0b1220;
+    --surface: #131c2f;
+    --surface-2: #1a2540;
+    --ink: #e8edf5;
+    --ink-2: #b8c3d4;
+    --muted: #929eb2;
+    --line: #243250;
+    --line-strong: #33446a;
+    --primary: #e3c77f;
+    --primary-soft: #2b2a24;
+    --on-primary: #1a1405;
+    --manila: #c9ad66;
+    --manila-ink: #1a1405;
+    --amber: #f2b450;
+    --amber-soft: #33260f;
+    --win: #4cc98a;
+    --win-soft: #0f2e20;
+    --loss: #ff7a80;
+    --loss-soft: #3a1519;
+    --pp: #5cc8e0;
+    --pp-soft: #0f2b35;
+    --ai: #b79cff;
+    --ai-soft: #251d45;
+    --focus: #e3c77f;
+    --shadow: 0 1px 0 rgb(0 0 0 / 0.4), 0 8px 24px -14px rgb(0 0 0 / 0.8);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0a1220;
-  --surface: #111b2e;
-  --surface-2: #17233a;
-  --ink: #e7edf6;
-  --ink-2: #b6c2d4;
-  --muted: #8f9bb0;
-  --line: #22304a;
-  --line-strong: #31415f;
-  --primary: #7aa2ff;
-  --primary-soft: #1a2950;
-  --on-primary: #0a1220;
+  --bg: #0b1220;
+  --surface: #131c2f;
+  --surface-2: #1a2540;
+  --ink: #e8edf5;
+  --ink-2: #b8c3d4;
+  --muted: #929eb2;
+  --line: #243250;
+  --line-strong: #33446a;
+  --primary: #e3c77f;
+  --primary-soft: #2b2a24;
+  --on-primary: #1a1405;
+  --manila: #c9ad66;
+  --manila-ink: #1a1405;
   --amber: #f2b450;
   --amber-soft: #33260f;
   --win: #4cc98a;
@@ -84,8 +93,8 @@
   --pp-soft: #0f2b35;
   --ai: #b79cff;
   --ai-soft: #251d45;
-  --focus: #7aa2ff;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 30px -16px rgb(0 0 0 / 0.8);
+  --focus: #e3c77f;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.4), 0 8px 24px -14px rgb(0 0 0 / 0.8);
   color-scheme: dark;
 }
 
@@ -101,6 +110,8 @@
   --color-primary: var(--primary);
   --color-primary-soft: var(--primary-soft);
   --color-on-primary: var(--on-primary);
+  --color-manila: var(--manila);
+  --color-manila-ink: var(--manila-ink);
   --color-amber: var(--amber);
   --color-amber-soft: var(--amber-soft);
   --color-win: var(--win);
@@ -113,28 +124,33 @@
   --color-ai-soft: var(--ai-soft);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-inter);
+  --font-display: var(--font-archivo);
   --shadow-card: var(--shadow);
 }
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* The sticky nav is ~102 px tall: anchor jumps and scrollIntoView land below it (with room for case tabs). */
+  scroll-padding-top: 9rem;
+}
+main h1[id],
+main h2[id] {
+  scroll-margin-top: 2.75rem;
 }
 
 body {
   background-color: var(--bg);
-  background-image: linear-gradient(180deg, var(--primary-soft) 0, transparent 280px);
-  background-repeat: no-repeat;
   color: var(--ink);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "cv11", "ss01";
   overflow-x: hidden;
 }
 
-/* Display type: bold sans with tabular figures for amounts and countdowns. */
+/* Display type: a sturdy, slightly expanded grotesk for headings and money, tabular figures. */
 .font-display {
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--font-archivo), var(--font-inter), sans-serif;
+  font-weight: 800;
+  font-stretch: 112%;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .font-display em,
@@ -147,60 +163,155 @@ h1 em {
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2.5px solid var(--focus);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
-/* Rubber-stamp label: WON, LOST, TEMPLATE, REPLAY. */
+/* ---------------------------------------------------------------- case file motif */
+
+/* A paper case card with a manila folder tab holding the dispute id. */
+.case {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px 12px 12px 12px;
+  box-shadow: var(--shadow);
+}
+.case-tab {
+  position: absolute;
+  left: -1px;
+  top: -26px;
+  height: 27px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.8rem 0 0.7rem;
+  background: var(--manila);
+  color: var(--manila-ink);
+  border-radius: 8px 10px 0 0;
+  font: 600 0.72rem/1 var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0.02em;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 0 100%);
+  padding-right: 1.4rem;
+}
+.case-wrap {
+  padding-top: 26px;
+}
+
+/* Rubber-stamp label: WON, LOST, TEMPLATE, REPLAY, and the big verdict stamp. */
 .stamp {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border: 1.5px solid currentColor;
-  border-radius: 6px;
-  padding: 0.1rem 0.45rem;
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  border: 2px solid currentColor;
+  border-radius: 5px;
+  padding: 0.12rem 0.5rem;
+  font-family: var(--font-archivo), var(--font-inter), sans-serif;
+  font-stretch: 112%;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   line-height: 1.4;
 }
 .stamp-tilt {
-  transform: rotate(-3deg);
+  transform: rotate(-4deg);
+}
+.stamp-xl {
+  font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+  border-width: 5px;
+  border-radius: 10px;
+  padding: 0.1em 0.45em;
+  letter-spacing: 0.08em;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, currentColor 30%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent);
+}
+@keyframes dd-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.4) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.94) rotate(-7deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-8deg);
+  }
+}
+.stamp-land {
+  animation: dd-stamp 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  transform: rotate(-8deg);
 }
 
-/* Perforated divider, like a tear-off case slip. */
+/* Perforated tear-off edge (the "What PayPal receives" slip). */
 .perf {
-  background-image: radial-gradient(circle, var(--line-strong) 1.2px, transparent 1.4px);
+  background-image: radial-gradient(circle, var(--line-strong) 1.4px, transparent 1.6px);
   background-size: 10px 4px;
   background-repeat: repeat-x;
   height: 4px;
 }
 
+/* Evidence card dropping into the case file. */
+@keyframes dd-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) rotate(-1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.drop-in {
+  animation: dd-drop 0.32s ease-out both;
+}
+
+/* Claim → evidence connector lines. */
+@keyframes dd-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.connector {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: dd-draw 0.7s ease-out forwards;
+}
+
 /* Evidence item highlighted when a source chip points at it. */
 .ev-item[data-flash="true"] {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
-  background: var(--primary-soft);
+  background: var(--amber-soft);
 }
 .ev-item {
-  scroll-margin-top: 140px;
   transition: background-color 0.4s ease;
 }
 
 @keyframes dd-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 45%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--focus) 45%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--primary) 0%, transparent);
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--focus) 0%, transparent);
   }
 }
 .pulse {
   animation: dd-pulse 1.4s ease-in-out infinite;
+}
+@keyframes dd-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: dd-spin 0.9s linear infinite;
 }
 
 @keyframes dd-in {
@@ -219,7 +330,14 @@ h1 em {
 
 @media (prefers-reduced-motion: reduce) {
   .pulse,
-  .rise {
+  .rise,
+  .drop-in,
+  .stamp-land,
+  .spin {
     animation: none;
+  }
+  .connector {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }

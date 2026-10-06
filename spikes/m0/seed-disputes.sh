@@ -10,7 +10,18 @@ if [[ "$TODAY" < "2026-10-12" && -z "$FORCE" ]]; then
   echo "Refusing before 2026-10-12 (realistic delivery gap). Set FORCE=1 to override."; exit 1
 fi
 BUYER_EMAIL=$(grep '^PAYPAL_SANDBOX_BUYER_EMAIL=' ../../.env.local | cut -d= -f2)
-reason_for() { case $1 in KC-MUG-4) echo MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED;; *) echo MERCHANDISE_OR_SERVICE_NOT_RECEIVED;; esac; }
+# Scenario per order (amounts are the full order totals; $873.50 at stake across 8 cases):
+#   bowl $89 INR (delivered, signature)      -> defend     plates $42 INR (no tracking)      -> buyer is right
+#   mugs $64 SNAD (photos before shipping)    -> offer      planter $28.50 INR (returned)     -> buyer is right
+#   vase $9.50 INR (delivered)                -> cost rule  platter $142 INR (no signature)   -> defend / pattern
+#   dinnerware $186 SNAD (photos, buyer chat) -> offer      cafe $312 UNAUTHORISED (repeat buyer, signed) -> defend
+reason_for() {
+  case $1 in
+    KC-MUG-4|KC-DINNER-16) echo MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED;;
+    KC-CAFE-24) echo UNAUTHORISED;;
+    *) echo MERCHANDISE_OR_SERVICE_NOT_RECEIVED;;
+  esac
+}
 for SKU in $(node -e 'for (const s of require("./store-seeds.json")) if (!s.dispute_id && s.buyer_txn) console.log(s.sku)'); do
   AMOUNT=$(node -e "console.log(require('./store-seeds.json').find(s=>s.sku==='$SKU').amount)")
   TXN=$(node -e "console.log(require('./store-seeds.json').find(s=>s.sku==='$SKU').buyer_txn)")

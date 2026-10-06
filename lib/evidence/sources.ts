@@ -9,6 +9,12 @@ import type { CarrierEventCode, EvidenceItem } from "./types";
 
 // ---------- PayPal dispute ----------
 
+const REASONS: Record<string, string> = {
+  MERCHANDISE_OR_SERVICE_NOT_RECEIVED: "Item not received",
+  MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED: "Not as described",
+  UNAUTHORISED: "Unauthorized payment",
+};
+
 export interface DisputeLike {
   dispute_id: string;
   reason?: string;
@@ -28,7 +34,7 @@ export function fromDispute(d: DisputeLike): EvidenceItem[] {
       sourceRef: `dispute:${d.dispute_id}`,
       kind: "dispute",
       label: "Dispute opened",
-      text: `Reason ${d.reason ?? "unknown"}, ${d.dispute_amount?.currency_code ?? ""} ${d.dispute_amount?.value ?? "?"}, stage ${d.dispute_life_cycle_stage ?? "?"}, status ${d.status ?? "?"}.`,
+      text: `${REASONS[d.reason ?? ""] ?? d.reason ?? "Unknown reason"}, ${d.dispute_amount?.currency_code ?? ""} ${d.dispute_amount?.value ?? "?"}. ${d.dispute_life_cycle_stage === "CHARGEBACK" ? "PayPal claim" : d.dispute_life_cycle_stage === "INQUIRY" ? "Inquiry" : (d.dispute_life_cycle_stage ?? "")} stage, ${(d.status ?? "").toLowerCase().replace(/_/g, " ")}.`,
       at: d.create_time,
       facts: { amount, currency: d.dispute_amount?.currency_code },
     },

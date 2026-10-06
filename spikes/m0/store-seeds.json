@@ -48,5 +48,35 @@
     "capture_id": "0EL30108735861334",
     "buyer_txn": "90N82918RU6232646",
     "seeded_at": "2026-10-05T20:10:29.673Z"
+  },
+  {
+    "sku": "KC-PLATTER-3",
+    "desc": "Serving platter set of 3, hand-glazed",
+    "amount": "142.00",
+    "tracking": "9405511899223197428605",
+    "order_id": "31F29510RT758130P",
+    "capture_id": "8W4045347V434121P",
+    "buyer_txn": "89N55976H5802811E",
+    "seeded_at": "2026-10-06T09:05:47.730Z"
+  },
+  {
+    "sku": "KC-DINNER-16",
+    "desc": "Stoneware dinnerware set, 16 pieces",
+    "amount": "186.00",
+    "tracking": "9405511899223197428606",
+    "order_id": "9L484138YW553552H",
+    "capture_id": "3AL19827J1859112C",
+    "buyer_txn": "5C647727J2120001U",
+    "seeded_at": "2026-10-06T09:07:00.920Z"
+  },
+  {
+    "sku": "KC-CAFE-24",
+    "desc": "Café order: 24 espresso cups, wholesale",
+    "amount": "312.00",
+    "tracking": "9405511899223197428607",
+    "order_id": "3WL85698SC366950L",
+    "capture_id": "5S991501Y76859350",
+    "buyer_txn": "95T27870YS540843X",
+    "seeded_at": "2026-10-06T09:08:17.921Z"
   }
 ]

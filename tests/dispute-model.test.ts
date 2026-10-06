@@ -65,3 +65,39 @@ describe("labels and provenance", () => {
     expect(provenanceOf(kind)).toBe(p);
   });
 });
+
+describe("Replay display cleanup of early fixtures", () => {
+  it("strips internal 'Spike' prefixes and maps DD-SPIKE invoices to KC- consistently (keys too)", async () => {
+    const { cleanDisplay } = await import("@/lib/replay/fixtures");
+    expect(cleanDisplay({ description: "Spike: Ceramic mug set", invoice_id: "DD-SPIKE-1791211304297", orders: { "DD-SPIKE-1": 1 }, note: "was delivered (spike)." })).toEqual({
+      description: "Ceramic mug set",
+      invoice_id: "KC-1791211304297",
+      orders: { "KC-1": 1 },
+      note: "was delivered.",
+    });
+  });
+
+  it("no Replay data shown to users contains 'spike'", () => {
+    const f = loadFixtures();
+    const shown = JSON.stringify([[...f.disputes.values()].map((d) => ({ ...d, _meta: undefined })), [...f.ordersByCapture.values()], f.store.orders, [...f.aiDrafts.values()].map((r) => r.draft)]);
+    expect(shown).not.toMatch(/spike/i);
+  });
+});
+
+describe("plain labels for records", () => {
+  it.each([
+    [{ sourceRef: "track:USPS:9400#ev4", kind: "carrier_event", at: "2026-10-05T18:58:00Z", facts: { carrier: "USPS", eventCode: "DELIVERED" } }, "USPS scan · Delivered 5 Oct"],
+    [{ sourceRef: "pptrack:C:9400", kind: "paypal_tracking", facts: { carrier: "USPS" } }, "Tracking at PayPal · USPS"],
+    [{ sourceRef: "capture:C", kind: "capture", facts: {} }, "Payment record"],
+    [{ sourceRef: "dispute:D", kind: "dispute", at: "2026-10-05T17:27:00Z", facts: {} }, "Dispute opened · 5 Oct"],
+    [{ sourceRef: "chat:T#line0", kind: "chat", at: "2026-10-05T18:10:00Z", facts: { author: "buyer" } }, "Buyer chat · 5 Oct"],
+  ])("%j → %s", async (e, label) => {
+    const { humanLabel } = await import("@/lib/format");
+    expect(humanLabel(e, e.sourceRef)).toBe(label);
+  });
+
+  it("falls back from the ref when the record isn't loaded", async () => {
+    const { humanLabel } = await import("@/lib/format");
+    expect(humanLabel(undefined, "order:O1")).toBe("Order");
+  });
+});

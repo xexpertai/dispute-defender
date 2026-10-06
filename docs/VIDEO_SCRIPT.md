@@ -1,6 +1,6 @@
 # Dispute Defender: demo video script v1
 
-Target: under 2:30 (PLAN §13). Draft v1 runs **125 s**. Voice: Kokoro-82M `af_heart` (local, Apache-2.0). There is no music, and captions are burned in (an `.srt` is also produced for YouTube CC).
+Target: under 2:30 (PLAN §13). Draft v1 runs **128 s**. Voice: Kokoro-82M `af_heart` (local, Apache-2.0). There is no music, and captions are burned in (an `.srt` is also produced for YouTube CC).
 
 **Source of truth:** `video/scenes.json`. The spoken lines below are generated from it, and `tests/video-script.test.ts` keeps them in sync. To rebuild the whole draft (voice, takes, captions, assembly), run:
 
@@ -23,7 +23,7 @@ scripts/video/make-draft.sh [out_dir]
 
 ### 2. problem · 0:10–0:19
 
-**Visual:** Phone take (390 px): the dashboard scrolls; the deadline guardian is visible.
+**Visual:** Phone take (390 px): the case board scrolls; deadlines and money at risk are visible.
 
 **Voice:**
 
@@ -32,7 +32,7 @@ scripts/video/make-draft.sh [out_dir]
 
 ### 3. dashboard · 0:19–0:28
 
-**Visual:** Desktop dashboard: $ at risk, your move / due < 48 h, ranked open disputes; cursor on "Watch the agent defend a dispute".
+**Visual:** Desktop case board: the docket strip ($ at risk, your move, next deadline, kept/refunded), open cases as case files; cursor on "Watch the agent work a case".
 
 **Voice:**
 
@@ -41,7 +41,7 @@ scripts/video/make-draft.sh [out_dir]
 
 ### 4. agent · 0:28–0:39
 
-**Visual:** Click the button: the numbered trace runs live; each step shows its PayPal API badge.
+**Visual:** Click it: the agent trace runs; evidence cards drop into the case file, claims tie to their records with drawn lines, and the DEFEND stamp lands.
 
 **Voice:**
 
@@ -49,19 +49,9 @@ scripts/video/make-draft.sh [out_dir]
 > It reads the dispute, the order and the tracking from PayPal.
 > Every step is a real PayPal API call.
 
-### 5. refund · 0:39–0:53
+### 5. draft · 0:39–0:53
 
-**Visual:** D4 ($9.50, claim stage): recommendation "Refund the buyer", cost to fight $12.50 vs $9.50; scroll to the AI-written draft.
-
-**Voice:**
-
-> Here the package is still on its way, and the case is for nine dollars fifty.
-> Fighting would cost more of your time than the refund.
-> So it says: refund. It tells you when a fight isn't worth it.
-
-### 6. draft · 0:53–1:07
-
-**Visual:** D3 ($12.75, inquiry): "Defend with evidence"; AI-written (recorded) draft types in; the Spanish buyer reply with its English gloss.
+**Visual:** Same case: the AI-written (recorded) response types in; the buyer wrote in Spanish, so the reply is Spanish with an English gloss.
 
 **Voice:**
 
@@ -69,27 +59,37 @@ scripts/video/make-draft.sh [out_dir]
 > Claude drafts the response, and every claim links to its source.
 > The buyer wrote in Spanish, so the reply is in Spanish.
 
-### 7. sources · 1:07–1:16
+### 6. sources · 0:53–1:02
 
-**Visual:** Tap the delivery-scan source chip: the page jumps to that record in the evidence timeline and highlights it.
+**Visual:** Tap a plain-language source chip ("USPS scan · Delivered 5 Oct"): the page jumps to that record in the evidence timeline and highlights it.
 
 **Voice:**
 
 > Tap a source to see the exact record behind a claim.
 > Nothing is invented. Our server checks every claim before you see it.
 
-### 8. paypal · 1:16–1:24
+### 7. paypal · 1:02–1:10
 
-**Visual:** "What PayPal receives" tab: the exact POST endpoint and JSON body (plus the evidence-pack PDF for provide-evidence).
+**Visual:** "What PayPal receives": the exact POST endpoint and JSON body on a perforated slip (plus the evidence-pack PDF for provide-evidence).
 
 **Voice:**
 
 > Before anything is sent, you see exactly what PayPal will receive.
 > The request, and the evidence pack.
 
+### 8. refund · 1:10–1:24
+
+**Visual:** The second case ($9.50, still in transit): the REFUND stamp lands; "you could defend this once delivered, but your time costs more than the refund".
+
+**Voice:**
+
+> Here the package is still on its way, and the case is for nine dollars fifty.
+> Fighting would cost more of your time than the refund.
+> So it says: refund. It tells you when a fight isn't worth it.
+
 ### 9. outcome · 1:24–1:33
 
-**Visual:** D3 "Sent to PayPal · 200" (real sandbox submission, debug_id shown), then /outcomes: kept vs refunded with WON / LOST stamps.
+**Visual:** History of the earlier real sandbox submission (200, debug_id), then /outcomes: kept vs refunded with WON / LOST stamps.
 
 **Voice:**
 
@@ -98,7 +98,7 @@ scripts/video/make-draft.sh [out_dir]
 
 ### 10. insights · 1:33–1:41
 
-**Visual:** /insights: patterns with their cases, and "What to change" (AI-written · recorded) citing those patterns.
+**Visual:** /insights: numbered patterns with their cases, and suggested changes (AI · recorded) linking to the patterns.
 
 **Voice:**
 
@@ -123,15 +123,13 @@ scripts/video/make-draft.sh [out_dir]
 > Dispute Defender. Win the disputes worth fighting, and settle the rest fairly.
 > Try the demo store. No login needed.
 
-### 13. endcard · about 3 s (after close)
+### 13. endcard · 2:05–2:08
 
-**Visual:** End card (text only): "Thanks for watching", "Built by Harsha Shinde · xexpertai", the demo URL and the GitHub repo URL (placeholders until the user approves the deploy and the public repo; edit `DEMO_URL` / `REPO_URL` in `scripts/video/cards.html`).
+**Visual:** End card (text only): "Thanks for watching", "Built by Harsha Shinde · xexpertai", demo URL and repo URL (placeholders until approved).
 
 **Voice:**
 
 > Thanks for watching.
-
-**Rules:** no "hello" or self-introduction at the start (the hook stays first). The AI voice never claims to be a person, and credit is text only. `tests/video-script.test.ts` enforces this.
 
 ## Re-shoot plan for 15 Oct (Kiln & Clay data)
 

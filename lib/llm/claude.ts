@@ -85,6 +85,7 @@ Rules:
 - Prefer the rules engine's recommendation unless the evidence clearly supports a different allowed action.
 - Write the buyer message in the buyer's language (given), warm and brief, plus an English gloss for the seller.
 - The note to PayPal is plain, factual English, under 2000 characters.
+- Write dates and times for people, like "5 Oct, 6:58 PM UTC" (never ISO formats), and never put source refs or ids in parentheses in your prose: citations go only in source_refs.
 - Never state a policy or legal outcome: do not say Seller Protection applies or covers this, that the seller will win, or what PayPal must do. PayPal decides. You may say "eligible for Seller Protection per PayPal's record" when the evidence shows ELIGIBLE.
 Respond only by calling the draft_response tool.`;
 

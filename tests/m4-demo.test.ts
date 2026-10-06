@@ -32,7 +32,7 @@ describe("recorded AI drafts (hosted demo at $0)", () => {
     expect(d.draft?.recorded?.model).toMatch(/^claude-haiku-4-5/);
     expect(finished(ev).totals).toMatchObject({ llmCalls: 0, inputTokens: 0, costUsd: 0 });
     const step = ev.find((e) => e.type === "step" && e.key === "draft" && e.status === "done") as Extract<TraceEvent, { type: "step" }>;
-    expect(step.detail).toMatch(/recorded from a real claude-haiku-4-5.* \$0 now/);
+    expect(step.detail).toBe("AI-written draft (a real Claude run, recorded; $0 to replay)");
   });
 
   it("the D3 recording answers the Spanish-speaking buyer in Spanish with an English gloss", async () => {

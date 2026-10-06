@@ -20,7 +20,7 @@ export function SandboxSim({ disputeId, canAdjudicate, canRequireEvidence }: { d
   }
 
   return (
-    <section className="rounded-2xl border border-dashed border-amber/60 bg-amber-soft/40 p-4 sm:p-5" aria-labelledby="sim-h">
+    <section className="rounded-xl border border-dashed border-amber/60 bg-amber-soft/40 p-4 sm:p-5" aria-labelledby="sim-h">
       <div className="flex flex-wrap items-center gap-2">
         <span className="stamp text-amber">Sandbox</span>
         <h2 id="sim-h" className="font-display text-[1.15rem] leading-none">

@@ -32,6 +32,8 @@ export interface Insight {
   total: number;
   disputeIds: string[];
   severity: "high" | "medium" | "low";
+  /** Dispute reasons behind this pattern (used to keep advice on-topic). */
+  reasons: string[];
   /** Deterministic suggestion (shown as TEMPLATE when no AI actions exist). */
   hint: string;
 }
@@ -65,11 +67,12 @@ export function factsFrom(id: string, outcome: DisputeFacts["outcome"], evidence
 }
 
 const share = (n: number, t: number) => `${n} of ${t}`;
+const reasonsOf = (all: DisputeFacts[], ids: string[]) => [...new Set(all.filter((d) => ids.includes(d.id)).map((d) => d.reason))];
 
 export function findPatterns(all: DisputeFacts[]): Insight[] {
-  const out: Insight[] = [];
+  const out: Omit<Insight, "reasons">[] = [];
   const total = all.length;
-  if (!total) return out;
+  if (!total) return [];
   const inr = all.filter((d) => d.reason === INR);
 
   const early = inr.filter((d) => d.openedBeforeDelivery);
@@ -153,7 +156,9 @@ export function findPatterns(all: DisputeFacts[]): Insight[] {
         total,
         disputeIds: ids,
         severity: "medium",
-        hint: `Review the listing, photos and packaging for ${sku}.`,
+        hint: reasonsOf(all, ids).every((r) => r === INR)
+          ? `Check the shipping method and tracking for ${sku}: all of its cases are "item not received".`
+          : `Review the listing, photos and packaging for ${sku}.`,
       });
 
   const small = all.filter((d) => d.belowCostToFight);
@@ -166,11 +171,11 @@ export function findPatterns(all: DisputeFacts[]): Insight[] {
       total,
       disputeIds: small.map((d) => d.id),
       severity: "low",
-      hint: "Set an auto-refund threshold for small, low-evidence cases.",
+      hint: "Consider offering a quick refund on small, low-evidence cases (you still approve each one).",
     });
 
   const rank = { high: 0, medium: 1, low: 2 };
-  return out.sort((a, b) => rank[a.severity] - rank[b.severity] || b.count / b.total - a.count / a.total);
+  return out.map((i): Insight => ({ ...i, reasons: reasonsOf(all, i.disputeIds) })).sort((a, b) => rank[a.severity] - rank[b.severity] || b.count / b.total - a.count / a.total);
 }
 
 export const reasonText = (r: string) => REASON_LABEL[r] ?? r;

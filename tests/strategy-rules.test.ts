@@ -78,7 +78,7 @@ describe("strategy rules: item not received", () => {
     const a = assess(ctx({ amount: 9, allowedActions: ["accept_claim", "make_offer"] }), ev, NOW);
     expect(a.costToFight).toBe(12.5);
     expect(a.recommendation.strategy).toBe("REFUND");
-    expect(a.recommendation.why.join(" ")).toMatch(/costs more than refunding/);
+    expect(a.recommendation.why.join(" ")).toMatch(/costs more than (refunding|the refund)/);
   });
 
   it("claim stage (no make_offer/send_message): FIGHT maps to provide_evidence only when the link exists", () => {

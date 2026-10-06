@@ -209,10 +209,10 @@ export async function* runAgent(disputeId: string, deps: AgentDeps): AsyncGenera
       fallbackReason
         ? `${fallbackReason} · using the TEMPLATE draft`
         : draft.recorded
-          ? `AI-written draft, recorded from a real ${draft.recorded.model} run on ${draft.recorded.at.slice(0, 10)} (${draft.recorded.input + draft.recorded.output} tokens, $${draft.recorded.costUsd.toFixed(4)} then; $0 now)`
+          ? "AI-written draft (a real Claude run, recorded; $0 to replay)"
           : draft.origin === "ai"
-          ? `AI-written draft (${usage?.model ?? draft.model ?? "model"}, ${usage ? `${usage.input + usage.output} tokens, $${usage.costUsd.toFixed(4)}` : "no usage"})`
-          : `TEMPLATE draft from the rules (${deps.provider.name} provider, no AI call)`,
+          ? "AI-written draft (Claude)"
+          : "TEMPLATE draft from the rules (no AI)",
       { tokens: usage, ...(fallbackReason ? { status: "done" as const } : {}) },
     );
 

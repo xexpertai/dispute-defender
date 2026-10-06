@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-06T09:08:35.957Z",
+    "redacted": true
+  },
+  "id": "31F29510RT758130P",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-PLATTER-3",
+      "amount": {
+        "currency_code": "USD",
+        "value": "142.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "142.00"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Serving platter set of 3, hand-glazed",
+      "invoice_id": "KC-1791277401522",
+      "items": [
+        {
+          "name": "Serving platter set of 3, hand-glazed",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "142.00"
+          },
+          "quantity": "1",
+          "sku": "KC-PLATTER-3",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "8W4045347V434121P",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "142.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "142.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "5.45"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "136.55"
+              }
+            },
+            "invoice_id": "KC-1791277401522",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W4045347V434121P",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/8W4045347V434121P/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/31F29510RT758130P",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-06T09:03:56Z",
+            "update_time": "2026-10-06T09:04:10Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-06T09:03:56Z",
+  "update_time": "2026-10-06T09:04:10Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/31F29510RT758130P",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

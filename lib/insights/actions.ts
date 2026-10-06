@@ -64,7 +64,9 @@ export function actionsTool(ids: string[]): Anthropic.Tool {
 
 const SYSTEM = `You advise a small online seller on preventing PayPal disputes.
 Use only the patterns given. Cite the pattern ids each action is based on.
-Do not write any numbers, percentages or fractions: the app shows each pattern's exact statistics next to your action. Prefer cheap, specific actions. At most 4 actions, most impactful first.
+Do not write any numbers, percentages or fractions: the app shows each pattern's exact statistics next to your action.
+Match the advice to the dispute reasons of the cited patterns: for "item not received" patterns advise on shipping, tracking and communication, never on product quality or descriptions.
+Never suggest automating refunds or anything that skips the seller's review: the seller approves every action. Prefer cheap, specific actions. At most 4 actions, most impactful first.
 Respond only by calling the seller_actions tool.`;
 
 type MessagesClient = { messages: Pick<Anthropic["messages"], "create"> };
@@ -89,10 +91,21 @@ export async function aiActions(client: MessagesClient, insights: Insight[], mod
     if (!cited.length || !a.title.trim()) continue;
     const sources = cited.map((x) => byId.get(x)!);
     if (!numbersSupported(a.title, sources)) continue; // a made-up number in the headline: drop it
+    if (offTopic(`${a.title} ${a.why}`, sources)) continue; // e.g. product-quality advice for shipping problems
+    if (AUTOMATION.test(`${a.title} ${a.why}`)) continue; // contradicts "you approve every action"
     const why = numbersSupported(a.why, sources) ? a.why : sources.map((x) => x.detail).join(" ");
     actions.push({ title: a.title, why, effort: a.effort, insightIds: cited });
   }
   return { actions, usage };
+}
+
+export const AUTOMATION = /\b(auto[-\s]?(refund|accept|approve)\w*|automat\w+|without (your |seller )?(review|approval|response))\b/i;
+const CONDITION_ADVICE = /\b(quality|defect\w*|damage\w*|broken|crack\w*|chipp?\w*|as described|description|listing photos?)\b/i;
+const SNAD = "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED";
+
+/** Product-condition advice is only on-topic when a cited pattern includes "not as described" cases. */
+export function offTopic(text: string, cited: Insight[]): boolean {
+  return CONDITION_ADVICE.test(text) && !cited.some((i) => i.reasons.includes(SNAD));
 }
 
 /** Every number in `text` must appear in the cited insights (or be a percentage of their counts). */

@@ -105,3 +105,25 @@ describe("formatCountdown", () => {
     expect(formatCountdown(h)).toBe(text);
   });
 });
+
+describe("dashboard showcase (lead with a defended case)", () => {
+  it("leads with the first FIGHT case and offers a REFUND/OFFER case second", async () => {
+    const { pickShowcase } = await import("@/lib/dashboard/showcase");
+    const rows = ["PP-A", "PP-B", "PP-C"].map((id) => toRow(dispute({ dispute_id: id }), NOW));
+    const s = pickShowcase(rows, new Map([["PP-A", "REFUND"], ["PP-B", "FIGHT"], ["PP-C", "OFFER"]] as const));
+    expect([s.lead?.id, s.settle?.id]).toEqual(["PP-B", "PP-A"]);
+    expect(pickShowcase(rows, new Map()).lead?.id).toBe("PP-A");
+  });
+
+  it("on the recorded fixtures: leads with D3 (delivered, Spanish reply), then D4 (refund)", async () => {
+    const { pickShowcase, rulesStrategies } = await import("@/lib/dashboard/showcase");
+    const { ReplayGateway } = await import("@/lib/agent/gateway");
+    const { MockCarrier } = await import("@/lib/carrier/mock");
+    const { SampleStore } = await import("@/lib/samples/store");
+    const f = loadFixtures();
+    const s = summarize([...f.disputes.values()], new Date(f.snapshotAt));
+    const strat = await rulesStrategies(s.open.map((r) => r.id), { gateway: new ReplayGateway(f), carrier: new MockCarrier(f.carrier), store: new SampleStore(f.store) });
+    const show = pickShowcase(s.open, strat);
+    expect([show.lead?.id, show.settle?.id]).toEqual(["PP-R-MQR-10190375", "PP-R-PLP-10190379"]);
+  });
+});

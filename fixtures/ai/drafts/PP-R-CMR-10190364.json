@@ -2,11 +2,11 @@
   "_meta": {
     "source": "claude",
     "model": "claude-haiku-4-5-20251001",
-    "recorded_at": "2026-10-05T20:39:25.196Z",
+    "recorded_at": "2026-10-06T09:44:23.573Z",
     "usage": {
-      "input": 3444,
-      "output": 721,
-      "costUsd": 0.007049
+      "input": 3519,
+      "output": 617,
+      "costUsd": 0.006604
     }
   },
   "disputeId": "PP-R-CMR-10190364",
@@ -15,39 +15,33 @@
     "model": "claude-haiku-4-5-20251001",
     "strategy": "FIGHT",
     "action": null,
-    "rationale": "The tracking evidence clearly shows the package was delivered to the buyer's address on 2026-10-05 at 16:55, after the dispute was opened. PayPal has the tracking number on file, and USPS confirms delivery to ZIP 95131, which matches the order's ship-to location.",
+    "rationale": "The tracking evidence shows the package was delivered to the buyer's address on 5 Oct at 4:55 PM UTC. The delivery ZIP 95131 matches the order's ship-to location, and the tracking was recorded with PayPal at the time of shipment.",
     "claims": [
       {
-        "text": "Tracking number 9400111899223197428490 is recorded with PayPal for this transaction.",
-        "sourceRefs": [
-          "pptrack:72C200774H985740J:9400111899223197428490"
-        ]
-      },
-      {
-        "text": "USPS tracking shows the package was delivered on 2026-10-05 at 16:55 to the front door in ZIP 95131.",
-        "sourceRefs": [
-          "track:USPS:9400111899223197428490#ev4"
-        ]
-      },
-      {
-        "text": "The delivery ZIP 95131 matches the order's ship-to ZIP from the order details.",
+        "text": "The package was delivered to the buyer's address on 5 Oct, 4:55 PM UTC, as confirmed by USPS tracking to ZIP 95131, which matches the order's ship-to ZIP.",
         "sourceRefs": [
           "track:USPS:9400111899223197428490#ev4",
           "order:810133174W798673R"
         ]
       },
       {
-        "text": "The package was delivered after the dispute was opened, so the timing aligns with the carrier's progressive scan events.",
+        "text": "The USPS tracking number was recorded with PayPal at the time of shipment.",
+        "sourceRefs": [
+          "pptrack:72C200774H985740J:9400111899223197428490"
+        ]
+      },
+      {
+        "text": "The buyer opened the dispute on 5 Oct at 3:23 PM UTC, before the package was delivered at 4:55 PM UTC the same day.",
         "sourceRefs": [
           "dispute:PP-R-CMR-10190364",
           "track:USPS:9400111899223197428490#ev4"
         ]
       }
     ],
-    "sellerNote": "This is a case of merchandise not received, but the evidence strongly supports that the package was delivered. The USPS tracking number 9400111899223197428490 is on file with PayPal. Tracking shows the package was accepted by USPS on 2026-10-05 at 15:05, processed through San Jose at 15:40, marked out for delivery at 16:20, and delivered to the front door at 16:55 on the same day to ZIP 95131—the exact ship-to address from order 810133174W798673R. The buyer opened the dispute before checking with neighbors or waiting for the final tracking update. The seller has fulfilled the obligation by shipping the package to the correct address via a trackable carrier.",
+    "sellerNote": "Order 810133174W798673R for USD 12.00 ceramic mug set: USPS tracking 9400111899223197428490 shows delivery to ZIP 95131 on 5 Oct at 4:55 PM UTC, matching the order's ship-to address. Tracking was recorded with PayPal when shipped. The dispute was opened at 3:23 PM UTC the same day, before delivery confirmation. The seller provided tracking to the buyer and advised checking with neighbours.",
     "buyerMessage": {
       "language": "en",
-      "text": "Hi! I can see from the tracking that your mug set was delivered to your front door on October 5th at 4:55 PM (ZIP 95131). Could you please check with neighbors or look around your doorway? If you still can't find it, let me know and we'll work something out."
+      "text": "Hi! Your tracking shows the package was delivered to your front door on 5 Oct at 4:55 PM UTC. Please check with neighbours or around your property, as it may have been left in a safe spot. Let me know if you need any help!"
     },
     "buyerLanguage": {
       "code": "en",

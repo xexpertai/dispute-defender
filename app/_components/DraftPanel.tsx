@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { noteSources } from "@/lib/agent/note-sources";
 import type { RequestPreview } from "@/lib/agent/submission";
+import type { EvidenceItem } from "@/lib/evidence/types";
 import { wordDiff } from "@/lib/diff";
 import type { Draft } from "@/lib/llm/draft";
+import { useEvidence } from "./EvidenceContext";
 import { SourceChip } from "./SourceChip";
 
 interface Props {
   onSubmitted?: (detail: string) => void;
+  evidence?: EvidenceItem[];
   draft: Draft;
   draftId?: string;
   fallbackReason?: string;
@@ -26,8 +30,9 @@ const ACTION_LABEL: Record<string, string> = {
   escalate: "Approve · escalate",
 };
 
-export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues, mode, closed }: Props) {
+export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbackReason, issues, mode, closed }: Props) {
   const ai = draft.origin === "ai";
+  const { details } = useEvidence();
   const [tab, setTab] = useState<"draft" | "paypal">("draft");
   const [note, setNote] = useState(draft.sellerNote);
   const [msg, setMsg] = useState(draft.buyerMessage?.text ?? "");
@@ -70,10 +75,10 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
   }
 
   return (
-    <section aria-labelledby="draft-h" className="rise rounded-2xl border border-line bg-surface shadow-card">
+    <section aria-labelledby="draft-h" className="rise case">
       <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-5 sm:px-6">
         <h2 id="draft-h" className="font-display text-[1.3rem] leading-none">
-          Response
+          Response to send
         </h2>
         {ai ? (
           <span className="stamp stamp-tilt text-ai">{draft.recorded ? "AI-written · recorded" : "AI-written"}</span>
@@ -85,10 +90,16 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
       </div>
       <p className="px-5 pt-1 text-xs text-muted sm:px-6">
         {draft.recorded
-          ? `Recorded from a real ${draft.recorded.model} run on ${draft.recorded.at.slice(0, 10)} and replayed here at $0. Every claim was re-checked against its source just now.`
+          ? "Written by Claude in an earlier real run and replayed here at no cost. Every claim was re-checked against its record just now."
           : ai
-            ? `Drafted by ${draft.model ?? "Claude"}. Every claim was checked against its source on our server.`
+            ? "Written by Claude. Every claim was checked against its record on our server."
             : "Written by the rules engine from your evidence. No AI was used for this text."}
+        {details && draft.recorded && (
+          <span className="mt-1 block font-mono text-[0.68rem]">
+            {draft.recorded.model} · recorded {draft.recorded.at.slice(0, 10)} · {draft.recorded.input + draft.recorded.output} tokens · ${draft.recorded.costUsd.toFixed(4)} then
+          </span>
+        )}
+        {details && !draft.recorded && ai && draft.model && <span className="mt-1 block font-mono text-[0.68rem]">{draft.model}</span>}
       </p>
       {fallbackReason && <p className="mx-5 mt-3 rounded-lg border border-amber/40 bg-amber-soft p-2.5 text-xs text-amber sm:mx-6">{fallbackReason}. The TEMPLATE draft is shown instead.</p>}
 
@@ -115,8 +126,8 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
       <div className="px-5 pb-5 pt-4 sm:px-6">
         {tab === "draft" ? (
           <>
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="note">
-              Note to PayPal <span className="font-normal normal-case tracking-normal">(you can edit)</span>
+            <label className="text-sm font-semibold" htmlFor="note">
+              Note to PayPal <span className="font-normal text-muted">(you can edit)</span>
             </label>
             <textarea
               id="note"
@@ -126,18 +137,30 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
               onChange={(e) => setNote(e.target.value)}
               maxLength={2000}
               disabled={submit.phase === "done" || closed}
-              rows={Math.min(10, Math.max(4, note.split("\n").length + Math.ceil(note.length / 75)))}
-              className="mt-1.5 w-full rounded-xl border border-line bg-surface-2 p-3 text-[0.9rem] leading-relaxed text-ink focus:border-line-strong"
+              rows={4}
+              className="mt-1.5 min-h-24 w-full rounded-xl border border-line bg-surface-2 p-3 text-[0.9rem] leading-relaxed text-ink [field-sizing:content] focus:border-line-strong"
             />
-            <p className="text-right font-mono text-[0.66rem] text-muted">{note.length}/2000</p>
+            <div className="flex flex-wrap items-center justify-between gap-x-3">
+              <p className="flex flex-wrap items-center gap-x-1 text-xs text-muted">
+                {noteSources(note, evidence).length > 0 && (
+                  <>
+                    This note relies on:
+                    {noteSources(note, evidence).map((r) => (
+                      <SourceChip key={r} sourceRef={r} />
+                    ))}
+                  </>
+                )}
+              </p>
+              <p className="font-mono text-[0.66rem] text-muted">{note.length}/2000</p>
+            </div>
 
             {draft.claims.length > 0 && (
               <>
-                <h3 className="mt-2 text-xs font-semibold uppercase tracking-wider text-muted">Claims · each one cited</h3>
+                <h3 className="mt-2 text-sm font-semibold">Claims, each with its record</h3>
                 <ul className="mt-1 flex flex-col divide-y divide-line">
                   {draft.claims.map((c, i) => (
-                    <li key={i} className="flex flex-col gap-0.5 py-1.5 sm:flex-row sm:items-center sm:gap-3">
-                      <span className="flex-1 text-sm">{c.text}</span>
+                    <li key={i} className="flex flex-col gap-0.5 py-1.5">
+                      <span className="text-sm">{c.text}</span>
                       <span className="flex flex-wrap gap-x-1">
                         {c.sourceRefs.map((ref) => (
                           <SourceChip key={ref} sourceRef={ref} />
@@ -151,8 +174,8 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
 
             {draft.buyerMessage && (
               <>
-                <label className="mt-4 block text-xs font-semibold uppercase tracking-wider text-muted" htmlFor="msg">
-                  Message to the buyer{draft.buyerMessage.language !== "en" ? ` · ${lang?.name ?? draft.buyerMessage.language}` : ""}
+                <label className="mt-4 block text-sm font-semibold" htmlFor="msg">
+                  Message to the buyer{draft.buyerMessage.language !== "en" ? <span className="font-normal text-muted"> · in {lang?.name ?? draft.buyerMessage.language}, as the buyer wrote</span> : ""}
                 </label>
                 <textarea
                   id="msg"
@@ -161,7 +184,7 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
                   maxLength={2000}
                   disabled={submit.phase === "done" || closed}
                   rows={3}
-                  className="mt-1.5 w-full rounded-xl border-l-4 border-primary bg-surface-2 p-3 text-[0.9rem] leading-relaxed"
+                  className="mt-1.5 min-h-20 w-full rounded-xl border-l-4 border-primary bg-surface-2 p-3 text-[0.9rem] leading-relaxed [field-sizing:content]"
                 />
                 {draft.buyerMessage.englishGloss && (
                   <p className="mt-1 text-xs text-muted">
@@ -211,7 +234,7 @@ export function DraftPanel({ onSubmitted, draft, draftId, fallbackReason, issues
               {closed
                 ? "This case is closed; nothing will be sent."
                 : mode === "replay"
-                  ? "Replay mode: nothing is ever sent to PayPal."
+                  ? "Replay: nothing is sent from this screen. In the live sandbox, approving sends exactly the request shown under “What PayPal receives”."
                   : !draft.action
                     ? "PayPal allows no matching action right now."
                     : "Sandbox only. An approval record is saved before anything is sent."}
@@ -292,16 +315,17 @@ function PayPalPreview({ preview, draftId, edited, hasAction }: { preview: Reque
   if (!preview) return <div className="h-40 animate-pulse rounded-xl bg-surface-2" aria-label="Loading preview" />;
   return (
     <div className="flex flex-col gap-3">
+      <div className="perf" aria-hidden="true" />
       <p className="text-sm text-ink-2">This is the exact request that is sent when you approve. Nothing is added after your approval.</p>
       <p className="flex flex-wrap items-center gap-2 font-mono text-[0.75rem]">
         <span className="rounded-md bg-pp px-1.5 py-0.5 font-bold text-white">{preview.method}</span>
         <span className="break-all text-pp">{preview.endpoint}</span>
         <span className="text-muted">· {preview.encoding === "multipart" ? "multipart/form-data, part `input`" : "application/json"}</span>
       </p>
-      <pre className="max-h-80 overflow-auto rounded-xl border border-line bg-surface-2 p-3 font-mono text-[0.72rem] leading-relaxed text-ink">{JSON.stringify(preview.input, null, 2)}</pre>
+      <pre className="max-h-80 overflow-y-auto whitespace-pre-wrap rounded-xl border border-line bg-surface-2 p-3 font-mono text-[0.72rem] leading-relaxed text-ink [overflow-wrap:anywhere]">{JSON.stringify(preview.input, null, 2)}</pre>
       {preview.files.length > 0 && (
         <div className="rounded-xl border border-line p-3">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted">Attached files</p>
+          <p className="text-sm font-semibold">Attached files</p>
           {preview.files.map((f) => (
             <p key={f.filename} className="mt-1 flex flex-wrap items-center justify-between gap-2 text-sm">
               <span className="font-mono text-[0.75rem]">

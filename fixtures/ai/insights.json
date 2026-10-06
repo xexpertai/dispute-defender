@@ -1,45 +1,38 @@
 {
   "_meta": {
     "model": "claude-haiku-4-5-20251001",
-    "recorded_at": "2026-10-05T20:43:44.523Z",
+    "recorded_at": "2026-10-06T09:13:12.850Z",
     "usage": {
-      "input": 1319,
-      "output": 257,
-      "costUsd": 0.002604
+      "input": 1379,
+      "output": 269,
+      "costUsd": 0.002724
     }
   },
   "inputHash": "46846662c86d13ab",
   "actions": [
     {
-      "title": "Send tracking updates immediately after shipping",
-      "why": "Buyers who see prompt tracking activity are less likely to open premature disputes before delivery.",
+      "title": "Send tracking immediately when orders process",
+      "why": "Buyers who see tracking early are less likely to file cases before packages arrive.",
       "effort": "low",
       "insightIds": [
         "opened_before_delivery"
       ]
     },
     {
-      "title": "Use unique tracking numbers for each order",
-      "why": "Assigning distinct tracking numbers to each payment makes disputes easier for PayPal to resolve.",
+      "title": "Use a fresh tracking number per order, never reuse",
+      "why": "Each order needs its own tracking number so PayPal can verify which payment it covers.",
       "effort": "low",
       "insightIds": [
         "tracking_reused"
       ]
     },
     {
-      "title": "Inspect and improve quality of MUG-SET-4",
-      "why": "Since this product generates clusters of disputes, fixing quality issues will reduce dispute volume.",
-      "effort": "medium",
-      "insightIds": [
-        "sku_MUG-SET-4"
-      ]
-    },
-    {
-      "title": "Auto-refund small disputes without response",
-      "why": "Disputes below the cost of your response time are better handled with quick refunds than contested.",
+      "title": "Reply quickly to cases with photos of shipment",
+      "why": "Fast responses with proof of shipping can resolve disputes filed prematurely before delivery.",
       "effort": "low",
       "insightIds": [
-        "below_cost_to_fight"
+        "filed_within_48h",
+        "opened_before_delivery"
       ]
     }
   ]

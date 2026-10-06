@@ -27,8 +27,17 @@ def scene_seconds(sc):
     return max(sum(lines) + GAP * (len(lines) - 1) + TAIL, sc.get("minSeconds", 0))
 
 
-def smooth_to(page, selector, offset=110):
-    page.evaluate("([s, o]) => { const el = document.querySelector(s); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - o, behavior: 'smooth' }); }", [selector, offset])
+def smooth_to(page, selector, gap=18, whole=True):
+    """Scroll so the element's top (its case tab included) sits `gap` px below the sticky nav."""
+    page.evaluate(
+        """([s, gap, whole]) => {
+          const el = document.querySelector(s); if (!el) return;
+          const target = whole ? (el.closest('.case-wrap') || el.closest('section') || el) : el;
+          const nav = document.getElementById('site-nav').getBoundingClientRect().bottom;
+          window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - nav - gap, behavior: 'smooth' });
+        }""",
+        [selector, gap, whole],
+    )
 
 
 def slow_scroll(page, total_px, seconds, steps=30):
@@ -38,7 +47,7 @@ def slow_scroll(page, total_px, seconds, steps=30):
 
 
 def finished(page):
-    page.wait_for_selector("text=Finished in", timeout=40000)
+    page.wait_for_selector("text=Done in", timeout=40000)
     page.wait_for_timeout(1800)  # let the AI note finish typing
 
 
@@ -50,29 +59,44 @@ def t_dashboard(page, s, phone=False):
 
 TAKES = {
     "phone:dashboard": (lambda p: p.goto(BASE + "/", wait_until="networkidle"), lambda p, s: t_dashboard(p, s, phone=True)),
-    "dashboard": (lambda p: p.goto(BASE + "/", wait_until="networkidle"), lambda p, s: (p.locator("text=Watch the agent defend").hover(), t_dashboard(p, s))),
+    "dashboard": (lambda p: p.goto(BASE + "/", wait_until="networkidle"), lambda p, s: (p.locator("text=Watch the agent work a case").hover(), t_dashboard(p, s))),
+    # The defended case: trace runs, records drop into the case file, lines draw, DEFEND lands.
     "agent-run": (
         lambda p: p.goto(BASE + "/", wait_until="networkidle"),
-        lambda p, s: (p.wait_for_timeout(700), p.get_by_role("link", name="Watch the agent defend").click(), p.wait_for_timeout(int(s * 1000) - 700)),
-    ),
-    "refund": (
-        lambda p: (p.goto(BASE + "/disputes/PP-R-PLP-10190379?run=1&pace=0.15", wait_until="domcontentloaded"), finished(p), smooth_to(p, "#rec-h"), p.wait_for_timeout(900)),
-        lambda p, s: (p.wait_for_timeout(int(s * 600)), smooth_to(p, "#draft-h"), p.wait_for_timeout(int(s * 400))),
+        lambda p, s: (
+            p.wait_for_timeout(600),
+            p.get_by_role("link", name="Watch the agent work a case").click(),
+            p.wait_for_timeout(int(s * 1000 * 0.45)),
+            smooth_to(p, "#casefile-h"),
+            p.wait_for_timeout(int(s * 1000 * 0.55) - 600),
+        ),
     ),
     "spanish-draft": (
-        lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375?run=1&pace=0.15", wait_until="domcontentloaded"), finished(p), smooth_to(p, "#rec-h"), p.wait_for_timeout(900)),
-        lambda p, s: (p.wait_for_timeout(int(s * 330)), smooth_to(p, "#draft-h"), p.wait_for_timeout(int(s * 330)), smooth_to(p, "#msg", 260), p.wait_for_timeout(int(s * 340))),
+        lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375?run=1&pace=0.15", wait_until="domcontentloaded"), finished(p), smooth_to(p, "#casefile-h"), p.wait_for_timeout(900)),
+        lambda p, s: (p.wait_for_timeout(int(s * 250)), smooth_to(p, "#draft-h"), p.wait_for_timeout(int(s * 400)), smooth_to(p, "label[for=msg]", 24, whole=False), p.wait_for_timeout(int(s * 350))),
     ),
     "source-chip": (
         lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375?run=1&pace=0.15", wait_until="domcontentloaded"), finished(p), smooth_to(p, "#rec-h"), p.wait_for_timeout(900)),
-        lambda p, s: (p.wait_for_timeout(int(s * 250)), p.locator("a[href*='track-USPS-9400111899223197428491-ev4']").first.click(), p.wait_for_timeout(int(s * 750))),
+        lambda p, s: (p.wait_for_timeout(int(s * 250)), p.locator("a[href*='track-USPS-9400111899223197428491-ev4']:visible").first.click(), p.wait_for_timeout(int(s * 750))),
     ),
     "paypal-receives": (
         lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375?run=1&pace=0.15", wait_until="domcontentloaded"), finished(p), smooth_to(p, "#draft-h"), p.wait_for_timeout(900)),
         lambda p, s: (p.wait_for_timeout(int(s * 200)), p.get_by_role("tab", name="What PayPal receives").click(), p.wait_for_timeout(int(s * 800))),
     ),
+    # The honesty proof: film the REFUND stamp landing on the small in-transit case.
+    "refund": (
+        lambda p: (p.goto(BASE + "/disputes/PP-R-PLP-10190379?pace=0.6", wait_until="networkidle"), p.wait_for_timeout(500)),
+        lambda p, s: (
+            p.get_by_role("button", name="Start the agent").click(),
+            p.wait_for_timeout(int(s * 1000 * 0.5)),
+            smooth_to(p, "#casefile-h"),
+            p.wait_for_timeout(int(s * 1000 * 0.2)),
+            smooth_to(p, "#rec-h"),
+            p.wait_for_timeout(int(s * 1000 * 0.3)),
+        ),
+    ),
     "outcome": (
-        lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375", wait_until="networkidle"), smooth_to(p, "#sub-h", 300), p.wait_for_timeout(700)),
+        lambda p: (p.goto(BASE + "/disputes/PP-R-MQR-10190375", wait_until="networkidle"), smooth_to(p, "#sub-h"), p.wait_for_timeout(700)),
         lambda p, s: (p.wait_for_timeout(int(s * 450)), p.goto(BASE + "/outcomes", wait_until="networkidle"), p.wait_for_timeout(int(s * 550))),
     ),
     "insights": (

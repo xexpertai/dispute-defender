@@ -84,7 +84,7 @@ describe("agent run over recorded disputes (Replay, FakeProvider)", () => {
       "pptrack:72C200774H985740J:9400111899223197428490",
       ...[0, 1, 2, 3, 4].map((n) => `track:USPS:9400111899223197428490#ev${n}`),
       "listing:MUG-SET-4",
-      ...[0, 1, 2].map((n) => `store:DD-SPIKE-1791211304297#line${n}`),
+      ...[0, 1, 2].map((n) => `store:KC-1791211304297#line${n}`),
       "chat:T-1304297#line0",
       "chat:T-1304297#line1",
     ]);

@@ -27,6 +27,18 @@
     "KC-VASE": {
       "title": "Small bud vase, celadon",
       "text": "4 in bud vase in celadon glaze."
+    },
+    "KC-PLATTER-3": {
+      "title": "Serving platter set of 3, hand-glazed",
+      "text": "Three nesting stoneware serving platters (14, 12 and 10 in), hand-glazed in sea-salt white."
+    },
+    "KC-DINNER-16": {
+      "title": "Stoneware dinnerware set, 16 pieces",
+      "text": "Service for 4: dinner plates, side plates, bowls and mugs in speckled oat glaze. Handmade, so each piece varies slightly in size and speckle."
+    },
+    "KC-CAFE-24": {
+      "title": "Café order: 24 espresso cups, wholesale",
+      "text": "Wholesale order of 24 handmade 3 oz espresso cups with saucers for cafés."
     }
   },
   "orders": {
@@ -219,6 +231,90 @@
           "at": "2026-10-07T15:20:00Z",
           "author": "system",
           "text": "USPS label 9405511899223197428604 printed and added to PayPal."
+        }
+      ]
+    },
+    "KC-1791277401522": {
+      "sku": "KC-PLATTER-3",
+      "store": [
+        {
+          "at": "2026-10-06T09:04:00Z",
+          "author": "system",
+          "text": "Order paid with PayPal, USD 142.00."
+        },
+        {
+          "at": "2026-10-06T16:40:00Z",
+          "author": "seller",
+          "text": "Platters nested with foam dividers, double-boxed; photo saved.",
+          "tags": {
+            "photosBeforeShipping": true
+          }
+        },
+        {
+          "at": "2026-10-06T17:00:00Z",
+          "author": "system",
+          "text": "USPS label 9405511899223197428605 printed and added to PayPal."
+        }
+      ]
+    },
+    "KC-1791277548053": {
+      "sku": "KC-DINNER-16",
+      "store": [
+        {
+          "at": "2026-10-06T09:06:30Z",
+          "author": "system",
+          "text": "Order paid with PayPal, USD 186.00."
+        },
+        {
+          "at": "2026-10-06T17:00:00Z",
+          "author": "seller",
+          "text": "All 16 pieces inspected and photographed before packing; no chips or cracks.",
+          "tags": {
+            "photosBeforeShipping": true
+          }
+        },
+        {
+          "at": "2026-10-06T17:20:00Z",
+          "author": "system",
+          "text": "USPS label 9405511899223197428606 printed and added to PayPal."
+        }
+      ],
+      "chat": {
+        "threadId": "T-KC-7548",
+        "lines": [
+          {
+            "at": "2026-10-11T08:40:00Z",
+            "author": "buyer",
+            "text": "The plates are much smaller than I expected and two bowls have a different glaze. This is not what the listing showed."
+          },
+          {
+            "at": "2026-10-11T14:10:00Z",
+            "author": "seller",
+            "text": "Sorry about that! Each piece is handmade, so glaze and size vary a little. Could you send a photo?"
+          }
+        ]
+      }
+    },
+    "KC-1791277621225": {
+      "sku": "KC-CAFE-24",
+      "store": [
+        {
+          "at": "2026-10-06T09:07:40Z",
+          "author": "system",
+          "text": "Order paid with PayPal, USD 312.00. Returning wholesale customer.",
+          "tags": {
+            "buyerPriorOrders": 3
+          }
+        },
+        {
+          "at": "2026-10-06T17:40:00Z",
+          "author": "seller",
+          "text": "24 cups + saucers packed in 2 boxes; signature required."
+        },
+        {
+          "at": "2026-10-06T18:00:00Z",
+          "author": "system",
+          "text": "USPS label 9405511899223197428607 (signature required) printed and added to PayPal."
         }
       ]
     }

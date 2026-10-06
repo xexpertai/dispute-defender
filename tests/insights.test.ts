@@ -123,3 +123,31 @@ describe("reset demo", () => {
     expect((db.prepare("SELECT id FROM drafts").all() as { id: string }[]).map((r) => r.id)).toEqual(["run_b_d1"]);
   });
 });
+
+describe("insight actions stay on-topic and keep the human in the loop", () => {
+  const inrOnly = findPatterns([fact("a", { sku: "S" }), fact("b", { sku: "S" }), fact("c", { sku: "T", belowCostToFight: true })]);
+  const withSnad = findPatterns([fact("a", { sku: "S", reason: "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED" }), fact("b", { sku: "S" })]);
+  const reply = (actions: { title: string; why: string; insight_ids: string[] }[]) => ({
+    messages: { create: async () => ({ usage: { input_tokens: 1, output_tokens: 1 }, content: [{ type: "tool_use", name: "seller_actions", id: "t", input: { actions: actions.map((a) => ({ ...a, effort: "low" })) } }] }) },
+  });
+
+  it("drops product-quality advice for 'item not received' patterns", async () => {
+    const r = await aiActions(reply([{ title: "Inspect and improve quality of S", why: "Fix defects.", insight_ids: ["sku_S"] }, { title: "Use faster tracked shipping for S", why: "Fewer lost parcels.", insight_ids: ["sku_S"] }]) as never, inrOnly);
+    expect(r.actions.map((a) => a.title)).toEqual(["Use faster tracked shipping for S"]);
+  });
+
+  it("allows condition advice when a cited pattern includes 'not as described' cases", async () => {
+    const r = await aiActions(reply([{ title: "Improve the listing photos for S", why: "Set expectations.", insight_ids: ["sku_S"] }]) as never, withSnad);
+    expect(r.actions).toHaveLength(1);
+  });
+
+  it.each(["Auto-refund small disputes without response", "Automate refunds under the threshold", "Accept small claims without your review"])("drops automation: %s", async (title) => {
+    const r = await aiActions(reply([{ title, why: "Saves time.", insight_ids: ["below_cost_to_fight"] }]) as never, inrOnly);
+    expect(r.actions).toEqual([]);
+  });
+
+  it("deterministic hints follow the same rules", () => {
+    expect(inrOnly.find((i) => i.id === "sku_S")?.hint).toMatch(/shipping method/);
+    expect(inrOnly.find((i) => i.id === "below_cost_to_fight")?.hint).toMatch(/you still approve/);
+  });
+});

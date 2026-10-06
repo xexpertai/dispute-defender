@@ -1,6 +1,7 @@
 import type { EvidenceItem } from "../evidence/types";
 import type { Draft } from "../llm/draft";
 import type { DisputeContext } from "../strategy/rules";
+import { protectionBacked } from "./note-sources";
 
 /**
  * Server-side checks on any draft (AI or template) before a seller can approve it:
@@ -42,6 +43,25 @@ export function stripPolicyClaims(text: string): { text: string; removed: string
     .replace(/^\s+|\s+$/g, "");
   return { text: kept, removed };
 }
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const clock = (h: number, m: number) => `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`;
+
+/**
+ * Prose shown to people (and sent to PayPal) reads like a person wrote it: ISO dates/times become
+ * "5 Oct, 6:58 PM UTC", and raw source refs in parentheses ("(capture:5HF8…)") are removed;
+ * citations live in the source chips and ids in the PayPal payload.
+ */
+export function humanizeProse(text: string): string {
+  return text
+    .replace(/\s*\((?:capture|order|dispute|pptrack|track|store|chat|listing):[^)\s]+\)/g, "")
+    .replace(/(?:\bon\s+)?\b(20\d\d)-(\d\d)-(\d\d)(?:(?:T|\s+at\s+|\s+)(\d\d):(\d\d)(?::\d\d(?:\.\d+)?)?(?:Z|\s*UTC)?)?/g, (m, _y, mo, d, h, mi) => {
+      const on = /^on\s/i.test(m) ? "on " : "";
+      const day = `${Number(d)} ${MONTHS[Number(mo) - 1]}`;
+      return h ? `${on}${day}, ${clock(Number(h), Number(mi))} UTC` : `${on}${day}`;
+    })
+    .replace(/[ \t]{2,}/g, " ");
+}
+
 export interface ValidationIssue {
   code: "ai_fallback" | "policy_claim" | "unknown_source" | "uncited_claim" | "action_not_allowed" | "amount_exceeds_dispute" | "unknown_tracking" | "note_too_long";
   message: string;
@@ -60,6 +80,13 @@ export function validateDraft(draft: Draft, evidence: EvidenceItem[], ctx: Dispu
   const refs = new Set(evidence.map((e) => e.sourceRef));
 
   const policy = (where: string, removed: string[]) => removed.forEach((r) => issues.push({ code: "policy_claim", message: `Removed a policy/legal outcome from the ${where}: "${r}"` }));
+  draft = {
+    ...draft,
+    sellerNote: humanizeProse(draft.sellerNote),
+    rationale: humanizeProse(draft.rationale),
+    claims: draft.claims.map((c) => ({ ...c, text: humanizeProse(c.text) })),
+    buyerMessage: draft.buyerMessage && { ...draft.buyerMessage, text: humanizeProse(draft.buyerMessage.text), englishGloss: draft.buyerMessage.englishGloss && humanizeProse(draft.buyerMessage.englishGloss) },
+  };
   const claims = draft.claims.filter((c) => {
     const hit = findPolicyClaim(c.text);
     if (hit) {
@@ -99,7 +126,18 @@ export function validateDraft(draft: Draft, evidence: EvidenceItem[], ctx: Dispu
     })
     .filter((e) => (e.tracking_info?.length ?? 0) > 0 || e.evidence_type === "OTHER");
 
-  const noteClean = stripPolicyClaims(draft.sellerNote);
+  // Seller Protection may only be mentioned when PayPal's capture record says ELIGIBLE.
+  const unbacked = (t: string) => {
+    if (protectionBacked(evidence)) return { text: t, removed: [] as string[] };
+    const removed: string[] = [];
+    const kept = t
+      .split(/(?<=[.!?])\s+/)
+      .filter((x) => (/seller protection/i.test(x) ? (removed.push(x.trim()), false) : true))
+      .join(" ");
+    removed.forEach((r) => issues.push({ code: "policy_claim", message: `Removed a Seller Protection statement PayPal's record doesn't back: "${r}"` }));
+    return { text: kept, removed };
+  };
+  const noteClean = stripPolicyClaims(unbacked(draft.sellerNote).text);
   policy("note to PayPal", noteClean.removed);
   const rationaleClean = stripPolicyClaims(draft.rationale);
   policy("rationale", rationaleClean.removed);

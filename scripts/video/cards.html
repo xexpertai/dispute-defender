@@ -4,19 +4,20 @@
 <meta charset="utf-8" />
 <title>Dispute Defender video cards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet" />
 <style>
   /* Same tokens as app/globals.css (light). Rendered to PNG by scripts/video/takes.py. */
-  :root { --bg:#f4f6fa; --surface:#fff; --s2:#eef2f7; --ink:#0b1b33; --ink2:#3b4a61; --muted:#5b677a; --line:#e1e7ef; --primary:#2453d4; --psoft:#e6edff; --win:#147a3d; --loss:#c0262d; --pp:#0e6f8a; --ppsoft:#e2f4f8; --ai:#6a2fd0; --aisoft:#efe8fd; --amber:#a35a00; }
+  :root { --bg:#e7ebf0; --surface:#fffefb; --s2:#f1f3f6; --ink:#101c33; --ink2:#3a4659; --muted:#596476; --line:#dbe1e9; --primary:#14284b; --psoft:#e4e9f2; --manila:#ecd593; --manila-ink:#4a3a12; --win:#147a3d; --loss:#c0262d; --pp:#0e6f8a; --ppsoft:#e1f2f6; --ai:#6a2fd0; --aisoft:#efe8fd; --amber:#a35a00; }
+  h1, .big, .brand, #architecture h2 { font-family: Archivo, Inter, sans-serif; font-stretch: 112%; }
   * { box-sizing: border-box; margin: 0; }
   html, body { width: 1366px; height: 768px; overflow: hidden; }
-  body { font-family: Inter, -apple-system, Helvetica, sans-serif; color: var(--ink); background: linear-gradient(180deg, var(--psoft), var(--bg) 60%); }
+  body { font-family: Inter, -apple-system, Helvetica, sans-serif; color: var(--ink); background: var(--bg); }
   body.caption { background: transparent; }
   .mono { font-family: "Geist Mono", ui-monospace, monospace; }
   section { display: none; width: 1366px; height: 768px; padding: 64px 96px 150px; }
   section.on { display: flex; flex-direction: column; }
   .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 26px; letter-spacing: -0.02em; }
-  .brand b { color: var(--primary); }
+  .brand b { color: var(--ink); }
   .eyebrow { font: 600 15px "Geist Mono", monospace; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
   /* hook */
   #hook { justify-content: center; }
@@ -28,7 +29,7 @@
   #architecture { gap: 22px; }
   #architecture h1 { font-size: 40px; letter-spacing: -0.03em; }
   .row { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 22px; flex: 1; }
-  .col { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px -16px rgb(11 27 51 / .25); }
+  .col { background: var(--surface); border: 1px solid var(--line); border-radius: 4px 12px 12px 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px -16px rgb(11 27 51 / .25); }
   .col h2 { font-size: 20px; letter-spacing: -0.01em; }
   .chip { display: flex; justify-content: space-between; gap: 10px; align-items: center; border-radius: 10px; padding: 9px 12px; font-size: 15px; font-weight: 600; }
   .chip span { font: 400 12.5px "Geist Mono", monospace; opacity: .85; }
@@ -40,7 +41,11 @@
   /* close */
   #close { justify-content: center; align-items: flex-start; gap: 28px; }
   #close h1 { font-size: 84px; letter-spacing: -0.04em; line-height: 1; }
-  #close h1 b { color: var(--primary); }
+  /* Marker stroke: one word only. Sits behind the lower part of the letters from just under the
+     baseline, a little wider than the word, rounded and slightly angled; em-based so it scales. */
+  .marker { position: relative; z-index: 0; color: var(--ink); white-space: nowrap; }
+  .marker::before { content: ""; position: absolute; z-index: -1; left: -0.1em; right: -0.08em; bottom: 0.2em; height: 0.34em;
+    background: var(--manila); border-radius: 0.18em 0.3em 0.22em 0.32em; transform: rotate(-1.5deg) skewX(-10deg); opacity: 0.95; }
   #close p { font-size: 34px; color: var(--ink2); font-weight: 500; }
   #close .cta { background: var(--primary); color: #fff; font-size: 26px; font-weight: 700; padding: 18px 28px; border-radius: 14px; }
   #close .fine { font-size: 18px; color: var(--muted); }
@@ -95,7 +100,7 @@
 
 <section id="close">
   <div class="brand">Dispute <b>Defender</b></div>
-  <h1>Win the disputes worth fighting.<br/>Settle the rest <b>fairly</b>.</h1>
+  <h1>Win the disputes worth fighting.<br/>Settle the rest <b class="marker">fairly</b>.</h1>
   <p>An honest AI agent for small sellers, built on PayPal.</p>
   <span class="cta">Try the demo store: no login</span>
   <p class="fine">PayPal sandbox. Claude Haiku 4.5. Built for the PayPal AI Hackathon.</p>

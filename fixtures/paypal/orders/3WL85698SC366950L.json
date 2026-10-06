@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-06T09:08:40.183Z",
+    "redacted": true
+  },
+  "id": "3WL85698SC366950L",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-CAFE-24",
+      "amount": {
+        "currency_code": "USD",
+        "value": "312.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "312.00"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Café order: 24 espresso cups, wholesale",
+      "invoice_id": "KC-1791277621225",
+      "items": [
+        {
+          "name": "Café order: 24 espresso cups, wholesale",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "312.00"
+          },
+          "quantity": "1",
+          "sku": "KC-CAFE-24",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "5S991501Y76859350",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "312.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "312.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "11.38"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "300.62"
+              }
+            },
+            "invoice_id": "KC-1791277621225",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/5S991501Y76859350",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/5S991501Y76859350/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3WL85698SC366950L",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-06T09:07:35Z",
+            "update_time": "2026-10-06T09:08:05Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-06T09:07:35Z",
+  "update_time": "2026-10-06T09:08:05Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3WL85698SC366950L",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

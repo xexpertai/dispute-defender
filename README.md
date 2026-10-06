@@ -25,12 +25,13 @@ The hosted demo URL will be added after deployment. Locally:
 npm ci && npm run build && npm start      # http://localhost:3000, Replay mode, no keys needed
 ```
 
-1. **Dashboard:** $ at risk, whose move it is, deadlines, and disputes ranked by priority ($ × urgency).
-2. **"Watch the agent defend a dispute":** 9 numbered steps stream live, each with the PayPal API it called.
-3. **Recommendation:** evidence strength with reasons. Each reason has source chips; tap one to jump to the record.
-4. **Response:** an AI-written draft (labelled *recorded*: a real Claude run, replayed at $0). The buyer wrote in Spanish, so the reply is in Spanish with an English gloss.
+1. **Case board:** $ at risk, whose move it is, and your next deadline. Open disputes are case files, most urgent first ($ × urgency).
+2. **"Watch the agent work a case":** the 9-step trace runs live, and records from PayPal, the carrier and your store drop into the case file.
+3. **The case file closes:** each claim is tied to its record by a drawn line (claims the server rejects are struck through), and a **DEFEND / OFFER / REFUND** stamp lands.
+4. **Response:** an AI-written draft (labelled *recorded*: a real Claude run, replayed at $0). The buyer wrote in Spanish, so the reply is in Spanish with an English gloss. Tap a source ("USPS scan · Delivered 5 Oct") to jump to the record.
 5. **"What PayPal receives":** the exact request (endpoint + JSON) and the evidence-pack PDF.
-6. **Insights:** patterns across your disputes, each with its cases, and what to change.
+6. **"…and one where refunding is the smart call":** a $9.50 case where the agent says refund, because your time costs more than the dispute.
+7. **Insights:** patterns across your cases, each with its cases, and what to change (you approve everything).
 
 Replay uses recorded, redacted responses from the real PayPal sandbox. Carrier scans come from a mock carrier and store logs are sample data; both are labelled wherever they appear.
 
@@ -139,6 +140,7 @@ scripts/video/make-draft.sh           # demo video: Kokoro voice + scripted take
 - **Transaction Search** is not used yet (sandbox indexing lag).
 - **Validation scope.** The AI's wording is validated for sources, numbers and policy claims, but tone and adjectives still need the seller's review (which approval requires).
 - **One instance.** Rate limits are in-memory, which is fine for a single Render instance.
+- **Early fixtures.** The first sandbox fixtures carried internal test prefixes ("Spike:", invoice "DD-SPIKE-…"). Replay strips the prefix and shows those invoices as "KC-…" for display; no data is invented.
 
 ## License
 

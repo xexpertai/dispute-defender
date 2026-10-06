@@ -30,7 +30,26 @@ function readDir<T>(dir: string): (T & Meta)[] {
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
     .sort()
-    .map((f) => JSON.parse(readFileSync(path.join(dir, f), "utf8")) as T & Meta);
+    .map((f) => cleanDisplay(JSON.parse(readFileSync(path.join(dir, f), "utf8"))) as T & Meta);
+}
+
+/**
+ * Display cleanup for the earliest sandbox fixtures (design review): they carry internal test
+ * prefixes ("Spike: Ceramic mug set", invoice "DD-SPIKE-…"). Replay strips the "Spike:" prefix and
+ * shows those invoices as "KC-…" (the demo store's prefix), applied consistently to every string
+ * and key, so references still match. No data is invented: only the test prefix changes.
+ */
+export function cleanDisplay<T>(value: T): T {
+  const s = (x: string) =>
+    x
+      .replace(/\bSpike:\s*/g, "")
+      .replace(/\s*\(spike\)/g, "")
+      .replace(/\bDD-SPIKE-(\d+)/g, "KC-$1")
+      .replace(/^DD-SPIKE$/, "KC");
+  if (typeof value === "string") return s(value) as T;
+  if (Array.isArray(value)) return value.map(cleanDisplay) as T;
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [s(k), cleanDisplay(v)])) as T;
+  return value;
 }
 
 export function loadFixtures(root = path.join(process.cwd(), "fixtures")): FixtureSet {
@@ -45,7 +64,7 @@ export function loadFixtures(root = path.join(process.cwd(), "fixtures")): Fixtu
   for (const t of trackers) for (const tr of t.trackers ?? []) trackersByCapture.set(tr.transaction_id, [...(trackersByCapture.get(tr.transaction_id) ?? []), tr]);
 
   const snapshotAt = disputes.map((d) => d._meta?.recorded_at ?? "").sort().at(-1) || new Date(0).toISOString();
-  const json = <T>(p: string, fallback: T): T => (existsSync(p) ? (JSON.parse(readFileSync(p, "utf8")) as T) : fallback);
+  const json = <T>(p: string, fallback: T): T => (existsSync(p) ? cleanDisplay(JSON.parse(readFileSync(p, "utf8")) as T) : fallback);
 
   const aiDrafts = readDir<RecordedDraft>(path.join(root, "ai/drafts"));
   return {

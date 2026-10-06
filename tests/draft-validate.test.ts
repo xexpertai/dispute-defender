@@ -90,7 +90,7 @@ describe("demo adapters", () => {
   });
 
   it("sample store returns listing, store log and chat items keyed by invoice", async () => {
-    const items = await new SampleStore(f.store).evidenceFor("DD-SPIKE-1791221197517");
+    const items = await new SampleStore(f.store).evidenceFor("KC-1791221197517");
     expect(items.map((i) => i.kind)).toEqual(["listing", "store_log", "store_log", "chat"]);
     expect(await new SampleStore(f.store).evidenceFor("UNKNOWN")).toEqual([]);
   });

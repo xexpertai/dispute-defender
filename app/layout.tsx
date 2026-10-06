@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Archivo, Geist_Mono, Inter } from "next/font/google";
 import { currentMode } from "@/lib/agent/deps";
 import { fixtures } from "@/lib/replay/fixtures";
 import { Brand } from "./_components/Brand";
@@ -10,6 +10,7 @@ import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
   title: "Dispute Defender",
@@ -20,8 +21,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f6fa" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a1220" },
+    { media: "(prefers-color-scheme: light)", color: "#e7ebf0" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1220" },
   ],
 };
 
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const mode = currentMode();
   const snapshotAt = mode === "replay" ? fixtures().snapshotAt : undefined;
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} ${archivo.variable} h-full antialiased`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="sr-only z-50 rounded-md bg-primary px-4 py-3 text-on-primary focus:not-sr-only focus:fixed focus:left-3 focus:top-3">
           Skip to content
         </a>
-        <header className="sticky top-0 z-20 border-b border-line bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+        <header id="site-nav" className="sticky top-0 z-30 border-b border-line bg-bg">
           <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-1.5 sm:px-6">
             <Brand />
             <div className="flex items-center gap-2">

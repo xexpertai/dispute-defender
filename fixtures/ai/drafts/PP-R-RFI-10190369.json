@@ -2,11 +2,11 @@
   "_meta": {
     "source": "claude",
     "model": "claude-haiku-4-5-20251001",
-    "recorded_at": "2026-10-05T20:40:09.026Z",
+    "recorded_at": "2026-10-06T09:45:10.182Z",
     "usage": {
-      "input": 2772,
-      "output": 707,
-      "costUsd": 0.006307
+      "input": 2868,
+      "output": 679,
+      "costUsd": 0.006263
     }
   },
   "disputeId": "PP-R-RFI-10190369",
@@ -15,39 +15,39 @@
     "model": "claude-haiku-4-5-20251001",
     "strategy": "FIGHT",
     "action": null,
-    "rationale": "The evidence strongly supports that the package was delivered to the buyer's address on the day the dispute was opened. Tracking shows delivery confirmation to ZIP 95131, which matches the order's ship-to address.",
+    "rationale": "The tracking evidence clearly shows the package was delivered to the buyer's address on 5 Oct at 4:55 PM UTC, after the dispute was opened. The seller is eligible for Seller Protection per PayPal's record.",
     "claims": [
       {
-        "text": "A tracking number for USPS 9400111899223197428490 was recorded with PayPal at the time of the transaction.",
+        "text": "USPS tracking number 9400111899223197428490 is recorded with PayPal for this transaction.",
         "sourceRefs": [
           "pptrack:8VC4648452738260M:9400111899223197428490"
         ]
       },
       {
-        "text": "USPS tracking confirms the package was delivered to the buyer's address in ZIP 95131 on 2026-10-05 at 16:55, the same day the dispute was opened.",
-        "sourceRefs": [
-          "track:USPS:9400111899223197428490#ev4"
-        ]
-      },
-      {
-        "text": "The delivery ZIP code 95131 matches the order's ship-to ZIP code.",
+        "text": "The package was delivered to ZIP 95131 on 5 Oct, 4:55 PM UTC, which matches the order's ship-to ZIP.",
         "sourceRefs": [
           "track:USPS:9400111899223197428490#ev4",
           "order:96G626902Y7834237"
         ]
       },
       {
-        "text": "The dispute was opened at 15:38 UTC on 2026-10-05, but the package was not delivered until 16:55 UTC the same day, approximately 1 hour and 17 minutes later.",
+        "text": "The dispute was opened on 5 Oct, 3:38 PM UTC, before the package arrived at 4:55 PM UTC.",
         "sourceRefs": [
           "dispute:PP-R-RFI-10190369",
           "track:USPS:9400111899223197428490#ev4"
         ]
+      },
+      {
+        "text": "The seller is eligible for Seller Protection per PayPal's record.",
+        "sourceRefs": [
+          "capture:8VC4648452738260M"
+        ]
       }
     ],
-    "sellerNote": "The buyer filed a merchandise not received dispute, but USPS tracking confirms delivery to the correct address (ZIP 95131) at 16:55 UTC on 2026-10-05. The dispute was opened at 15:38 UTC the same day, before delivery was completed. Tracking number 9400111899223197428490 was recorded with PayPal. The package was delivered to the front door of the buyer's address as shown in the order.",
+    "sellerNote": "The buyer filed a claim for item not received on 5 Oct, 3:38 PM UTC. However, USPS tracking 9400111899223197428490 shows the ceramic mug set was delivered to the buyer's address at ZIP 95131 on 5 Oct, 4:55 PM UTC—approximately 77 minutes after the dispute was opened. The tracking number is recorded with PayPal. The delivery location matches the order's ship-to ZIP. The buyer may not have received the package at the time of filing, but it was successfully delivered to the correct address.",
     "buyerMessage": {
       "language": "en",
-      "text": "Hi there, thank you for reaching out. I can see from USPS tracking that your package was delivered to your front door on October 5th at 4:55 PM to the address on file (ZIP 95131). The tracking number is 9400111899223197428490 if you'd like to check the details. Please take another look—it may have been left at your door or with a neighbor. Let me know if you have any other questions!"
+      "text": "Hi there! Thank you for letting us know. We've checked the tracking for your order, and USPS shows it was delivered to your address on 5 Oct at 4:55 PM. It may have arrived after you opened the case. Please check your front door or contact USPS if you have questions. We're here to help if you need anything else!"
     },
     "buyerLanguage": {
       "code": "en",

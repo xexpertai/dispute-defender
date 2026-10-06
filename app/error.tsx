@@ -5,7 +5,7 @@ import Link from "next/link";
 /** Shown if a page fails (e.g. the PayPal sandbox is unreachable in Live mode). Never shows secrets. */
 export default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
-    <div className="mx-auto flex max-w-lg flex-col items-start gap-3 rounded-2xl border border-line bg-surface p-6 shadow-card" role="alert">
+    <div className="mx-auto flex max-w-lg flex-col items-start gap-3 case p-6" role="alert">
       <h1 className="font-display text-[1.4rem]">Something went wrong</h1>
       <p className="text-sm text-ink-2">We couldn&apos;t load this page. If you&apos;re in Live mode, the PayPal sandbox may be slow or unavailable. Nothing was sent to PayPal.</p>
       <div className="flex flex-wrap gap-2">
