@@ -1,0 +1,83 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-05T20:56:31.158Z",
+    "usage": {
+      "input": 3465,
+      "output": 771,
+      "costUsd": 0.00732
+    }
+  },
+  "disputeId": "PP-R-MQR-10190375",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "FIGHT",
+    "action": {
+      "kind": "send_message"
+    },
+    "rationale": "The tracking evidence shows the package was delivered to the buyer's address (ZIP 95131) on 2026-10-05 at 18:58, before the dispute was opened. The buyer reported non-receipt in the dispute but the carrier confirms delivery in the mailbox at the correct location.",
+    "claims": [
+      {
+        "text": "Tracking number 9400111899223197428491 is recorded with PayPal for this transaction.",
+        "sourceRefs": [
+          "pptrack:5HF82502Y85788524:9400111899223197428491"
+        ]
+      },
+      {
+        "text": "USPS tracking shows the package was delivered in the mailbox at ZIP 95131 on 2026-10-05 at 18:58.",
+        "sourceRefs": [
+          "track:USPS:9400111899223197428491#ev4"
+        ]
+      },
+      {
+        "text": "The delivery ZIP 95131 matches the order's ship-to address.",
+        "sourceRefs": [
+          "order:8SB67183NX0987544",
+          "track:USPS:9400111899223197428491#ev4"
+        ]
+      },
+      {
+        "text": "The dispute was opened on 2026-10-05 at 17:27, but the package was not delivered until 2026-10-05 at 18:58.",
+        "sourceRefs": [
+          "dispute:PP-R-MQR-10190375",
+          "track:USPS:9400111899223197428491#ev4"
+        ]
+      }
+    ],
+    "sellerNote": "Order 8SB67183NX0987544: Ceramic mug set, USD 12.75. USPS tracking 9400111899223197428491 shows delivery to the correct address (ZIP 95131) in the mailbox on 2026-10-05 at 18:58. The dispute was opened at 17:27 the same day, before the package arrived. The seller is eligible for Seller Protection per PayPal's record (capture:5HF82502Y85788524). The package was successfully delivered as tracked.",
+    "buyerMessage": {
+      "language": "es",
+      "text": "Hola, entiendo tu preocupación. Nuestros registros muestran que tu paquete fue entregado en el correo a las 18:58 hoy. Por favor, revisa tu buzón de correo, en el de tus vecinos o en la recepción de tu edificio. Estamos aquí para ayudarte si necesitas algo más.",
+      "englishGloss": "Hi, I understand your concern. Our records show that your package was delivered to your mailbox at 18:58 today. Please check your mailbox, with your neighbors, or at your building's reception. We're here to help if you need anything else."
+    },
+    "buyerLanguage": {
+      "code": "es",
+      "name": "Spanish"
+    },
+    "evidence": [
+      {
+        "evidence_type": "PROOF_OF_FULFILLMENT",
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9400111899223197428491"
+          }
+        ],
+        "sourceRefs": [
+          "track:USPS:9400111899223197428491#ev4"
+        ]
+      },
+      {
+        "evidence_type": "OTHER",
+        "sourceRefs": [
+          "pptrack:5HF82502Y85788524:9400111899223197428491",
+          "track:USPS:9400111899223197428491#ev4",
+          "order:8SB67183NX0987544",
+          "dispute:PP-R-MQR-10190375"
+        ]
+      }
+    ]
+  }
+}

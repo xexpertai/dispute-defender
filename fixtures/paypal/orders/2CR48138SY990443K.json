@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:10:52.044Z",
+    "redacted": true
+  },
+  "id": "2CR48138SY990443K",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-BOWL-10",
+      "amount": {
+        "currency_code": "USD",
+        "value": "89.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "89.00"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Hand-thrown serving bowl, 10 in",
+      "invoice_id": "KC-1791230340949",
+      "items": [
+        {
+          "name": "Hand-thrown serving bowl, 10 in",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "89.00"
+          },
+          "quantity": "1",
+          "sku": "KC-BOWL-10",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "9L7363079F074815T",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "89.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "89.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "3.60"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "85.40"
+              }
+            },
+            "invoice_id": "KC-1791230340949",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/9L7363079F074815T",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/9L7363079F074815T/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2CR48138SY990443K",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T19:59:36Z",
+            "update_time": "2026-10-05T20:00:05Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T19:59:36Z",
+  "update_time": "2026-10-05T20:00:05Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2CR48138SY990443K",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

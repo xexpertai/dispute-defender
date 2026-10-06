@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:10:53.954Z",
+    "redacted": true
+  },
+  "id": "64G935169U342041P",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-PLATE-6",
+      "amount": {
+        "currency_code": "USD",
+        "value": "42.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "42.00"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Matte glaze dinner plates, set of 6",
+      "invoice_id": "KC-1791230414057",
+      "items": [
+        {
+          "name": "Matte glaze dinner plates, set of 6",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "42.00"
+          },
+          "quantity": "1",
+          "sku": "KC-PLATE-6",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "54W66960KL656200B",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "42.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "42.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "1.96"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "40.04"
+              }
+            },
+            "invoice_id": "KC-1791230414057",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/54W66960KL656200B",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/54W66960KL656200B/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/64G935169U342041P",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T20:00:48Z",
+            "update_time": "2026-10-05T20:00:48Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T20:00:48Z",
+  "update_time": "2026-10-05T20:00:48Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/64G935169U342041P",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

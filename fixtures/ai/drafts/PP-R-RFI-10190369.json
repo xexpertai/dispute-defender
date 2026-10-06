@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-05T20:40:09.026Z",
+    "usage": {
+      "input": 2772,
+      "output": 707,
+      "costUsd": 0.006307
+    }
+  },
+  "disputeId": "PP-R-RFI-10190369",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "FIGHT",
+    "action": null,
+    "rationale": "The evidence strongly supports that the package was delivered to the buyer's address on the day the dispute was opened. Tracking shows delivery confirmation to ZIP 95131, which matches the order's ship-to address.",
+    "claims": [
+      {
+        "text": "A tracking number for USPS 9400111899223197428490 was recorded with PayPal at the time of the transaction.",
+        "sourceRefs": [
+          "pptrack:8VC4648452738260M:9400111899223197428490"
+        ]
+      },
+      {
+        "text": "USPS tracking confirms the package was delivered to the buyer's address in ZIP 95131 on 2026-10-05 at 16:55, the same day the dispute was opened.",
+        "sourceRefs": [
+          "track:USPS:9400111899223197428490#ev4"
+        ]
+      },
+      {
+        "text": "The delivery ZIP code 95131 matches the order's ship-to ZIP code.",
+        "sourceRefs": [
+          "track:USPS:9400111899223197428490#ev4",
+          "order:96G626902Y7834237"
+        ]
+      },
+      {
+        "text": "The dispute was opened at 15:38 UTC on 2026-10-05, but the package was not delivered until 16:55 UTC the same day, approximately 1 hour and 17 minutes later.",
+        "sourceRefs": [
+          "dispute:PP-R-RFI-10190369",
+          "track:USPS:9400111899223197428490#ev4"
+        ]
+      }
+    ],
+    "sellerNote": "The buyer filed a merchandise not received dispute, but USPS tracking confirms delivery to the correct address (ZIP 95131) at 16:55 UTC on 2026-10-05. The dispute was opened at 15:38 UTC the same day, before delivery was completed. Tracking number 9400111899223197428490 was recorded with PayPal. The package was delivered to the front door of the buyer's address as shown in the order.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Hi there, thank you for reaching out. I can see from USPS tracking that your package was delivered to your front door on October 5th at 4:55 PM to the address on file (ZIP 95131). The tracking number is 9400111899223197428490 if you'd like to check the details. Please take another look—it may have been left at your door or with a neighbor. Let me know if you have any other questions!"
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": [
+      {
+        "evidence_type": "PROOF_OF_FULFILLMENT",
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9400111899223197428490"
+          }
+        ],
+        "sourceRefs": [
+          "track:USPS:9400111899223197428490#ev4"
+        ]
+      },
+      {
+        "evidence_type": "OTHER",
+        "sourceRefs": [
+          "pptrack:8VC4648452738260M:9400111899223197428490",
+          "track:USPS:9400111899223197428490#ev4",
+          "order:96G626902Y7834237",
+          "dispute:PP-R-RFI-10190369"
+        ]
+      }
+    ]
+  }
+}

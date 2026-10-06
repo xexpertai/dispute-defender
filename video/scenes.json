@@ -1,0 +1,117 @@
+{
+  "_meta": {
+    "note": "Canonical video script (PLAN §13). docs/VIDEO_SCRIPT.md is the readable version; a test keeps them in sync. Each line is spoken by Kokoro af_heart and shown as a caption. 'take' names a scripted Playwright take in scripts/video/takes.py.",
+    "voice": "af_heart",
+    "maxSeconds": 150,
+    "endcard": "Credit is text on screen only (the voice never claims to be a person). Replace DEMO_URL / REPO_URL in scripts/video/cards.html after the user approves deploy + public repo."
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "take": "card:hook",
+      "lines": [
+        "For every dollar a US online seller loses to fraud, the real cost is about five dollars.",
+        "Chargeback fraud is part of that bill."
+      ]
+    },
+    {
+      "id": "problem",
+      "take": "phone:dashboard",
+      "lines": [
+        "A PayPal dispute opens. A deadline starts.",
+        "It's easy to refund when you could have won, or to fight when the buyer is right."
+      ]
+    },
+    {
+      "id": "dashboard",
+      "take": "dashboard",
+      "lines": [
+        "This is Dispute Defender.",
+        "It reads your PayPal disputes and shows what's at risk, and which deadline matters most."
+      ]
+    },
+    {
+      "id": "agent",
+      "take": "agent-run",
+      "lines": [
+        "One click, and the agent gets to work.",
+        "It reads the dispute, the order and the tracking from PayPal.",
+        "Every step is a real PayPal API call."
+      ]
+    },
+    {
+      "id": "refund",
+      "take": "refund",
+      "lines": [
+        "Here the package is still on its way, and the case is for nine dollars fifty.",
+        "Fighting would cost more of your time than the refund.",
+        "So it says: refund. It tells you when a fight isn't worth it."
+      ]
+    },
+    {
+      "id": "draft",
+      "take": "spanish-draft",
+      "lines": [
+        "On this case, tracking shows delivery to the right ZIP code.",
+        "Claude drafts the response, and every claim links to its source.",
+        "The buyer wrote in Spanish, so the reply is in Spanish."
+      ]
+    },
+    {
+      "id": "sources",
+      "take": "source-chip",
+      "lines": [
+        "Tap a source to see the exact record behind a claim.",
+        "Nothing is invented. Our server checks every claim before you see it."
+      ]
+    },
+    {
+      "id": "paypal",
+      "take": "paypal-receives",
+      "lines": [
+        "Before anything is sent, you see exactly what PayPal will receive.",
+        "The request, and the evidence pack."
+      ]
+    },
+    {
+      "id": "outcome",
+      "take": "outcome",
+      "lines": [
+        "You approve, and it goes through PayPal's dispute API.",
+        "Then you see the outcome. In the sandbox, this one was won."
+      ]
+    },
+    {
+      "id": "insights",
+      "take": "insights",
+      "lines": [
+        "Then it helps you prevent the next dispute.",
+        "Patterns across your cases, each with its evidence, and what to change."
+      ]
+    },
+    {
+      "id": "architecture",
+      "take": "card:architecture",
+      "lines": [
+        "Under the hood: six PayPal APIs, and PayPal's Agent Toolkit, which we extended with six dispute tools and also serve over MCP.",
+        "Claude writes. Code checks. You decide."
+      ]
+    },
+    {
+      "id": "close",
+      "take": "card:close",
+      "lines": [
+        "Dispute Defender. Win the disputes worth fighting, and settle the rest fairly.",
+        "Try the demo store. No login needed."
+      ]
+    },
+    {
+      "id": "endcard",
+      "take": "card:endcard",
+      "lines": [
+        "Thanks for watching."
+      ],
+      "minSeconds": 3.2
+    }
+  ]
+}

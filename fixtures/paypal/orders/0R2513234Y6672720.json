@@ -1,0 +1,166 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T19:36:59.519Z",
+    "redacted": true
+  },
+  "id": "0R2513234Y6672720",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "DD-SPIKE",
+      "amount": {
+        "currency_code": "USD",
+        "value": "9.50",
+        "breakdown": {}
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Spike: Ceramic mug set",
+      "invoice_id": "DD-SPIKE-1791226520573",
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "0ST03300BN7296020",
+            "status": "PENDING",
+            "status_details": {
+              "reason": "BUYER_COMPLAINT"
+            },
+            "amount": {
+              "currency_code": "USD",
+              "value": "9.50"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "invoice_id": "DD-SPIKE-1791226520573",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0ST03300BN7296020",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0ST03300BN7296020/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0R2513234Y6672720",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T18:55:53Z",
+            "update_time": "2026-10-05T19:00:03Z"
+          }
+        ],
+        "refunds": [
+          {
+            "id": "19385380PE2008744",
+            "amount": {
+              "currency_code": "USD",
+              "value": "8.68"
+            },
+            "seller_payable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "8.68"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.00"
+              },
+              "platform_fees": [
+                {
+                  "amount": {
+                    "currency_code": "USD",
+                    "value": "0.00"
+                  }
+                }
+              ],
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "8.68"
+              },
+              "total_refunded_amount": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            },
+            "invoice_id": "DD-SPIKE-1791226520573",
+            "status": "PENDING",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/refunds/19385380PE2008744",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0ST03300BN7296020",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T12:00:03-07:00",
+            "update_time": "2026-10-05T12:00:03-07:00"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T18:55:53Z",
+  "update_time": "2026-10-05T19:00:03Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0R2513234Y6672720",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

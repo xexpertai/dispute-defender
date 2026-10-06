@@ -1,0 +1,52 @@
+[
+  {
+    "sku": "KC-BOWL-10",
+    "desc": "Hand-thrown serving bowl, 10 in",
+    "amount": "89.00",
+    "tracking": "9405511899223197428601",
+    "order_id": "2CR48138SY990443K",
+    "capture_id": "9L7363079F074815T",
+    "buyer_txn": "0L8257481T1863642",
+    "seeded_at": "2026-10-05T20:00:13.636Z"
+  },
+  {
+    "sku": "KC-PLATE-6",
+    "desc": "Matte glaze dinner plates, set of 6",
+    "amount": "42.00",
+    "tracking": null,
+    "order_id": "64G935169U342041P",
+    "capture_id": "54W66960KL656200B",
+    "buyer_txn": "61294171WL738972R",
+    "seeded_at": "2026-10-05T20:06:23.651Z"
+  },
+  {
+    "sku": "KC-MUG-4",
+    "desc": "Speckled stoneware mugs, set of 4",
+    "amount": "64.00",
+    "tracking": "9405511899223197428602",
+    "order_id": "20E70799VU785692S",
+    "capture_id": "52P71036MV855370G",
+    "buyer_txn": "9YX6303245934302N",
+    "seeded_at": "2026-10-05T20:07:41.099Z"
+  },
+  {
+    "sku": "KC-PLANTER",
+    "desc": "Ceramic planter with drainage tray",
+    "amount": "28.50",
+    "tracking": "9405511899223197428603",
+    "order_id": "0RK11107DK9353719",
+    "capture_id": "0FM53370TK692722L",
+    "buyer_txn": "6WX35990FT875933V",
+    "seeded_at": "2026-10-05T20:08:59.697Z"
+  },
+  {
+    "sku": "KC-VASE",
+    "desc": "Small bud vase, celadon",
+    "amount": "9.50",
+    "tracking": "9405511899223197428604",
+    "order_id": "6CE61471EJ5832354",
+    "capture_id": "0EL30108735861334",
+    "buyer_txn": "90N82918RU6232646",
+    "seeded_at": "2026-10-05T20:10:29.673Z"
+  }
+]

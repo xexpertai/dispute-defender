@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:10:56.080Z",
+    "redacted": true
+  },
+  "id": "20E70799VU785692S",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-MUG-4",
+      "amount": {
+        "currency_code": "USD",
+        "value": "64.00",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "64.00"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Speckled stoneware mugs, set of 4",
+      "invoice_id": "KC-1791230784084",
+      "items": [
+        {
+          "name": "Speckled stoneware mugs, set of 4",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "64.00"
+          },
+          "quantity": "1",
+          "sku": "KC-MUG-4",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "52P71036MV855370G",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "64.00"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "64.00"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "2.72"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "61.28"
+              }
+            },
+            "invoice_id": "KC-1791230784084",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/52P71036MV855370G",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/52P71036MV855370G/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/20E70799VU785692S",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T20:07:01Z",
+            "update_time": "2026-10-05T20:07:40Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T20:07:01Z",
+  "update_time": "2026-10-05T20:07:40Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/20E70799VU785692S",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

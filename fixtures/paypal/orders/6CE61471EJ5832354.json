@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:11:00.320Z",
+    "redacted": true
+  },
+  "id": "6CE61471EJ5832354",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-VASE",
+      "amount": {
+        "currency_code": "USD",
+        "value": "9.50",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "9.50"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Small bud vase, celadon",
+      "invoice_id": "KC-1791230940136",
+      "items": [
+        {
+          "name": "Small bud vase, celadon",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "9.50"
+          },
+          "quantity": "1",
+          "sku": "KC-VASE",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "0EL30108735861334",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "9.50"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "9.50"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.82"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "8.68"
+              }
+            },
+            "invoice_id": "KC-1791230940136",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0EL30108735861334",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0EL30108735861334/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6CE61471EJ5832354",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T20:09:43Z",
+            "update_time": "2026-10-05T20:10:05Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T20:09:43Z",
+  "update_time": "2026-10-05T20:10:05Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/6CE61471EJ5832354",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

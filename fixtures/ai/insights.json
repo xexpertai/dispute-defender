@@ -1,0 +1,46 @@
+{
+  "_meta": {
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-05T20:43:44.523Z",
+    "usage": {
+      "input": 1319,
+      "output": 257,
+      "costUsd": 0.002604
+    }
+  },
+  "inputHash": "46846662c86d13ab",
+  "actions": [
+    {
+      "title": "Send tracking updates immediately after shipping",
+      "why": "Buyers who see prompt tracking activity are less likely to open premature disputes before delivery.",
+      "effort": "low",
+      "insightIds": [
+        "opened_before_delivery"
+      ]
+    },
+    {
+      "title": "Use unique tracking numbers for each order",
+      "why": "Assigning distinct tracking numbers to each payment makes disputes easier for PayPal to resolve.",
+      "effort": "low",
+      "insightIds": [
+        "tracking_reused"
+      ]
+    },
+    {
+      "title": "Inspect and improve quality of MUG-SET-4",
+      "why": "Since this product generates clusters of disputes, fixing quality issues will reduce dispute volume.",
+      "effort": "medium",
+      "insightIds": [
+        "sku_MUG-SET-4"
+      ]
+    },
+    {
+      "title": "Auto-refund small disputes without response",
+      "why": "Disputes below the cost of your response time are better handled with quick refunds than contested.",
+      "effort": "low",
+      "insightIds": [
+        "below_cost_to_fight"
+      ]
+    }
+  ]
+}

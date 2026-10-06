@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:11:00.840Z",
+    "redacted": true
+  },
+  "trackers": [
+    {
+      "transaction_id": "0EL30108735861334",
+      "tracking_number": "9405511899223197428604",
+      "tracking_number_type": "CARRIER_PROVIDED",
+      "status": "SHIPPED",
+      "shipment_date": "2026-10-05",
+      "carrier": "USPS",
+      "notify_buyer": false,
+      "last_updated_time": "1791230986364",
+      "shipment_direction": "FORWARD",
+      "shipment_uploader": "MERCHANT",
+      "links": [
+        {
+          "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/0EL30108735861334-9405511899223197428604",
+          "rel": "self",
+          "method": "GET",
+          "encType": "application/json"
+        },
+        {
+          "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/0EL30108735861334-9405511899223197428604",
+          "rel": "replace",
+          "method": "PUT",
+          "encType": "application/json"
+        },
+        {
+          "href": "https://api-m.sandbox.paypal.com/v1/shipping/trackers/0EL30108735861334-9405511899223197428604",
+          "rel": "edit",
+          "method": "PATCH",
+          "encType": "application/json"
+        }
+      ]
+    }
+  ],
+  "links": []
+}

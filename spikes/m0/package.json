@@ -1,0 +1,11 @@
+{
+  "name": "dd-spike-m0",
+  "private": true,
+  "type": "module",
+  "description": "M0 sandbox spike scripts (throwaway, not app code)",
+  "dependencies": {
+    "@paypal/agent-toolkit": "^1.11.0",
+    "tsx": "^4.23.15",
+    "zod-to-json-schema": "^3.25.2"
+  }
+}

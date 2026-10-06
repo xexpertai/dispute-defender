@@ -1,0 +1,53 @@
+{
+  "name": "dispute-defender",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "next typegen && tsc --noEmit",
+    "paypal:key": "node scripts/paypal-key.mjs",
+    "claude:key": "node scripts/claude-key.mjs",
+    "buyer:key": "node scripts/buyer-key.mjs",
+    "fixtures:record": "tsx --env-file=.env.local scripts/record-fixtures.mts",
+    "fixtures:scan": "vitest run tests/fixtures-scan.test.ts",
+    "sandbox:sim": "tsx --env-file=.env.local scripts/sandbox-sim.mts",
+    "poll": "tsx --env-file=.env.local scripts/poll.mts",
+    "seed:disputes": "zsh spikes/m0/seed-disputes.sh",
+    "ai:record": "tsx --env-file=.env.local scripts/record-ai.mts",
+    "mcp": "tsx --env-file=.env.local scripts/mcp-server.mts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@paypal/agent-toolkit": "^1.11.0",
+    "better-sqlite3": "^13.0.3",
+    "next": "16.3.8",
+    "pdf-lib": "^1.17.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

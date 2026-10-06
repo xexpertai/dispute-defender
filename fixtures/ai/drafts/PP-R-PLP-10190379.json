@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-05T20:39:49.686Z",
+    "usage": {
+      "input": 2709,
+      "output": 523,
+      "costUsd": 0.005324
+    }
+  },
+  "disputeId": "PP-R-PLP-10190379",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "REFUND",
+    "action": {
+      "kind": "accept_claim",
+      "acceptClaimType": "REFUND"
+    },
+    "rationale": "The package is still in transit and has not yet been delivered to the buyer. While tracking is on file with PayPal, the USPS scan shows it was only accepted by carrier on October 5 with an expected delivery of October 9. Accepting the claim is the most straightforward path forward.",
+    "claims": [
+      {
+        "text": "A tracking number for USPS Ground Advantage (9400111899223197428503) was recorded with PayPal for this transaction.",
+        "sourceRefs": [
+          "pptrack:0ST03300BN7296020:9400111899223197428503"
+        ]
+      },
+      {
+        "text": "The package was accepted by USPS carrier on October 5 with an expected delivery date of October 9, meaning it is still in transit and has not been delivered.",
+        "sourceRefs": [
+          "track:USPS:9400111899223197428503#ev1"
+        ]
+      }
+    ],
+    "sellerNote": "Order for ceramic mug set (USD 9.50) was shipped via USPS Ground Advantage with tracking 9400111899223197428503, which is on file with PayPal. USPS tracking shows the package was accepted by carrier on October 5 with expected delivery October 9. Since the package has not yet been delivered and the buyer opened the dispute before delivery, we accept this claim.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Thanks for letting us know. We can see your package is on its way via USPS Ground Advantage with expected delivery on October 9. We're issuing a refund right away so you're covered. We hope it arrives soon, but this refund is yours to keep. Thanks for your patience."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": []
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T20:10:58.494Z",
+    "redacted": true
+  },
+  "id": "0RK11107DK9353719",
+  "intent": "CAPTURE",
+  "status": "COMPLETED",
+  "payment_source": {
+    "paypal": {
+      "email_address": "[email]",
+      "account_id": "[account_id]",
+      "account_status": "VERIFIED",
+      "name": {
+        "given_name": "[name]",
+        "surname": "[name]"
+      },
+      "address": {
+        "country_code": "US"
+      }
+    }
+  },
+  "purchase_units": [
+    {
+      "reference_id": "KC-PLANTER",
+      "amount": {
+        "currency_code": "USD",
+        "value": "28.50",
+        "breakdown": {
+          "item_total": {
+            "currency_code": "USD",
+            "value": "28.50"
+          }
+        }
+      },
+      "payee": {
+        "email_address": "[email]",
+        "merchant_id": "[merchant_id]"
+      },
+      "description": "Ceramic planter with drainage tray",
+      "invoice_id": "KC-1791230861519",
+      "items": [
+        {
+          "name": "Ceramic planter with drainage tray",
+          "unit_amount": {
+            "currency_code": "USD",
+            "value": "28.50"
+          },
+          "quantity": "1",
+          "sku": "KC-PLANTER",
+          "category": "PHYSICAL_GOODS"
+        }
+      ],
+      "shipping": {
+        "name": {
+          "full_name": "[name]"
+        },
+        "address": {
+          "address_line_1": "[address]",
+          "admin_area_2": "[city]",
+          "admin_area_1": "CA",
+          "postal_code": "95131",
+          "country_code": "US"
+        }
+      },
+      "payments": {
+        "captures": [
+          {
+            "id": "0FM53370TK692722L",
+            "status": "COMPLETED",
+            "amount": {
+              "currency_code": "USD",
+              "value": "28.50"
+            },
+            "final_capture": true,
+            "seller_protection": {
+              "status": "ELIGIBLE",
+              "dispute_categories": [
+                "ITEM_NOT_RECEIVED",
+                "UNAUTHORIZED_TRANSACTION"
+              ]
+            },
+            "seller_receivable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "28.50"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "1.48"
+              },
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "27.02"
+              }
+            },
+            "invoice_id": "KC-1791230861519",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0FM53370TK692722L",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0FM53370TK692722L/refund",
+                "rel": "refund",
+                "method": "POST"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0RK11107DK9353719",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-05T20:08:14Z",
+            "update_time": "2026-10-05T20:08:35Z"
+          }
+        ]
+      }
+    }
+  ],
+  "payer": {
+    "name": {
+      "given_name": "[name]",
+      "surname": "[name]"
+    },
+    "email_address": "[email]",
+    "payer_id": "[payer_id]",
+    "address": {
+      "country_code": "US"
+    }
+  },
+  "create_time": "2026-10-05T20:08:14Z",
+  "update_time": "2026-10-05T20:08:35Z",
+  "links": [
+    {
+      "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0RK11107DK9353719",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

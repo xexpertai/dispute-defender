@@ -1,0 +1,145 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-05T19:57:53.440Z",
+    "redacted": true
+  },
+  "dispute_id": "PP-R-MQR-10190375",
+  "create_time": "2026-10-05T17:27:52.611Z",
+  "update_time": "2026-10-05T19:56:28.561Z",
+  "disputed_transactions": [
+    {
+      "buyer_transaction_id": "1SP15800X2664204H",
+      "seller_transaction_id": "5HF82502Y85788524",
+      "create_time": "2026-10-05T17:27:07.000Z",
+      "transaction_status": "HELD",
+      "gross_amount": {
+        "currency_code": "USD",
+        "value": "12.75"
+      },
+      "invoice_number": "DD-SPIKE-1791221197517",
+      "buyer": {
+        "email": "[email]",
+        "payer_id": "[payer_id]",
+        "name": "[name]"
+      },
+      "seller": {
+        "email": "[email]",
+        "merchant_id": "[merchant_id]",
+        "name": "[name]"
+      },
+      "seller_protection_eligible": true,
+      "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+  ],
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+  "status": "WAITING_FOR_BUYER_RESPONSE",
+  "dispute_amount": {
+    "currency_code": "USD",
+    "value": "12.75"
+  },
+  "dispute_state": "REQUIRED_OTHER_PARTY_ACTION",
+  "fund_movements": [
+    {
+      "party": "RECEIVER",
+      "amount": {
+        "currency_code": "USD",
+        "value": "11.82"
+      },
+      "initiated_time": "2026-10-05T17:31:04.000Z",
+      "type": "DEBIT",
+      "reason": "HOLD_PLACED"
+    }
+  ],
+  "dispute_life_cycle_stage": "INQUIRY",
+  "dispute_channel": "INTERNAL",
+  "messages": [
+    {
+      "posted_by": "SELLER",
+      "time_posted": "2026-10-05T19:56:28.561Z",
+      "content": "Hi! Thanks for reaching out. Our records show your order was delivered. Could you check with neighbours or your building's mail room? We're happy to help further. Gracias / thank you!"
+    }
+  ],
+  "extensions": {
+    "merchant_contacted": true,
+    "merchant_contacted_outcome": "NO_RESPONSE",
+    "buyer_contacted_time": "2026-10-05T17:27:51.837Z",
+    "merchandize_dispute_properties": {
+      "issue_type": "PRODUCT"
+    }
+  },
+  "evidences": [
+    {
+      "evidence_type": "CREATE",
+      "source": "SUBMITTED_BY_BUYER",
+      "date": "2026-10-05T17:27:52.611Z",
+      "dispute_life_cycle_stage": "INQUIRY"
+    },
+    {
+      "evidence_type": "PROOF_OF_FULFILLMENT",
+      "evidence_info": {
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9400111899223197428491"
+          }
+        ]
+      },
+      "documents": [
+        {
+          "name": "[name]",
+          "url": "https://api-m.sandbox.paypal.com/v2/content/documents/DIS-010-11f1-c0e2-9d680d60-b9bd-c7dd7d80fa35/files/1/download"
+        }
+      ],
+      "notes": "M1 adapter check: tracking + evidence pack PDF attached.",
+      "source": "SUBMITTED_BY_SELLER",
+      "date": "2026-10-05T17:31:36.750Z",
+      "action_info": {
+        "action": "PROVIDE_EVIDENCE"
+      },
+      "dispute_life_cycle_stage": "INQUIRY"
+    }
+  ],
+  "buyer_response_due_date": "2026-10-25T17:27:52.611Z",
+  "offer": {
+    "buyer_requested_amount": {
+      "currency_code": "USD",
+      "value": "12.75"
+    }
+  },
+  "refund_details": {
+    "allowed_refund_amount": {
+      "currency_code": "USD",
+      "value": "12.75"
+    }
+  },
+  "allowed_response_options": {
+    "accept_claim": {
+      "accept_claim_types": [
+        "REFUND"
+      ]
+    }
+  },
+  "links": [
+    {
+      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-MQR-10190375",
+      "rel": "self",
+      "method": "GET"
+    },
+    {
+      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-MQR-10190375/accept-claim",
+      "rel": "accept_claim",
+      "method": "POST"
+    },
+    {
+      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-MQR-10190375/send-message",
+      "rel": "send_message",
+      "method": "POST"
+    },
+    {
+      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-MQR-10190375/escalate",
+      "rel": "escalate",
+      "method": "POST"
+    }
+  ]
+}

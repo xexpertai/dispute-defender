@@ -1,0 +1,42 @@
+# dependencies
+/node_modules
+node_modules/
+/.pnp
+.pnp.*
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# env + secrets (never commit)
+.env*
+!.env.example
+*.pem
+
+# local data
+/data/
+*.db
+*.db-journal
+
+# spike artifacts
+spikes/m0/state*.json
+spikes/m0/consent-url.txt
+spikes/m0/shots/
+spikes/m0/*.log
+spikes/m0/tts-samples/
+
+# misc
+.DS_Store
+npm-debug.log*
+
+# local knowledge graph (graphify)
+graphify-out/
+spikes/m0/seeded.txt
+spikes/m0/known-txns.txt
+video/out/
