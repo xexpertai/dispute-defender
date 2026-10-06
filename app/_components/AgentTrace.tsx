@@ -173,33 +173,41 @@ export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailab
           <CaseFile state={state} disputeId={disputeId} closed={closed} stampRef={stampRef} />
         </div>
 
-        {/* ------------------------------------------------------------ the full write-up */}
-        {(state.assessment || state.draft) && (
-          <div className="grid gap-x-6 gap-y-8 lg:col-span-12 lg:grid-cols-2 lg:items-start">
-            {state.assessment && <Recommendation a={state.assessment} closed={closed} />}
-            {state.draft && (
-              <DraftPanel
-                key={state.draftId}
-                draft={state.draft}
-                draftId={state.draftId}
-                fallbackReason={state.fallbackReason}
-                issues={state.issues.filter((i) => i.code !== "ai_fallback").length}
-                mode={mode}
-                closed={closed}
-                evidence={state.evidence}
-                onSubmitted={(detail) =>
-                  dispatch({
-                    kind: "event",
-                    event: { v: 1, type: "step", runId: state.runId ?? "", step: 9, key: "await_approval", title: "Wait for your approval", status: "done", detail, at: new Date().toISOString() },
-                  })
-                }
-              />
+        {/* ------------------------------------------------------------ the full write-up
+            Balanced on desktop: recommendation + evidence timeline on the left, the response on the
+            right. On phones: recommendation, response, then the timeline. */}
+        {(state.assessment || state.draft || state.evidence.length > 0) && (
+          <div className="grid gap-x-6 gap-y-8 lg:col-span-12 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start">
+            {state.assessment && (
+              <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+                <Recommendation a={state.assessment} closed={closed} />
+              </div>
             )}
-          </div>
-        )}
-        {state.evidence.length > 0 && (
-          <div className="lg:col-span-12">
-            <Evidence items={state.evidence} packRefs={state.packRefs} />
+            {state.draft && (
+              <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
+                <DraftPanel
+                  key={state.draftId}
+                  draft={state.draft}
+                  draftId={state.draftId}
+                  fallbackReason={state.fallbackReason}
+                  issues={state.issues.filter((i) => i.code !== "ai_fallback").length}
+                  mode={mode}
+                  closed={closed}
+                  evidence={state.evidence}
+                  onSubmitted={(detail) =>
+                    dispatch({
+                      kind: "event",
+                      event: { v: 1, type: "step", runId: state.runId ?? "", step: 9, key: "await_approval", title: "Wait for your approval", status: "done", detail, at: new Date().toISOString() },
+                    })
+                  }
+                />
+              </div>
+            )}
+            {state.evidence.length > 0 && (
+              <div className="min-w-0 lg:col-start-1 lg:row-start-2">
+                <Evidence items={state.evidence} packRefs={state.packRefs} />
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -246,6 +254,7 @@ function StepRow({ step: s, last, visible, details }: { step: StepView; last: bo
                   </span>
                   {b.status && <span className="opacity-70">{b.status}</span>}
                   {b.source === "replay" && <span className="opacity-70">rec</span>}
+                  {b.via === "agent-toolkit" && <span className="opacity-70">via Agent Toolkit</span>}
                 </span>
               ))}
             </div>
@@ -386,7 +395,7 @@ function Evidence({ items, packRefs }: { items: EvidenceItem[]; packRefs: string
           </span>
         ))}
       </div>
-      <ol className="mt-3 grid gap-1.5 md:grid-cols-2">
+      <ol className="mt-3 grid gap-1.5 md:grid-cols-2 lg:grid-cols-1">
         {sorted.map((e) => {
           const p = provenanceOf(e.kind);
           return (

@@ -160,3 +160,37 @@ describe("LiveGateway (fake PayPal client)", () => {
     expect(calls[0]).toMatchObject({ source: "live", status: 200, debugId: "d1", api: "Disputes" });
   });
 });
+
+describe("LiveGateway reads through PayPal's Agent Toolkit", () => {
+  it("uses the toolkit for dispute/order/tracking/list, REST only for the capture lookup; 404 → null", async () => {
+    const { LiveGateway } = await import("@/lib/agent/gateway");
+    const ran: string[] = [];
+    const rest: string[] = [];
+    const toolkit = async (method: string, args: Record<string, unknown>) => {
+      ran.push(`${method} ${JSON.stringify(args)}`);
+      if (method === "get_dispute" && args.dispute_id === "PP-NOPE") return JSON.stringify({ ok: false, status: 404, code: "x" });
+      if (method === "get_dispute") return JSON.stringify({ dispute_id: args.dispute_id, status: "WAITING_FOR_SELLER_RESPONSE", buyer: { email_address: "b@example.com" } });
+      if (method === "get_order") return JSON.stringify({ id: args.id, purchase_units: [] });
+      if (method === "get_shipment_tracking") return JSON.stringify({ trackers: [{ transaction_id: "C1", tracking_number: "9", carrier: "USPS" }] });
+      return JSON.stringify({ items: [] });
+    };
+    const client = { request: async (_m: string, path: string) => (rest.push(path), { status: 200, debugId: "d", data: { links: [{ rel: "up", href: "https://x/v2/checkout/orders/O1" }] } }) };
+    const gw = new LiveGateway(client as never, undefined, toolkit);
+    const d = await gw.getDispute("PP-A");
+    expect(d.calls[0]).toMatchObject({ via: "agent-toolkit", source: "live", status: 200, api: "Disputes" });
+    expect(JSON.stringify(d.data)).not.toContain("b@example.com");
+    expect((await gw.getDispute("PP-NOPE")).data).toBeNull();
+    const o = await gw.findOrderByCapture("C1");
+    expect(o.calls.map((c) => c.via)).toEqual(["rest", "agent-toolkit"]);
+    expect((await gw.getTrackers("C1")).data).toHaveLength(1);
+    await gw.listDisputes();
+    expect(ran.map((r) => r.split(" ")[0])).toEqual(["get_dispute", "get_dispute", "get_order", "get_shipment_tracking", "list_disputes"]);
+    expect(rest).toEqual(["/v2/payments/captures/C1"]);
+  });
+
+  it("a non-404 toolkit failure throws (the run shows an error, not empty data)", async () => {
+    const { LiveGateway } = await import("@/lib/agent/gateway");
+    const gw = new LiveGateway({ request: async () => ({}) } as never, undefined, async () => JSON.stringify({ ok: false, status: 500 }));
+    await expect(gw.getDispute("PP-A")).rejects.toThrow(/500/);
+  });
+});

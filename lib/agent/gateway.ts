@@ -80,12 +80,32 @@ export class ReplayGateway implements DisputeGateway {
 
 const RESOLVED_CACHE = new Map<string, DisputeRecord>();
 
+/** Runs a PayPal Agent Toolkit method (sandbox-forced; see lib/paypal/toolkit.ts) and returns its JSON text. */
+export type ToolkitRunner = (method: string, args: Record<string, unknown>) => Promise<string>;
+
+const TOOLKIT_FOR: Partial<Record<Ep, string>> = { listDisputes: "list_disputes", getDispute: "get_dispute", getOrder: "get_order", listTrackers: "get_shipment_tracking" };
+
 export class LiveGateway implements DisputeGateway {
   readonly mode = "live" as const;
   constructor(
     private readonly client: PayPalClient,
     private readonly clock: () => Date = () => new Date(),
+    /** When given, dispute/order/tracking reads go through PayPal's Agent Toolkit. */
+    private readonly toolkit?: ToolkitRunner,
   ) {}
+
+  private async viaToolkit<T>(ep: Ep, args: Record<string, unknown>): Promise<{ data: T | null; call: PayPalCallBadge } | null> {
+    const method = TOOLKIT_FOR[ep];
+    if (!this.toolkit || !method) return null;
+    const started = Date.now();
+    const parsed = JSON.parse(await this.toolkit(method, args)) as { ok?: boolean; status?: number } & Record<string, unknown>;
+    const failed = parsed.ok === false;
+    if (failed && parsed.status !== 404) throw Object.assign(new Error(`PayPal ${parsed.status ?? "error"} via Agent Toolkit`), { status: parsed.status });
+    return {
+      data: failed ? null : (redactObject(parsed) as T),
+      call: { ...ENDPOINTS[ep], status: failed ? 404 : 200, ms: Date.now() - started, source: "live", via: "agent-toolkit" },
+    };
+  }
 
   now() {
     return this.clock();
@@ -95,10 +115,10 @@ export class LiveGateway implements DisputeGateway {
     const started = Date.now();
     try {
       const res = await this.client.request<T>("GET", path);
-      return { data: redactObject(res.data), call: { ...ENDPOINTS[ep], status: res.status, debugId: res.debugId, ms: Date.now() - started, source: "live" } };
+      return { data: redactObject(res.data), call: { ...ENDPOINTS[ep], status: res.status, debugId: res.debugId, ms: Date.now() - started, source: "live", via: "rest" } };
     } catch (err) {
       const e = err as { status?: number; debugId?: string | null };
-      if (e.status === 404) return { data: null, call: { ...ENDPOINTS[ep], status: 404, debugId: e.debugId ?? null, ms: Date.now() - started, source: "live" } };
+      if (e.status === 404) return { data: null, call: { ...ENDPOINTS[ep], status: 404, debugId: e.debugId ?? null, ms: Date.now() - started, source: "live", via: "rest" } };
       throw err;
     }
   }
@@ -108,7 +128,7 @@ export class LiveGateway implements DisputeGateway {
    * with a details GET. Resolved disputes never change, so their details are cached per process.
    */
   async listDisputes() {
-    const { data } = await this.get<{ items?: DisputeRecord[] }>("listDisputes", "/v1/customer/disputes?page_size=50");
+    const { data } = (await this.viaToolkit<{ items?: DisputeRecord[] }>("listDisputes", { page_size: 50 })) ?? (await this.get<{ items?: DisputeRecord[] }>("listDisputes", "/v1/customer/disputes?page_size=50"));
     const items = data?.items ?? [];
     return Promise.all(
       items.map(async (d) => {
@@ -122,7 +142,7 @@ export class LiveGateway implements DisputeGateway {
   }
 
   async getDispute(id: string) {
-    const { data, call } = await this.get<DisputeRecord>("getDispute", `/v1/customer/disputes/${encodeURIComponent(id)}`);
+    const { data, call } = (await this.viaToolkit<DisputeRecord>("getDispute", { dispute_id: id })) ?? (await this.get<DisputeRecord>("getDispute", `/v1/customer/disputes/${encodeURIComponent(id)}`));
     return { data, calls: [call] };
   }
 
@@ -130,12 +150,14 @@ export class LiveGateway implements DisputeGateway {
     const cap = await this.get<{ links?: { rel: string; href: string }[] }>("getCapture", `/v2/payments/captures/${encodeURIComponent(captureId)}`);
     const orderId = cap.data?.links?.find((l) => l.rel === "up")?.href.split("/").pop();
     if (!orderId) return { data: null, calls: [cap.call] };
-    const order = await this.get<OrderLike>("getOrder", `/v2/checkout/orders/${encodeURIComponent(orderId)}`);
+    const order = (await this.viaToolkit<OrderLike>("getOrder", { id: orderId })) ?? (await this.get<OrderLike>("getOrder", `/v2/checkout/orders/${encodeURIComponent(orderId)}`));
     return { data: order.data, calls: [cap.call, order.call] };
   }
 
   async getTrackers(captureId: string) {
-    const { data, call } = await this.get<{ trackers?: PayPalTrackerLike[] }>("listTrackers", `/v1/shipping/trackers?transaction_id=${encodeURIComponent(captureId)}`);
+    const { data, call } =
+      (await this.viaToolkit<{ trackers?: PayPalTrackerLike[] }>("listTrackers", { transaction_id: captureId })) ??
+      (await this.get<{ trackers?: PayPalTrackerLike[] }>("listTrackers", `/v1/shipping/trackers?transaction_id=${encodeURIComponent(captureId)}`));
     return { data: data?.trackers ?? [], calls: [call] };
   }
 }

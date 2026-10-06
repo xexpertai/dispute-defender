@@ -43,7 +43,9 @@ export function CaseFile({ state, disputeId, closed, stampRef }: { state: TraceS
     if (!el || !draft) return;
     const measure = () => {
       const base = el.getBoundingClientRect();
-      if (base.width < 700) return setPaths([]);
+      // Rects are in zoomed (visual) px when the page uses CSS zoom; the SVG draws in local px.
+      const z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+      if (base.width / z < 700) return setPaths([]);
       const out: { d: string; key: string; delay: number }[] = [];
       draft.claims.forEach((c, i) => {
         const from = el.querySelector<HTMLElement>(`[data-claim="${i}"]`)?.getBoundingClientRect();
@@ -51,10 +53,10 @@ export function CaseFile({ state, disputeId, closed, stampRef }: { state: TraceS
         c.sourceRefs.forEach((r, j) => {
           const to = el.querySelector<HTMLElement>(`[data-card="${CSS.escape(r)}"]`)?.getBoundingClientRect();
           if (!to) return;
-          const x1 = from.right - base.left + 6;
-          const y1 = from.top - base.top + Math.min(from.height / 2, 18);
-          const x2 = to.left - base.left - 6;
-          const y2 = to.top - base.top + to.height / 2;
+          const x1 = (from.right - base.left) / z + 6;
+          const y1 = (from.top - base.top) / z + Math.min(from.height / z / 2, 18);
+          const x2 = (to.left - base.left) / z - 6;
+          const y2 = (to.top - base.top + to.height / 2) / z;
           const k = Math.max(30, (x2 - x1) / 2);
           out.push({ d: `M${x1},${y1} C${x1 + k},${y1} ${x2 - k},${y2} ${x2},${y2}`, key: `${i}-${j}`, delay: 0.25 + i * 0.35 + j * 0.12 });
         });
@@ -81,12 +83,14 @@ export function CaseFile({ state, disputeId, closed, stampRef }: { state: TraceS
             <p className="text-xs text-muted" aria-live="polite">
               {filed.length ? `${filed.length} records filed${a ? ` · ${a.strength.level === "HIGH" ? "strong" : a.strength.level === "MEDIUM" ? "mixed" : "weak"} evidence` : ""}` : phase === "idle" ? "Start the agent to open the file" : "Opening the file…"}
             </p>
+            {verdictReady && a && (
+              <p className="mt-1 text-sm text-ink-2">
+                {closed ? "Hindsight review: this case is closed." : a.recommendation.buyerFair ? "The buyer is right." : "Verdict from the rules, with every claim tied to a record."}
+              </p>
+            )}
           </div>
           {verdictReady && a && (
-            <div ref={stampRef} className="flex items-center gap-3">
-              <span className="hidden max-w-[16rem] text-right text-xs text-muted sm:block">
-                {closed ? "Hindsight review: this case is closed." : a.recommendation.buyerFair ? "The buyer is right." : "Verdict from the rules, with every claim tied to a record."}
-              </span>
+            <div ref={stampRef} className="shrink-0 py-2 pr-2">
               <span className={`stamp stamp-xl stamp-land ${VERDICT[a.recommendation.strategy].tone}`} role="status" aria-label={`Verdict: ${VERDICT[a.recommendation.strategy].word}`}>
                 {VERDICT[a.recommendation.strategy].word}
               </span>

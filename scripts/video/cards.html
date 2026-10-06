@@ -6,126 +6,183 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,800&family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet" />
 <style>
-  /* Same tokens as app/globals.css (light). Rendered to PNG by scripts/video/takes.py. */
-  :root { --bg:#e7ebf0; --surface:#fffefb; --s2:#f1f3f6; --ink:#101c33; --ink2:#3a4659; --muted:#596476; --line:#dbe1e9; --primary:#14284b; --psoft:#e4e9f2; --manila:#ecd593; --manila-ink:#4a3a12; --win:#147a3d; --loss:#c0262d; --pp:#0e6f8a; --ppsoft:#e1f2f6; --ai:#6a2fd0; --aisoft:#efe8fd; --amber:#a35a00; }
-  h1, .big, .brand, #architecture h2 { font-family: Archivo, Inter, sans-serif; font-stretch: 112%; }
+  /*
+   * Same tokens as app/globals.css (light). Rendered to PNG by scripts/video/takes.py.
+   * Output frame 1366×768 = content area 1366×648 (top) + caption band 1366×120 (bottom).
+   * Full-frame cards (architecture/close/endcard) are scaled into the content area by the assembler.
+   * Overlays (hookstat, phoneframe, caption) are drawn on the full output frame.
+   */
+  :root { --bg:#e7ebf0; --surface:#fffefb; --s2:#f1f3f6; --ink:#101c33; --ink2:#3a4659; --muted:#596476; --line:#dbe1e9; --primary:#14284b; --manila:#ecd593; --manila-ink:#4a3a12; --win:#147a3d; --loss:#c0262d; --pp:#0e6f8a; --ppsoft:#e1f2f6; --ai:#6a2fd0; --aisoft:#efe8fd; }
   * { box-sizing: border-box; margin: 0; }
   html, body { width: 1366px; height: 768px; overflow: hidden; }
   body { font-family: Inter, -apple-system, Helvetica, sans-serif; color: var(--ink); background: var(--bg); }
-  body.caption { background: transparent; }
+  body.overlay { background: transparent; }
+  h1, .big, .brand, .disp { font-family: Archivo, Inter, sans-serif; font-stretch: 112%; font-weight: 800; letter-spacing: -0.02em; }
   .mono { font-family: "Geist Mono", ui-monospace, monospace; }
-  section { display: none; width: 1366px; height: 768px; padding: 64px 96px 150px; }
+  section { display: none; width: 1366px; height: 768px; position: relative; }
   section.on { display: flex; flex-direction: column; }
-  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 26px; letter-spacing: -0.02em; }
-  .brand b { color: var(--ink); }
-  .eyebrow { font: 600 15px "Geist Mono", monospace; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
-  /* hook */
-  #hook { justify-content: center; }
-  #hook .big { font-weight: 800; font-size: 200px; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
-  #hook .big small { font-size: 64px; color: var(--loss); font-weight: 700; letter-spacing: -0.02em; margin-left: 18px; }
-  #hook p.lead { font-size: 36px; font-weight: 500; color: var(--ink2); margin-top: 24px; max-width: 1050px; line-height: 1.25; }
-  #hook .cite { margin-top: auto; font-size: 18px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 18px; }
-  /* architecture */
-  #architecture { gap: 22px; }
-  #architecture h1 { font-size: 40px; letter-spacing: -0.03em; }
-  .row { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 22px; flex: 1; }
-  .col { background: var(--surface); border: 1px solid var(--line); border-radius: 4px 12px 12px 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px -16px rgb(11 27 51 / .25); }
-  .col h2 { font-size: 20px; letter-spacing: -0.01em; }
-  .chip { display: flex; justify-content: space-between; gap: 10px; align-items: center; border-radius: 10px; padding: 9px 12px; font-size: 15px; font-weight: 600; }
-  .chip span { font: 400 12.5px "Geist Mono", monospace; opacity: .85; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 28px; }
+  .tab { display: inline-flex; align-items: center; height: 34px; padding: 0 26px 0 14px; background: var(--manila); color: var(--manila-ink); border-radius: 9px 12px 0 0; font: 600 15px "Geist Mono", monospace; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 100%, 0 100%); }
+  .paper { background: var(--surface); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; box-shadow: 0 10px 30px -16px rgb(16 28 51 / .35); }
+
+  /* ---- hook stat: floats over the live product for the first ~3 s ---- */
+  #hookstat { align-items: center; justify-content: center; padding-bottom: 120px; background: rgb(231 235 240 / 0.74); }
+  #hookstat .wrap { display: flex; flex-direction: column; align-items: flex-start; }
+  #hookstat .paper { padding: 26px 34px 22px; width: 760px; }
+  #hookstat .big { font-size: 112px; line-height: .95; }
+  #hookstat .big small { font-size: 40px; color: var(--loss); margin-left: 14px; }
+  #hookstat p { font-size: 24px; color: var(--ink2); margin-top: 10px; line-height: 1.3; }
+  #hookstat .cite { font-size: 15px; color: var(--muted); margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+
+  /* ---- phone frame: device bezel (left) + desktop still slot (right), within the 648 px content area ---- */
+  #phoneframe .bezel { position: absolute; left: 166px; top: 10px; width: 305px; height: 628px; border-radius: 46px; background: #0d1424; box-shadow: 0 20px 40px -20px rgb(16 28 51 / .6); }
+  #phoneframe .notch { position: absolute; left: 286px; top: 18px; width: 66px; height: 9px; border-radius: 6px; background: #273149; }
+  #phoneframe .desk { position: absolute; left: 536px; top: 104px; width: 768px; height: 432px; border-radius: 12px; background: #0d1424; box-shadow: 0 20px 40px -22px rgb(16 28 51 / .55); }
+  #phoneframe .label { position: absolute; font: 600 15px Inter, sans-serif; color: var(--muted); }
+
+  /* ---- architecture: 3-step build, left → right ---- */
+  #architecture { padding: 0 56px 120px; gap: 18px; justify-content: center; }
+  #architecture h1 { font-size: 44px; }
+  .row { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 22px; align-items: start; }
+  .col { padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 10px; transition: none; }
+  .col h2 { font-family: Archivo, Inter, sans-serif; font-stretch: 112%; font-size: 23px; margin-bottom: 4px; }
+  .chip { display: flex; justify-content: space-between; gap: 10px; align-items: center; border-radius: 10px; padding: 10px 13px; font-size: 19px; font-weight: 600; }
+  .chip span { font: 400 14px "Geist Mono", monospace; opacity: .85; }
   .pp { background: var(--ppsoft); color: var(--pp); border: 1px solid rgb(14 111 138 / .25); }
   .ai { background: var(--aisoft); color: var(--ai); border: 1px solid rgb(106 47 208 / .25); }
   .core { background: var(--s2); color: var(--ink); border: 1px solid var(--line); }
-  .ok { color: var(--win); font-size: 15px; font-weight: 600; display: flex; gap: 8px; }
-  .flow { font: 600 14px "Geist Mono", monospace; color: var(--muted); text-align: center; }
-  /* close */
-  #close { justify-content: center; align-items: flex-start; gap: 28px; }
-  #close h1 { font-size: 84px; letter-spacing: -0.04em; line-height: 1; }
-  /* Marker stroke: one word only. Sits behind the lower part of the letters from just under the
-     baseline, a little wider than the word, rounded and slightly angled; em-based so it scales. */
-  .marker { position: relative; z-index: 0; color: var(--ink); white-space: nowrap; }
-  .marker::before { content: ""; position: absolute; z-index: -1; left: -0.1em; right: -0.08em; bottom: 0.2em; height: 0.34em;
-    background: var(--manila); border-radius: 0.18em 0.3em 0.22em 0.32em; transform: rotate(-1.5deg) skewX(-10deg); opacity: 0.95; }
-  #close p { font-size: 34px; color: var(--ink2); font-weight: 500; }
-  #close .cta { background: var(--primary); color: #fff; font-size: 26px; font-weight: 700; padding: 18px 28px; border-radius: 14px; }
-  #close .fine { font-size: 18px; color: var(--muted); }
-  /* caption: bottom pill on a transparent frame */
-  #caption { padding: 0; justify-content: flex-end; align-items: center; }
-  #caption div { margin-bottom: 34px; max-width: 1120px; background: rgb(11 27 51 / .86); color: #fff; font-size: 28px; font-weight: 600; line-height: 1.3; padding: 12px 22px; border-radius: 12px; text-align: center; letter-spacing: -0.005em; }
+  .ok { color: var(--win); font-size: 20px; font-weight: 600; display: flex; gap: 10px; padding: 10px 2px; border-bottom: 1px dashed var(--line); }
+  .ok:last-of-type { border-bottom: 0; }
+  .flow { font: 600 15px "Geist Mono", monospace; color: var(--muted); text-align: center; margin-top: 6px; }
+  .dim { opacity: .12; }
+
+  /* ---- close ---- */
+  #close { justify-content: center; align-items: center; text-align: center; gap: 28px; padding: 0 60px 120px; }
+  #close h1 { font-size: 62px; line-height: 1.12; white-space: nowrap; }
+  #close p { font-size: 32px; color: var(--ink2); font-weight: 500; }
+  /* ---- end card ---- */
+  #endcard { justify-content: center; align-items: center; padding: 0 100px 120px; gap: 34px; }
+  #endcard h1 { font-size: 84px; }
+  #endcard dl { display: grid; grid-template-columns: auto auto; gap: 22px 32px; align-items: baseline; background: var(--surface); border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; padding: 30px 40px; }
+  #endcard dt { font-size: 28px; font-weight: 600; color: var(--muted); text-align: right; }
+  #endcard dd { font-size: 36px; font-weight: 600; }
+  #endcard dd.url { font-family: "Geist Mono", monospace; font-size: 32px; }
+  #endcard dd.todo { color: var(--muted); font-style: italic; }
+  #endcard .fine { font-size: 20px; color: var(--muted); }
+
+  /* ---- band label: small chip at the top of the caption band (announces a context switch) ---- */
+  #bandlabel { display: none; }
+  #bandlabel.on { display: block; }
+  #bandlabel .chip2 { position: absolute; left: 50%; transform: translateX(-50%); top: 652px; background: var(--manila); color: var(--manila-ink); font: 600 16px Inter, sans-serif; padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+  #caption .band.low { align-items: flex-end; padding-bottom: 10px; }
+  /* ---- deliberate bottom fade of the app frame (half rows at the bottom edge read as "more below") ---- */
+  #fade { display: none; }
+  #fade.on { display: block; }
+  #fade .g { position: absolute; left: 0; top: 608px; width: 1366px; height: 40px; background: linear-gradient(to bottom, rgb(231 235 240 / 0), rgb(231 235 240 / 1)); }
+
+  /* ---- caption: centred in the 120 px band under the content area ---- */
+  #caption { display: none; }
+  #caption.on { display: block; }
+  #caption .band { position: absolute; left: 0; top: 648px; width: 1366px; height: 120px; display: flex; align-items: center; justify-content: center; }
+  #caption .pill { max-width: 1160px; background: var(--ink); color: #fff; font-size: 28px; font-weight: 600; line-height: 1.28; padding: 11px 22px; border-radius: 12px; text-align: center; }
 </style>
 </head>
 <body>
-<section id="hook">
-  <p class="eyebrow">The real cost of fraud for online sellers</p>
-  <p class="big">$5.13<small>per $1 lost</small></p>
-  <p class="lead">Every $1 a US retail or e-commerce business loses to fraud costs about $5.13 in total, and chargeback fraud is one of the fraud types counted.</p>
-  <p class="cite">Source: LexisNexis® Risk Solutions, 2026 True Cost of Fraud™ Study for Retail and Ecommerce (press release, 24 June 2026), risk.lexisnexis.com</p>
+<section id="hookstat">
+  <div class="wrap">
+    <span class="tab">The real cost of fraud for online sellers</span>
+    <div class="paper">
+      <p class="big">$5.13<small>per $1 lost</small></p>
+      <p>Every $1 a US retail or e-commerce business loses to fraud costs about $5.13 in total, and chargeback fraud is one of the fraud types counted.</p>
+      <p class="cite">Source: 2026 industry fraud-cost study, retail and e-commerce (full citation in the video description)</p>
+    </div>
+  </div>
 </section>
 
+<section id="phoneframe">
+  <div class="bezel"></div><div class="notch"></div>
+  <div class="desk"></div>
+  <span class="label" style="left:536px;top:548px">…and on your desk</span>
+</section>
+
+<section id="phonering"><div style="position:absolute;left:166px;top:10px;width:305px;height:628px;border:12px solid #0d1424;border-radius:46px"></div></section>
+
 <section id="architecture">
-  <div style="display:flex;justify-content:space-between;align-items:baseline"><h1>How it works</h1><div class="brand">Dispute <b>Defender</b></div></div>
+  <div style="display:flex;justify-content:space-between;align-items:baseline"><h1>How it works</h1><div class="brand">Dispute Defender</div></div>
   <div class="row">
-    <div class="col">
+    <div class="col paper" data-step="1">
       <h2>PayPal (sandbox)</h2>
-      <div class="chip pp">OAuth 2.0 <span>/v1/oauth2/token</span></div>
-      <div class="chip pp">Disputes v1 <span>read · 6 actions · sandbox sims</span></div>
-      <div class="chip pp">Orders v2 <span>/v2/checkout/orders</span></div>
-      <div class="chip pp">Payments v2 <span>/v2/payments/captures</span></div>
-      <div class="chip pp">Shipment Tracking <span>/v1/shipping/trackers</span></div>
-      <div class="chip pp">Webhooks <span>verify signature</span></div>
+      <div class="chip pp">OAuth 2.0 <span>token</span></div>
+      <div class="chip pp">Disputes v1 <span>read · 6 actions</span></div>
+      <div class="chip pp">Orders v2 <span>order truth</span></div>
+      <div class="chip pp">Payments v2 <span>capture</span></div>
+      <div class="chip pp">Shipment Tracking <span>trackers</span></div>
+      <div class="chip pp">Webhooks <span>verified</span></div>
     </div>
-    <div class="col">
-      <h2>Agent (deterministic loop)</h2>
-      <div class="chip core">1 Read dispute · 2 Order · 3 Tracking · 4 Store logs</div>
-      <div class="chip core">5 Rules: evidence strength, buyer-fair, cost to fight</div>
-      <div class="chip ai">6 Claude Haiku 4.5 drafts <span>1 strict tool call</span></div>
-      <div class="chip core">7 Server validation <span>sources · HATEOAS · amounts · policy wording</span></div>
-      <div class="chip core">8 Evidence pack PDF + exact request preview</div>
+    <div class="col paper" data-step="2">
+      <h2>The agent</h2>
+      <div class="chip core">1–4 Read dispute, order, tracking, store</div>
+      <div class="chip core">5 Rules: strength, buyer-fair, cost</div>
+      <div class="chip ai">6 Claude drafts <span>1 strict call</span></div>
+      <div class="chip core">7 Server checks every claim</div>
+      <div class="chip core">8 Evidence pack + exact request</div>
       <div class="chip core">9 You approve → submit</div>
-      <p class="flow">PayPal Agent Toolkit + 6 custom dispute tools · also served as an MCP server</p>
+      <p class="flow">PayPal Agent Toolkit + 6 dispute tools · also an MCP server</p>
     </div>
-    <div class="col">
+    <div class="col paper" data-step="3">
       <h2>Honesty guarantees</h2>
       <p class="ok">✓ Every claim cites a real record</p>
-      <p class="ok">✓ Unknown sources are dropped</p>
       <p class="ok">✓ Only actions PayPal allows now</p>
       <p class="ok">✓ No invented numbers or outcomes</p>
-      <p class="ok">✓ AI vs TEMPLATE always labelled</p>
+      <p class="ok">✓ AI and TEMPLATE always labelled</p>
       <p class="ok">✓ Nothing sent without approval</p>
       <p class="ok">✓ Sandbox forced, PII redacted</p>
-      <div class="chip ai" style="margin-top:auto">Prevention insights <span>1 cached call per portfolio</span></div>
     </div>
   </div>
 </section>
 
 <section id="close">
-  <div class="brand">Dispute <b>Defender</b></div>
-  <h1>Win the disputes worth fighting.<br/>Settle the rest <b class="marker">fairly</b>.</h1>
+  <div class="brand">Dispute Defender</div>
+  <h1>Win the disputes worth fighting.<br/>Settle the rest fairly.</h1>
   <p>An honest AI agent for small sellers, built on PayPal.</p>
-  <span class="cta">Try the demo store: no login</span>
-  <p class="fine">PayPal sandbox. Claude Haiku 4.5. Built for the PayPal AI Hackathon.</p>
 </section>
 
 <section id="endcard">
-  <div class="brand">Dispute <b>Defender</b></div>
-  <h1 style="font-size:64px;letter-spacing:-0.035em;margin-top:40px">Thanks for watching</h1>
-  <div style="margin-top:36px;display:grid;grid-template-columns:auto 1fr;gap:14px 28px;font-size:26px;align-items:baseline">
-    <span class="eyebrow">Built by</span><span style="font-weight:600">Harsha Shinde · xexpertai</span>
-    <span class="eyebrow">Demo</span><span class="mono" style="color:var(--primary)" data-placeholder="DEMO_URL">demo URL coming soon</span>
-    <span class="eyebrow">Code</span><span class="mono" style="color:var(--primary)" data-placeholder="REPO_URL">github.com/xexpertai (repo link coming soon)</span>
-  </div>
-  <p style="margin-top:auto;font-size:18px;color:var(--muted)">PayPal sandbox · Claude Haiku 4.5 · MIT licensed</p>
+  <div class="brand">Dispute Defender</div>
+  <h1>Thanks for watching</h1>
+  <dl>
+    <dt>Built by</dt><dd>Harsha Shinde · xexpertai</dd>
+    <dt>Try it</dt><dd class="url" id="demo"></dd>
+    <dt>Code</dt><dd class="url" id="repo"></dd>
+  </dl>
+  <p class="fine">PayPal sandbox · Claude Haiku 4.5 · MIT licensed</p>
 </section>
 
-<section id="caption"><div id="captext"></div></section>
+<section id="bandlabel"><div class="chip2" id="labeltext"></div></section>
+<section id="fade"><div class="g"></div></section>
+<section id="caption"><div class="band" id="capband"><div class="pill" id="captext"></div></div></section>
 
 <script>
   const q = new URLSearchParams(location.search);
-  const card = q.get("card") || "hook";
+  const card = q.get("card") || "hookstat";
   document.getElementById(card).classList.add("on");
+  if (["caption", "hookstat", "phonering", "bandlabel", "fade"].includes(card)) document.body.classList.add("overlay");
   if (card === "caption") {
-    document.body.classList.add("caption");
     document.getElementById("captext").textContent = q.get("text") || "";
+    if (q.get("low")) document.getElementById("capband").classList.add("low");
+  }
+  if (card === "bandlabel") document.getElementById("labeltext").textContent = q.get("text") || "";
+  if (card === "architecture") {
+    const step = Number(q.get("step") || 3);
+    for (const c of document.querySelectorAll("[data-step]")) if (Number(c.dataset.step) > step) c.classList.add("dim");
+  }
+  if (card === "endcard") {
+    for (const [id, key, todo] of [["demo", "demo", "demo URL: added after deploy"], ["repo", "repo", "repo URL: added when public"]]) {
+      const v = q.get(key);
+      const el = document.getElementById(id);
+      el.textContent = v || todo;
+      if (!v) el.classList.add("todo");
+    }
   }
 </script>
 </body>

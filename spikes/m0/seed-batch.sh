@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Kiln & Clay Studio demo orders (sandbox). Disputes open 12-15 Oct (see docs/HANDOFF.md).
+# Kiln & Clay Studio demo orders (sandbox). Disputes open 12-15 Oct.
 cd "$(dirname "$0")"
 ./seed-store.sh KC-BOWL-10 "Hand-thrown serving bowl, 10 in" 89.00 9405511899223197428601
 ./seed-store.sh KC-PLATE-6 "Matte glaze dinner plates, set of 6" 42.00

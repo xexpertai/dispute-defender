@@ -1,0 +1,5 @@
+{
+  "_note": "Fill both before the final render (FINAL=1 scripts/video/make-draft.sh fails while either is empty).",
+  "demoUrl": "",
+  "repoUrl": ""
+}

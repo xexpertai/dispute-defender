@@ -9,6 +9,7 @@ import { CliProvider } from "../llm/cli";
 import { registerSecret } from "../log/scrub";
 import { sharedDb } from "../store/shared";
 import { getPayPalClient } from "../paypal/client";
+import { createSandboxToolkit } from "../paypal/toolkit";
 import { fixtures } from "../replay/fixtures";
 import { SampleStore } from "../samples/store";
 import type { AgentDeps } from "./run";
@@ -26,7 +27,10 @@ export type Mode = "live" | "replay";
 export const currentMode = (): Mode => (process.env.DD_MODE === "live" ? "live" : "replay");
 
 export function gatewayFor(mode: Mode = currentMode()): DisputeGateway {
-  return mode === "live" ? new LiveGateway(getPayPalClient()) : new ReplayGateway(fixtures());
+  if (mode === "replay") return new ReplayGateway(fixtures());
+  const client = getPayPalClient();
+  // Reads go through PayPal's Agent Toolkit (sandbox-forced, re-checked per call; token cached).
+  return new LiveGateway(client, undefined, async (method, args) => String(await createSandboxToolkit(await client.getAccessToken()).run(method, args)));
 }
 
 /** Replay pacing per step, in ms, so a person can follow the trace (≈6 s total at pace 1). */

@@ -6,7 +6,7 @@ export function ModeBadge({ mode, snapshotAt }: { mode: "live" | "replay"; snaps
     return (
       <span className="inline-flex min-h-8 items-center gap-2 whitespace-nowrap rounded-full border border-win/40 bg-win-soft px-3 text-xs font-semibold text-win" title="Reading the PayPal sandbox right now">
         <span className="size-2 rounded-full bg-win pulse" aria-hidden="true" />
-        Live sandbox
+        LIVE · PayPal sandbox
       </span>
     );
   }

@@ -6,7 +6,7 @@ import json, pathlib, re, subprocess, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SC = json.load(open(ROOT / "video/scenes.json"))["scenes"]
 BUILD = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else None
-GAP, TAIL, LEAD = 0.35, 0.6, 0.25
+GAP, TAIL, LEAD = 0.3, 0.25, 0.15
 
 
 def dur(p):
@@ -16,7 +16,7 @@ def dur(p):
 def secs(s):
     if not BUILD:
         return None
-    ls = [dur(BUILD / "audio" / f"{s['id']}_{i}.wav") for i in range(len(s["lines"]))]
+    ls = [dur(BUILD / "audio_trim" / f"{s['id']}_{i}.wav") for i in range(len(s["lines"]))]
     return max(LEAD + sum(ls) + GAP * (len(ls) - 1) + TAIL, s.get("minSeconds", 0))
 
 

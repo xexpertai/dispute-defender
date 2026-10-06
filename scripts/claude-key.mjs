@@ -1,11 +1,13 @@
-// npm run claude:key: copy CLAUDE_API_KEY from ~/workspace/taste-advisor/.env.local into this
-// project's .env.local (chmod 600) without printing it, then verify it with a free Models API call.
-// Usage: npm run claude:key [-- /path/to/other/.env.local]
-import os from "node:os";
-import path from "node:path";
+// npm run claude:key -- <path to an env file containing CLAUDE_API_KEY>
+// Copies the key into this project's .env.local (chmod 600) without printing it, then verifies it
+// with a free Models API call.
 import { readEnvFile, updateEnvFile } from "./lib/env-file.mjs";
 
-const source = process.argv[2] ?? path.join(os.homedir(), "workspace/taste-advisor/.env.local");
+const source = process.argv[2];
+if (!source) {
+  console.error("Usage: npm run claude:key -- <path to an env file containing CLAUDE_API_KEY>");
+  process.exit(1);
+}
 const key = readEnvFile(source).CLAUDE_API_KEY;
 if (!key) {
   console.error(`CLAUDE_API_KEY not found in ${source}. Nothing written.`);

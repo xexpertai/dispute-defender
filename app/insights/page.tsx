@@ -88,11 +88,11 @@ export default async function InsightsPage() {
                     {p.count}/{p.total}
                   </span>
                 </div>
-                <p className="mt-2 flex flex-wrap items-center gap-x-2 text-xs text-muted">
-                  Cases:
+                <p className="mt-2 flex flex-wrap items-center gap-x-3 text-xs text-muted">
+                  {p.disputeIds.length} {p.disputeIds.length === 1 ? "case" : "cases"}:
                   {p.disputeIds.map((id) => (
-                    <Link key={id} href={`/disputes/${id}`} className="inline-flex min-h-11 items-center font-mono text-[0.72rem] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
-                      {id}
+                    <Link key={id} href={`/disputes/${id}`} title={id} className="inline-flex min-h-11 items-center text-[0.78rem] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+                      {v.caseLabels[id] ?? id}
                     </Link>
                   ))}
                 </p>

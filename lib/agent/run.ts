@@ -11,7 +11,7 @@ import { scrub } from "../log/scrub";
 import { detectLanguage } from "../lang/detect";
 
 /**
- * The agent loop (PLAN §5). Code gathers evidence and applies the rules; the provider only drafts
+ * The agent loop. Code gathers evidence and applies the rules; the provider only drafts
  * text (FakeProvider in M2 → a TEMPLATE draft, zero tokens). Every step is streamed as a numbered
  * trace event with the PayPal calls it made. Nothing is ever submitted here: the run stops at
  * "Wait for your approval".

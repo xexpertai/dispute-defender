@@ -18,12 +18,18 @@ describe("video script", () => {
     expect(scenes.scenes.at(-1)?.id).toBe("endcard");
     const text = scenes.scenes.flatMap((s) => s.lines).join(" ");
     expect(text).not.toMatch(/\b(hello|hi everyone|my name|I'm|I am|Harsha)\b/i);
-    expect(readFileSync("scripts/video/cards.html", "utf8")).toContain("Built by</span><span style=\"font-weight:600\">Harsha Shinde · xexpertai");
+    expect(readFileSync("scripts/video/cards.html", "utf8")).toContain("<dt>Built by</dt><dd>Harsha Shinde · xexpertai</dd>");
+    const cfg = JSON.parse(readFileSync("video/config.json", "utf8"));
+    expect(Object.keys(cfg)).toEqual(expect.arrayContaining(["demoUrl", "repoUrl"]));
   });
 
   it("never claims more PayPal APIs than the app uses, and cites the hook's source on screen", () => {
     const text = scenes.scenes.flatMap((s) => s.lines).join(" ");
     expect(text).not.toMatch(/seven|eight PayPal/i);
-    expect(readFileSync("scripts/video/cards.html", "utf8")).toContain("2026 True Cost of Fraud");
+    expect(text).not.toMatch(/real PayPal API call/i); // Replay reads recorded responses; say so
+    const cards = readFileSync("scripts/video/cards.html", "utf8");
+    expect(cards).toContain("Source: 2026 industry fraud-cost study");
+    // no third-party marks on screen (full citation lives in docs/YOUTUBE.md)
+    expect(cards + text).not.toMatch(/®|™|LexisNexis|True Cost of Fraud/);
   });
 });

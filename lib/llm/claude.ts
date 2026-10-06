@@ -5,7 +5,7 @@ import type { ActionKind, PlannedAction, Strategy } from "../strategy/rules";
 import type { Draft, DraftInput, DraftProvider } from "./draft";
 
 /**
- * Claude draft provider (PLAN §5, call #1). One request, one forced tool call with a strict schema.
+ * Claude draft provider. One request, one forced tool call with a strict schema.
  * Claude only writes text and picks among options the rules and PayPal already allow:
  *  - `action` is an enum of the HATEOAS-allowed actions (+ "none")
  *  - every claim's `source_refs` is an enum of the gathered evidence refs, so a citation to

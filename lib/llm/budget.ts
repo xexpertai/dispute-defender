@@ -3,7 +3,7 @@ import type { DB } from "../store/db";
 import { llmTotals, recordLlmCall } from "../store/repo";
 
 /**
- * Hard daily cap on Claude calls (PLAN §11: public demo ≤ 40/day) plus per-call token logging.
+ * Hard daily cap on Claude calls (LLM_MAX_CALLS_PER_DAY, default 40) plus per-call token logging.
  * Every call is recorded in llm_calls, which is where milestone reports read cumulative spend.
  */
 export class LlmBudgetExceeded extends Error {

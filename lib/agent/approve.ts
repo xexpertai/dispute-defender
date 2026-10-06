@@ -8,7 +8,7 @@ import { getApprovalForDraft, getDraft, insertApproval, insertSubmission, type S
 import { assertPlanValid, PACK_FILENAME, planSubmission, previewRequest, type RequestPreview } from "./submission";
 
 /**
- * Human-in-the-loop submit (PLAN §5 step 8):
+ * Human-in-the-loop submit:
  *   1. the seller has reviewed the draft (explicit flag) and may have edited the text
  *   2. an approval record is stored BEFORE anything is sent
  *   3. the custom toolkit tool re-reads the dispute and passes the HATEOAS gate, then submits

@@ -59,8 +59,15 @@ export function humanizeProse(text: string): string {
       const day = `${Number(d)} ${MONTHS[Number(mo) - 1]}`;
       return h ? `${on}${day}, ${clock(Number(h), Number(mi))} UTC` : `${on}${day}`;
     })
+    .replace(MONTH_DAY, (_m, mon: string, d: string) => `${Number(d)} ${MONTHS[MONTH_INDEX[mon.slice(0, 3).toLowerCase()]]}`)
+    .replace(/\b(\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec))(?:,? 20\d\d)?,?\s+at\s+(\d{1,2}:\d\d\s*[AP]M)/g, "$1, $2")
+    .replace(/\b(\d{1,2} (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)),? 20\d\d\b/g, "$1")
     .replace(/[ \t]{2,}/g, " ");
 }
+
+const MONTH_INDEX: Record<string, number> = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+// "October 5th", "Oct 5", "October 5, 2026" (English only; other languages keep their own style)
+const MONTH_DAY = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.? (\d{1,2})(?:st|nd|rd|th)?\b/g;
 
 export interface ValidationIssue {
   code: "ai_fallback" | "policy_claim" | "unknown_source" | "uncited_claim" | "action_not_allowed" | "amount_exceeds_dispute" | "unknown_tracking" | "note_too_long";

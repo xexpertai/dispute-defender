@@ -6,6 +6,8 @@ import type { RequestPreview } from "@/lib/agent/submission";
 import type { EvidenceItem } from "@/lib/evidence/types";
 import { wordDiff } from "@/lib/diff";
 import type { Draft } from "@/lib/llm/draft";
+import type { ApiProof } from "@/lib/paypal/proof";
+import { ApiResponsePanel } from "./ApiResponsePanel";
 import { useEvidence } from "./EvidenceContext";
 import { SourceChip } from "./SourceChip";
 
@@ -20,7 +22,11 @@ interface Props {
   closed?: boolean;
 }
 
-type SubmitState = { phase: "idle" } | { phase: "sending" } | { phase: "done"; status: number; debugId: string | null; endpoint: string } | { phase: "error"; message: string; debugId?: string | null };
+type SubmitState =
+  | { phase: "idle" }
+  | { phase: "sending" }
+  | { phase: "done"; status: number; debugId: string | null; endpoint: string; at: string; after?: ApiProof }
+  | { phase: "error"; message: string; debugId?: string | null };
 
 const ACTION_LABEL: Record<string, string> = {
   provide_evidence: "Approve · submit evidence",
@@ -65,7 +71,17 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
       const r = await fetch(`/api/drafts/${draftId}/approve`, { method: "POST", headers: { "content-type": "application/json", "x-dd-action": "1" }, body: JSON.stringify({ reviewed, edits }) });
       const j = (await r.json()) as { ok: boolean; status?: number; debugId?: string | null; error?: string; preview?: RequestPreview };
       if (j.ok) {
-        setSubmit({ phase: "done", status: j.status ?? r.status, debugId: j.debugId ?? null, endpoint: j.preview?.endpoint ?? "" });
+        const endpoint = j.preview?.endpoint ?? "";
+        const done = { phase: "done" as const, status: j.status ?? r.status, debugId: j.debugId ?? null, endpoint, at: new Date().toISOString() };
+        setSubmit(done);
+        // Read the dispute back from PayPal so the new state is shown from PayPal's own response.
+        const disputeId = endpoint.split("/")[4];
+        if (disputeId) {
+          fetch(`/api/disputes/${disputeId}/proof`)
+            .then((x) => (x.ok ? (x.json() as Promise<ApiProof>) : null))
+            .then((after) => after && setSubmit({ ...done, after }))
+            .catch(() => undefined);
+        }
         onSubmitted?.(`Approved by you and sent to PayPal (${j.status ?? r.status}${j.debugId ? `, debug_id ${j.debugId}` : ""})`);
       }
       else setSubmit({ phase: "error", message: j.error ?? "Submit failed", debugId: j.debugId });
@@ -81,9 +97,9 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
           Response to send
         </h2>
         {ai ? (
-          <span className="stamp stamp-tilt text-ai">{draft.recorded ? "AI-written · recorded" : "AI-written"}</span>
+          <span className="stamp shrink-0 text-ai">{draft.recorded ? "AI-written · recorded" : "AI-written"}</span>
         ) : (
-          <span className="stamp stamp-tilt text-ink-2" title="Written by deterministic rules, not by an AI model">
+          <span className="stamp shrink-0 text-ink-2" title="Written by deterministic rules, not by an AI model">
             Template
           </span>
         )}
@@ -249,10 +265,13 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
             </button>
           </div>
           {submit.phase === "done" && (
-            <p className="rounded-lg border border-win/40 bg-win-soft p-3 text-sm text-win" role="status">
-              Sent to PayPal sandbox · {submit.status} · <span className="font-mono text-xs">{submit.endpoint}</span>
-              {submit.debugId && <span className="block font-mono text-[0.7rem] opacity-80">debug_id {submit.debugId}</span>}
-            </p>
+            <div className="flex flex-col gap-2" role="status">
+              <p className="text-sm font-semibold text-win">Sent to PayPal sandbox · {submit.status}</p>
+              <ApiResponsePanel
+                proof={{ source: "live", method: "POST", endpoint: submit.endpoint, httpStatus: submit.status, disputeId: submit.endpoint.split("/")[4] ?? "", debugId: submit.debugId, fetchedAt: submit.at }}
+              />
+              {submit.after && <ApiResponsePanel title="PayPal API response · dispute re-read" proof={submit.after} />}
+            </div>
           )}
           {submit.phase === "error" && (
             <p className="rounded-lg border border-loss/40 bg-loss-soft p-3 text-sm text-loss" role="alert">

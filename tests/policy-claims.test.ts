@@ -86,6 +86,10 @@ describe("human prose", () => {
     ["shipped 2026-10-09", "shipped 9 Oct"],
     ["Eligible per PayPal's record (capture:5HF82502Y85788524).", "Eligible per PayPal's record."],
     ["at 00:05 on 2026-01-02 00:05 UTC", "at 00:05 on 2 Jan, 12:05 AM UTC"],
+    ["delivered on October 5th at 6:58 PM UTC.", "delivered on 5 Oct, 6:58 PM UTC."],
+    ["expected Oct 9, 2026.", "expected 9 Oct."],
+    ["shipped on October 5 and", "shipped on 5 Oct and"],
+    ["entregado el 5 de octubre", "entregado el 5 de octubre"],
   ])("%s → %s", async (a, b) => {
     const { humanizeProse } = await import("@/lib/agent/validate");
     expect(humanizeProse(a)).toBe(b);

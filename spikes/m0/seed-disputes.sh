@@ -1,5 +1,5 @@
 #!/bin/zsh
-# npm run seed:disputes   (one command on 12-15 Oct; see docs/HANDOFF.md "DATED TODO")
+# npm run seed:disputes   (one command on 12-15 Oct)
 # Opens the Kiln & Clay Studio disputes for the orders in store-seeds.json (sandbox, buyer-side
 # create via PayPal-Auth-Assertion), waits until each is WAITING_FOR_SELLER_RESPONSE, then records
 # redacted fixtures (dispute + order + trackers) for Replay. Idempotent: skips seeds with a dispute_id.

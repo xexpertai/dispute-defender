@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ApiProof } from "@/lib/paypal/proof";
+import { ApiResponsePanel } from "./ApiResponsePanel";
 
 /**
  * PayPal's sandbox-only lifecycle endpoints, shown only when PayPal offers them (HATEOAS) in Live
@@ -9,14 +11,36 @@ import { useState } from "react";
  */
 export function SandboxSim({ disputeId, canAdjudicate, canRequireEvidence }: { disputeId: string; canAdjudicate: boolean; canRequireEvidence: boolean }) {
   const router = useRouter();
-  const [state, setState] = useState<{ busy: boolean; msg?: string; ok?: boolean }>({ busy: false });
+  const [state, setState] = useState<{ busy: boolean; msg?: string; ok?: boolean; sent?: ApiProof }>({ busy: false });
+  const [decision, setDecision] = useState<ApiProof | null>(null);
+
+  // After a decision is requested, poll PayPal (every 15 s, up to ~5 min) until the case is resolved.
+  useEffect(() => {
+    if (!state.sent) return;
+    let tries = 0;
+    const id = window.setInterval(async () => {
+      tries += 1;
+      const r = await fetch(`/api/disputes/${disputeId}/proof`).catch(() => null);
+      if (r?.ok) {
+        const p = (await r.json()) as ApiProof;
+        if (p.status === "RESOLVED" || tries >= 20) {
+          setDecision(p);
+          window.clearInterval(id);
+          router.refresh();
+        }
+      }
+    }, 15_000);
+    return () => window.clearInterval(id);
+  }, [state.sent, disputeId, router]);
 
   async function sim(kind: "adjudicate" | "require_evidence", outcome?: "SELLER_FAVOR" | "BUYER_FAVOR") {
     setState({ busy: true });
     const r = await fetch("/api/sandbox/simulate", { method: "POST", headers: { "content-type": "application/json", "x-dd-action": "1" }, body: JSON.stringify({ disputeId, kind, outcome }) });
     const j = (await r.json()) as { ok?: boolean; status?: number; debugId?: string | null; error?: string };
-    setState({ busy: false, ok: Boolean(j.ok), msg: j.ok ? `PayPal accepted (${j.status}). The new status appears in about 2–3 minutes; refresh to see it.` : (j.error ?? "Failed") });
-    if (j.ok) window.setTimeout(() => router.refresh(), 1500);
+    const sent: ApiProof | undefined = j.ok
+      ? { source: "live", method: "POST", endpoint: `/v1/customer/disputes/${disputeId}/${kind === "adjudicate" ? "adjudicate" : "require-evidence"}`, httpStatus: j.status ?? 200, disputeId, debugId: j.debugId ?? null, fetchedAt: new Date().toISOString() }
+      : undefined;
+    setState({ busy: false, ok: Boolean(j.ok), sent, msg: j.ok ? "PayPal accepted the request. Its decision usually appears within 2–3 minutes; checking every 15 s." : (j.error ?? "Failed") });
   }
 
   return (
@@ -46,6 +70,12 @@ export function SandboxSim({ disputeId, canAdjudicate, canRequireEvidence }: { d
         )}
       </div>
       {state.msg && <p className={`mt-2 text-xs ${state.ok ? "text-win" : "text-loss"}`}>{state.msg}</p>}
+      {state.sent && (
+        <div className="mt-3 flex flex-col gap-2">
+          <ApiResponsePanel proof={state.sent} />
+          {decision && <ApiResponsePanel title="PayPal API response · decision" proof={decision} />}
+        </div>
+      )}
     </section>
   );
 }

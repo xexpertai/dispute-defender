@@ -1,6 +1,6 @@
 # Deploying the hosted demo (Render): steps for the user
 
-Nothing here has been run. The Blueprint is `render.yaml`. **Deploying costs money and makes the demo public, so it needs your approval.** PLAN §8 budget: Starter ($7/month, prorated per second) from about 10 Nov to 21 Dec ≈ **$9.50**.
+Nothing here has been run. The Blueprint is `render.yaml`. **Deploying costs money and makes the demo public, so it needs your approval.** Budget: Starter ($7/month, prorated per second) from about 10 Nov to 21 Dec ≈ **$9.50**.
 
 ## What the hosted demo is
 

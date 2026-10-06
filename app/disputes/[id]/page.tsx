@@ -10,6 +10,7 @@ import { redactText } from "@/lib/redact";
 import { AgentTrace } from "../../_components/AgentTrace";
 import { ClockChip } from "../../_components/ClockChip";
 import { SandboxSim } from "../../_components/SandboxSim";
+import { VerifyWithPayPal } from "../../_components/ApiResponsePanel";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,13 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
           </div>
         </div>
       </header>
+
+      {mode === "live" && (
+        <section aria-label="Verify with PayPal" className="rounded-xl border border-pp/30 bg-surface p-4">
+          <p className="mb-2 text-sm text-ink-2">This is PayPal&apos;s live sandbox. Re-read this case from PayPal&apos;s Disputes API:</p>
+          <VerifyWithPayPal disputeId={d.dispute_id} />
+        </section>
+      )}
 
       {mode === "live" && (rels.includes("adjudicate") || rels.includes("require_evidence")) && (
         <SandboxSim disputeId={d.dispute_id} canAdjudicate={rels.includes("adjudicate")} canRequireEvidence={rels.includes("require_evidence")} />

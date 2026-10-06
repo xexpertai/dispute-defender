@@ -58,7 +58,7 @@ export default async function Dashboard() {
                 <span className="flex flex-col text-left">
                   <span className="text-[1.05rem] font-semibold">Watch the agent work a case</span>
                   <span className="text-xs opacity-80">
-                    {lead.reasonLabel} · {money(lead.amount, lead.currency)} · live, step by step
+                    {lead.reasonLabel} · {money(lead.amount, lead.currency)} · {mode === "replay" ? "replayed" : "live"}, step by step
                   </span>
                 </span>
                 <span aria-hidden="true" className="text-2xl transition group-hover:translate-x-0.5">

@@ -10,13 +10,16 @@ import { fixtures } from "../replay/fixtures";
 import { SampleStore } from "../samples/store";
 import { sharedDb } from "../store/shared";
 import { aiActions, insightsHash, readCache, templateActions, writeCache, type ActionsResult } from "./actions";
-import { findPatterns, type Insight } from "./patterns";
+import { findPatterns, reasonText, type Insight } from "./patterns";
+import { money } from "../format";
 import { collectFacts } from "./portfolio";
 
 export interface InsightsView {
   mode: "live" | "replay";
   disputes: number;
   patterns: Insight[];
+  /** Friendly label per dispute id for the UI ("$12.75 · Speckled ceramic mug set (4)"). */
+  caseLabels: Record<string, string>;
   actions: ActionsResult;
   hash: string;
 }
@@ -41,7 +44,10 @@ export async function getInsights(opts: { liveAi?: boolean } = {}): Promise<Insi
   const facts = await collectFacts(gatewayFor(mode), new MockCarrier(f.carrier), new SampleStore(f.store));
   const patterns = findPatterns(facts);
   const hash = insightsHash(patterns);
-  const base = { mode, disputes: facts.length, patterns, hash };
+  const caseLabels = Object.fromEntries(
+    facts.map((x) => [x.id, `${money(x.amount, x.currency)} · ${(x.sku && f.store.listings?.[x.sku]?.title) || reasonText(x.reason)}`]),
+  );
+  const base = { mode, disputes: facts.length, patterns, caseLabels, hash };
   if (!patterns.length) return { ...base, actions: { origin: "template", actions: [] } };
 
   const db = sharedDb();

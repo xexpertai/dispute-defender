@@ -42,6 +42,8 @@ export interface PayPalCallBadge {
   ms?: number;
   /** "replay" = served from a recorded, redacted sandbox response; "live" = a real sandbox call just now. */
   source?: "live" | "replay";
+  /** How the call was made: through PayPal's Agent Toolkit, or our own sandbox-forced REST client. */
+  via?: "agent-toolkit" | "rest";
 }
 
 export interface TokenUsage {

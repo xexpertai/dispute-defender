@@ -11,6 +11,7 @@ const badge = z.object({
   debugId: z.string().nullable().optional(),
   ms: z.number().nonnegative().optional(),
   source: z.enum(["live", "replay"]).optional(),
+  via: z.enum(["agent-toolkit", "rest"]).optional(),
 }).strict();
 
 export const TraceEventSchema = z.discriminatedUnion("type", [
