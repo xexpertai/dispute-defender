@@ -1,37 +1,36 @@
 {
   "_meta": {
     "model": "claude-haiku-4-5-20251001",
-    "recorded_at": "2026-10-06T09:13:12.850Z",
+    "recorded_at": "2026-10-07T15:17:52.391Z",
     "usage": {
-      "input": 1379,
-      "output": 269,
-      "costUsd": 0.002724
+      "input": 1054,
+      "output": 188,
+      "costUsd": 0.001994
     }
   },
-  "inputHash": "46846662c86d13ab",
+  "inputHash": "dccc0afa884680af",
   "actions": [
     {
-      "title": "Send tracking immediately when orders process",
-      "why": "Buyers who see tracking early are less likely to file cases before packages arrive.",
+      "title": "Send tracking info immediately after shipping",
+      "why": "Buyers who see active tracking updates are less likely to open cases prematurely.",
       "effort": "low",
       "insightIds": [
         "opened_before_delivery"
       ]
     },
     {
-      "title": "Use a fresh tracking number per order, never reuse",
-      "why": "Each order needs its own tracking number so PayPal can verify which payment it covers.",
+      "title": "Add expected delivery date to shipping confirmation",
+      "why": "Clear delivery timelines help buyers understand normal delivery windows and reduce panic disputes.",
       "effort": "low",
       "insightIds": [
-        "tracking_reused"
+        "opened_before_delivery"
       ]
     },
     {
-      "title": "Reply quickly to cases with photos of shipment",
-      "why": "Fast responses with proof of shipping can resolve disputes filed prematurely before delivery.",
-      "effort": "low",
+      "title": "Message buyer if tracking shows delay beyond estimate",
+      "why": "Proactive communication about delays prevents buyers from assuming the package is lost and opening cases.",
+      "effort": "medium",
       "insightIds": [
-        "filed_within_48h",
         "opened_before_delivery"
       ]
     }

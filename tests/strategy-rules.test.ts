@@ -45,10 +45,12 @@ describe("strategy rules: item not received", () => {
     allRefsExist(a, ev);
   });
 
-  it("buyer-fair: no tracking at all → REFUND, decisive reason cites the order", () => {
+  it("no tracking at all → REFUND because the seller can't prove delivery (not 'the buyer is right')", () => {
     const ev = order();
     const a = assess(ctx(), ev, NOW);
-    expect(a.recommendation).toMatchObject({ strategy: "REFUND", buyerFair: true, action: { kind: "accept_claim", acceptClaimType: "REFUND" } });
+    expect(a.recommendation).toMatchObject({ strategy: "REFUND", buyerFair: true, unprovable: true, action: { kind: "accept_claim", acceptClaimType: "REFUND" } });
+    expect(a.recommendation.why.join(" ")).toMatch(/can't prove delivery/);
+    expect(JSON.stringify(a.recommendation)).not.toMatch(/buyer is right|supports the buyer|favours the buyer/i);
     expect(a.strength).toMatchObject({ level: "LOW" });
     expect(a.strength.reasons[0]).toMatchObject({ id: "no_tracking", supports: "buyer", decisive: true, sourceRefs: ["order:O1"] });
     expect(a.evidenceToSubmit).toEqual([]);
@@ -59,6 +61,7 @@ describe("strategy rules: item not received", () => {
     const a = assess(ctx(), ev, NOW);
     expect(ids(a)).toContain("zip_mismatch");
     expect(a.recommendation).toMatchObject({ strategy: "REFUND", buyerFair: true });
+    expect(a.recommendation.unprovable).toBeUndefined();
   });
 
   it("buyer-fair: returned to sender → REFUND", () => {
@@ -81,12 +84,26 @@ describe("strategy rules: item not received", () => {
     expect(a.recommendation.why.join(" ")).toMatch(/costs more than (refunding|the refund)/);
   });
 
-  it("claim stage (no make_offer/send_message): FIGHT maps to provide_evidence only when the link exists", () => {
+  it("claim stage (no make_offer/send_message): FIGHT sends evidence through whichever endpoint PayPal offers", () => {
     const ev = [...order(), ...scans(shipped, delivered())];
     expect(assess(ctx({ stage: "CHARGEBACK", allowedActions: ["provide_evidence", "accept_claim"] }), ev, NOW).recommendation.action).toEqual({ kind: "provide_evidence" });
-    const waiting = assess(ctx({ stage: "CHARGEBACK", status: "UNDER_REVIEW", allowedActions: ["provide_supporting_info"] }), ev, NOW);
-    expect(waiting.recommendation.action).toBeNull();
-    expect(waiting.recommendation.why.at(-1)).toMatch(/does not allow this action right now/);
+    // Under PayPal review: the evidence goes in as supporting info (the evidence pack is attached).
+    const review = assess(ctx({ stage: "CHARGEBACK", status: "UNDER_REVIEW", allowedActions: ["provide_supporting_info", "accept_claim"] }), ev, NOW);
+    expect(review.recommendation.action).toEqual({ kind: "provide_supporting_info" });
+    expect(review.evidenceToSubmit.length).toBeGreaterThan(0);
+    const none = assess(ctx({ stage: "CHARGEBACK", status: "UNDER_REVIEW", allowedActions: [] }), ev, NOW);
+    expect(none.recommendation.action).toBeNull();
+    expect(none.recommendation.why.at(-1)).toMatch(/hasn't opened a response window yet/);
+    expect(none.recommendation.wait).toBe("no_allowed_action");
+    // Only the sandbox simulation links: still no seller action, so still on hold.
+    const simOnly = assess(ctx({ stage: "CHARGEBACK", status: "UNDER_REVIEW", allowedActions: ["adjudicate", "require_evidence"] }), ev, NOW);
+    expect(simOnly.recommendation).toMatchObject({ action: null, wait: "no_allowed_action" });
+    // Some seller action exists, just not the one the strategy needs.
+    const other = assess(ctx({ stage: "CHARGEBACK", status: "UNDER_REVIEW", allowedActions: ["accept_claim"] }), ev, NOW);
+    expect(other.recommendation.why.at(-1)).toMatch(/does not allow this action right now/);
+    // Closed: a hindsight review, never "on hold".
+    const closed = assess(ctx({ stage: "CHARGEBACK", status: "RESOLVED", allowedActions: [] }), ev, NOW);
+    expect(closed.recommendation.wait).toBeUndefined();
   });
 });
 
@@ -100,7 +117,8 @@ describe("strategy rules: not as described", () => {
     ];
     const a = assess(ctx({ reason: SNAD }), ev, NOW);
     expect(a.strength.level).toBe("MEDIUM");
-    expect(a.recommendation).toMatchObject({ strategy: "OFFER", action: { kind: "make_offer", offerType: "REFUND_WITH_RETURN", amount: { value: "89.00", currency_code: "USD" } } });
+    // A partial refund without a return (PayPal needs a return address for REFUND_WITH_RETURN).
+    expect(a.recommendation).toMatchObject({ strategy: "OFFER", action: { kind: "make_offer", offerType: "REFUND", amount: { value: "44.50", currency_code: "USD" } } });
     allRefsExist(a, ev);
   });
 

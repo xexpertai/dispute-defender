@@ -7,6 +7,7 @@ import { PROVENANCE_LABEL, provenanceOf } from "@/lib/disputes/model";
 import type { EvidenceItem } from "@/lib/evidence/types";
 import { evidenceAnchor, humanLabel, money, utcStamp } from "@/lib/format";
 import type { Assessment, Reason } from "@/lib/strategy/rules";
+import { holdNote, verdictOf, verdictTitle, type VerdictKey } from "@/lib/strategy/verdict";
 import { CaseFile } from "./CaseFile";
 import { DraftPanel } from "./DraftPanel";
 import { EvidenceContext, useEvidence } from "./EvidenceContext";
@@ -30,9 +31,11 @@ export interface AgentTraceProps {
   closed?: boolean;
   /** Live Claude is configured: offer a fresh (capped) AI draft. */
   aiAvailable?: boolean;
+  /** Replay: work the case as it stood before PayPal's decision. */
+  rewind?: boolean;
 }
 
-export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailable }: AgentTraceProps) {
+export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailable, rewind }: AgentTraceProps) {
   const [state, dispatch] = useReducer(reducer, undefined, initialTraceState);
   const [details, setDetails] = useState(false);
   const [allSteps, setAllSteps] = useState(false);
@@ -43,7 +46,7 @@ export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailab
     (liveAi = false) => {
       source.current?.close();
       dispatch({ kind: "reset" });
-      const qs = new URLSearchParams({ dispute: disputeId, ...(pace ? { pace } : {}), ...(liveAi ? { ai: "live" } : {}) });
+      const qs = new URLSearchParams({ dispute: disputeId, ...(pace ? { pace } : {}), ...(liveAi ? { ai: "live" } : {}), ...(rewind ? { rewind: "1" } : {}) });
       const es = new EventSource(`/api/agent/run?${qs}`);
       source.current = es;
       let done = false;
@@ -62,7 +65,7 @@ export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailab
         if (!done) dispatch({ kind: "fail", message: "Lost the connection to the agent (or too many runs from this network). Try again in a moment." });
       };
     },
-    [disputeId, pace],
+    [disputeId, pace, rewind],
   );
 
   useEffect(() => {
@@ -193,6 +196,7 @@ export function AgentTrace({ disputeId, mode, autoStart, pace, closed, aiAvailab
                   issues={state.issues.filter((i) => i.code !== "ai_fallback").length}
                   mode={mode}
                   closed={closed}
+                  hold={closed || !state.assessment ? null : holdNote(state.assessment.recommendation)}
                   evidence={state.evidence}
                   onSubmitted={(detail) =>
                     dispatch({
@@ -274,26 +278,25 @@ function StepRow({ step: s, last, visible, details }: { step: StepView; last: bo
 
 // ------------------------------------------------------------------------------------- results
 
-const STRATEGY: Record<Assessment["recommendation"]["strategy"], { title: string; tone: string }> = {
-  FIGHT: { title: "Defend with evidence", tone: "text-win" },
-  OFFER: { title: "Make a fair offer", tone: "text-amber" },
-  REFUND: { title: "Refund the buyer", tone: "text-loss" },
-};
+const VERDICT_TONE: Record<VerdictKey, string> = { FIGHT: "text-win", OFFER: "text-amber", REFUND: "text-loss", HOLD: "text-ink", WAIT: "text-amber" };
 
 const ACTION: Record<string, { label: string; path: string }> = {
   provide_evidence: { label: "Provide evidence", path: "provide-evidence" },
+  provide_supporting_info: { label: "Send evidence to PayPal's review", path: "provide-supporting-info" },
   send_message: { label: "Message the buyer", path: "send-message" },
   make_offer: { label: "Make an offer", path: "make-offer" },
   accept_claim: { label: "Accept the claim and refund", path: "accept-claim" },
   escalate: { label: "Escalate to PayPal", path: "escalate" },
 };
 
+const OTHER_ACTION: Record<string, string> = { acknowledge_return_item: "Acknowledge the returned item", appeal: "Appeal PayPal's decision" };
+
 const LEVEL = { HIGH: "Strong evidence", MEDIUM: "Mixed evidence", LOW: "Weak evidence" };
 const LEVEL_TONE = { HIGH: "text-win border-win/40 bg-win-soft", MEDIUM: "text-amber border-amber/40 bg-amber-soft", LOW: "text-loss border-loss/40 bg-loss-soft" };
 
 function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
   const rec = a.recommendation;
-  const s = STRATEGY[rec.strategy];
+  const s = { title: verdictTitle(rec), tone: VERDICT_TONE[verdictOf(rec)] };
   const act = rec.action ? ACTION[rec.action.kind] : null;
   return (
     <section aria-labelledby="rec-h" className="rise case p-5 sm:p-6">
@@ -302,10 +305,13 @@ function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
         {s.title}
       </h2>
       <div className="mt-2 flex flex-wrap items-center gap-2">
-        <span className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${LEVEL_TONE[a.strength.level]}`} title="Confidence from the evidence, with the reasons below. Not a win probability.">
-          {LEVEL[a.strength.level]}
+        <span
+          className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${rec.wait === "awaiting_delivery" ? "border-line-strong text-ink-2" : LEVEL_TONE[a.strength.level]}`}
+          title="Confidence from the evidence, with the reasons below. Not a win probability."
+        >
+          {rec.wait === "awaiting_delivery" ? "Not proven yet" : rec.unprovable ? "No proof of delivery" : rec.buyerFair ? "Evidence favours the buyer" : LEVEL[a.strength.level]}
         </span>
-        {rec.buyerFair && <span className="rounded-full border border-amber/40 bg-amber-soft px-2 py-0.5 text-xs font-semibold text-amber">The buyer is right</span>}
+        {rec.buyerFair && <span className="rounded-full border border-amber/40 bg-amber-soft px-2 py-0.5 text-xs font-semibold text-amber">{rec.unprovable ? "You can't prove delivery" : "The buyer is right"}</span>}
       </div>
       <ul className="mt-3 flex flex-col gap-1 text-[0.92rem] leading-relaxed text-ink-2">
         {rec.why.map((w, i) => (
@@ -336,7 +342,7 @@ function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
               <p className="text-[0.7rem] text-muted">PayPal allows this on the dispute right now</p>
             </>
           ) : (
-            <p className="mt-0.5 text-sm text-ink-2">{closed ? "None: the case is closed." : "None allowed by PayPal right now."}</p>
+            <p className="mt-0.5 text-sm text-ink-2">{closed ? "None: the case is closed." : rec.wait === "awaiting_delivery" ? "None yet: holding until the delivery scan." : "None allowed by PayPal right now."}</p>
           )}
         </div>
         <div className="rounded-lg bg-surface-2 p-3">
@@ -347,6 +353,34 @@ function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
           <p className="text-[0.7rem] text-muted">30 min at $25/h</p>
         </div>
       </div>
+
+      {!closed && rec.considered && (
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold">Actions PayPal allows right now</h3>
+          <p className="text-[0.7rem] text-muted">From the dispute&apos;s own links. The rules pick one and say why not the others.</p>
+          {rec.considered.length === 0 ? (
+            <p className="mt-1 text-sm text-ink-2">None listed yet.</p>
+          ) : (
+            <ul className="mt-1 flex flex-col divide-y divide-line" aria-label="Actions considered">
+              {rec.considered.map((c) => (
+                <li key={c.kind} className="flex items-start gap-2 py-1.5 text-sm">
+                  <span
+                    className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[0.7rem] font-bold ${c.chosen ? "bg-win-soft text-win" : "bg-surface-2 text-muted"}`}
+                    aria-label={c.chosen ? "Picked" : "Not picked"}
+                  >
+                    {c.chosen ? "✓" : "–"}
+                  </span>
+                  <span className="min-w-0">
+                    <span className={c.chosen ? "font-semibold" : "text-ink-2"}>{ACTION[c.kind]?.label ?? OTHER_ACTION[c.kind] ?? c.kind}</span>
+                    {c.chosen && <span className="ml-1.5 text-xs font-semibold text-win">picked</span>}
+                    <span className="block text-xs text-muted">{c.note}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </section>
   );
 }

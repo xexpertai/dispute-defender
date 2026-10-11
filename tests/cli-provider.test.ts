@@ -25,7 +25,7 @@ describe("DD_LLM=cli guard (dev only)", () => {
   });
 
   it("its drafts still go through server validation (unknown refs dropped)", async () => {
-    const f = loadFixtures();
+    const f = loadFixtures(undefined, { withArchive: true });
     const run = async () =>
       JSON.stringify({ result: JSON.stringify({ strategy: "FIGHT", action: "send_message", offer_type: "none", amount: "", rationale: "r", claims: [{ text: "Invented", source_refs: ["order:NOPE"] }, { text: "Real", source_refs: ["dispute:PP-R-MQR-10190375"] }], seller_note_to_paypal: "n", buyer_message: { language: "en", text: "hi", english_gloss: "" } }) });
     const events: TraceEvent[] = [];

@@ -95,9 +95,11 @@ export function toRow(d: DisputeRecord, now: Date): GuardianRow {
 }
 
 /** Highest priority first; ties broken by the nearest deadline, then the larger amount. */
+/** Your move first (a seller deadline is running), then money × urgency, nearest deadline, amount. */
 export function rank(rows: GuardianRow[]): GuardianRow[] {
+  const yours = (r: GuardianRow) => (r.clock.owner === "seller" ? 0 : 1);
   return [...rows].sort(
-    (a, b) => b.priority - a.priority || (a.hoursLeft ?? Infinity) - (b.hoursLeft ?? Infinity) || b.amount - a.amount || a.id.localeCompare(b.id),
+    (a, b) => yours(a) - yours(b) || b.priority - a.priority || (a.hoursLeft ?? Infinity) - (b.hoursLeft ?? Infinity) || b.amount - a.amount || a.id.localeCompare(b.id),
   );
 }
 

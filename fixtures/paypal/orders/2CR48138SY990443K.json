@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "paypal-sandbox",
-    "recorded_at": "2026-10-05T20:10:52.044Z",
+    "recorded_at": "2026-10-06T18:44:09.801Z",
     "redacted": true
   },
   "id": "2CR48138SY990443K",
@@ -31,6 +31,26 @@
           "item_total": {
             "currency_code": "USD",
             "value": "89.00"
+          },
+          "shipping": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "handling": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "insurance": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "shipping_discount": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "discount": {
+            "currency_code": "USD",
+            "value": "0.00"
           }
         }
       },
@@ -46,6 +66,10 @@
           "unit_amount": {
             "currency_code": "USD",
             "value": "89.00"
+          },
+          "tax": {
+            "currency_code": "USD",
+            "value": "0.00"
           },
           "quantity": "1",
           "sku": "KC-BOWL-10",
@@ -114,7 +138,58 @@
               }
             ],
             "create_time": "2026-10-05T19:59:36Z",
-            "update_time": "2026-10-05T20:00:05Z"
+            "update_time": "2026-10-06T17:36:24Z"
+          }
+        ],
+        "refunds": [
+          {
+            "id": "1FS412036E590944L",
+            "amount": {
+              "currency_code": "USD",
+              "value": "85.40"
+            },
+            "seller_payable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "85.40"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.00"
+              },
+              "platform_fees": [
+                {
+                  "amount": {
+                    "currency_code": "USD",
+                    "value": "0.00"
+                  }
+                }
+              ],
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "85.40"
+              },
+              "total_refunded_amount": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            },
+            "invoice_id": "KC-1791230340949",
+            "status": "FAILED",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/refunds/1FS412036E590944L",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/9L7363079F074815T",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-06T10:11:03-07:00",
+            "update_time": "2026-10-06T10:35:03-07:00"
           }
         ]
       }
@@ -131,8 +206,8 @@
       "country_code": "US"
     }
   },
-  "create_time": "2026-10-05T19:59:36Z",
-  "update_time": "2026-10-05T20:00:05Z",
+  "create_time": "2026-10-05T19:59:02Z",
+  "update_time": "2026-10-05T19:59:36Z",
   "links": [
     {
       "href": "https://api.sandbox.paypal.com/v2/checkout/orders/2CR48138SY990443K",

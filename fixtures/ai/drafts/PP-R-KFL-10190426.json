@@ -1,0 +1,65 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-06T17:33:18.902Z",
+    "usage": {
+      "input": 3469,
+      "output": 641,
+      "costUsd": 0.006674
+    },
+    "note": "The draft from the filmed live run (same case, same evidence), so Replay and the live shot show the same message."
+  },
+  "disputeId": "PP-R-KFL-10190426",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "OFFER",
+    "action": {
+      "kind": "make_offer",
+      "offerType": "REFUND",
+      "amount": {
+        "value": "32.00",
+        "currency_code": "USD"
+      }
+    },
+    "rationale": "The buyer reports that two mugs arrived with chipped edges. While the listing notes that handmade variations are normal, shipping damage resulting in chips is a separate issue. A partial refund acknowledges the damage without disputing the full claim.",
+    "claims": [
+      {
+        "text": "The mugs were inspected and photographed before packing with no chips noted.",
+        "sourceRefs": [
+          "store:KC-1791230784084#line1"
+        ]
+      },
+      {
+        "text": "The listing describes the mugs as handmade stoneware with small glaze variations as part of the intended design.",
+        "sourceRefs": [
+          "listing:KC-MUG-4"
+        ]
+      },
+      {
+        "text": "The package was delivered to the buyer on 6 Oct, 3:58 PM UTC.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428602#ev4"
+        ]
+      },
+      {
+        "text": "The buyer reported that two of the four mugs arrived with chipped edges.",
+        "sourceRefs": [
+          "chat:T-KC-0784#line0"
+        ]
+      }
+    ],
+    "sellerNote": "Speckled stoneware mug set ordered for USD 64.00, delivered 6 Oct. Buyer reports two mugs arrived with chipped edges. Seller inspected and photographed all four mugs before shipping on 5 Oct with no chips noted. The listing discloses that handmade variations are normal, but shipping damage is separate. Offering USD 32.00 refund for the two damaged mugs as a goodwill gesture. Awaiting buyer photos of damage.",
+    "buyerMessage": {
+      "language": "es",
+      "text": "Gracias por contactarnos. Lamento mucho que dos tazas hayan llegado dañadas. Te ofrecemos un reembolso de USD 32.00 para compensar los daños. ¿Puedes enviar una foto de los bordes astillados para confirmar?",
+      "englishGloss": "Thank you for reaching out. I'm very sorry two mugs arrived damaged. We're offering a USD 32.00 refund to compensate for the damage. Can you send a photo of the chipped edges to confirm?"
+    },
+    "buyerLanguage": {
+      "code": "es",
+      "name": "Spanish"
+    },
+    "evidence": []
+  }
+}

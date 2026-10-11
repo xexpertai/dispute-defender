@@ -17,16 +17,25 @@ const ids = (f: DisputeFacts[]) => findPatterns(f).map((p) => p.id);
 
 describe("deterministic patterns", () => {
   it.each([
-    ["early filing", [fact("a", { openedBeforeDelivery: true }), fact("b")], "opened_before_delivery", ["a"]],
-    ["high value, no signature", [fact("a", { amount: 89 }), fact("b", { amount: 89, signature: true })], "high_value_no_signature", ["a"]],
-    ["no tracking", [fact("a", { noTracking: true, trackingNumbers: [] }), fact("b")], "no_tracking_at_paypal", ["a"]],
+    // Each pattern needs >= 2 cases, >= 20 % of its base, and a contrast (not every case) in a small portfolio.
+    ["early filing", [fact("a", { openedBeforeDelivery: true }), fact("b", { openedBeforeDelivery: true }), fact("c")], "opened_before_delivery", ["a", "b"]],
+    ["high value, no signature", [fact("a", { amount: 89 }), fact("b", { amount: 95 }), fact("c", { amount: 89, signature: true })], "high_value_no_signature", ["a", "b"]],
+    ["no tracking", [fact("a", { noTracking: true, trackingNumbers: [] }), fact("b", { noTracking: true, trackingNumbers: [] }), fact("c")], "no_tracking_at_paypal", ["a", "b"]],
     ["reused tracking", [fact("a", { trackingNumbers: ["X"] }), fact("b", { trackingNumbers: ["X"] }), fact("c")], "tracking_reused", ["a", "b"]],
     ["sku cluster", [fact("a", { sku: "S" }), fact("b", { sku: "S" }), fact("c", { sku: "T" })], "sku_S", ["a", "b"]],
-    ["small disputes", [fact("a", { belowCostToFight: true })], "below_cost_to_fight", ["a"]],
-    ["fast filing", [fact("a", { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-01T05:00:00Z" }), fact("b", { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-09T00:00:00Z" })], "filed_within_48h", ["a"]],
+    ["small disputes", [fact("a", { belowCostToFight: true }), fact("b", { belowCostToFight: true }), fact("c")], "below_cost_to_fight", ["a", "b"]],
+    ["fast filing", [fact("a", { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-01T05:00:00Z" }), fact("b", { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-02T00:00:00Z" }), fact("c", { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-09T00:00:00Z" })], "filed_within_48h", ["a", "b"]],
   ] as const)("%s", (_n, facts, id, disputeIds) => {
     const p = findPatterns([...facts]).find((x) => x.id === id);
     expect(p?.disputeIds).toEqual(disputeIds);
+  });
+
+  it("needs a minimum sample and a contrast: one case, or every case of a small portfolio, is not a pattern", () => {
+    expect(ids([fact("a", { noTracking: true, trackingNumbers: [] }), fact("b"), fact("c")])).toEqual([]); // 1 case
+    const all = ["a", "b", "c"].map((x) => fact(x, { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-01T05:00:00Z" }));
+    expect(ids(all)).toEqual([]); // 3 of 3: no contrast in a small portfolio
+    const many = Array.from({ length: 10 }, (_, i) => fact(`d${i}`, { paidAt: "2026-10-01T00:00:00Z", openedAt: "2026-10-01T05:00:00Z" }));
+    expect(ids(many)).toEqual(["filed_within_48h"]); // a larger portfolio: every case is a real signal
   });
 
   it("finds nothing in a clean portfolio and nothing at all without disputes", () => {
@@ -38,19 +47,21 @@ describe("deterministic patterns", () => {
     const f = loadFixtures();
     const facts = await collectFacts(new ReplayGateway(f), new MockCarrier(f.carrier), new SampleStore(f.store));
     const p = findPatterns(facts);
-    expect(p.map((x) => x.id)).toEqual(["opened_before_delivery", "tracking_reused", "filed_within_48h", "sku_MUG-SET-4", "below_cost_to_fight"]);
+    expect(p.map((x) => x.id)).toEqual(["opened_before_delivery"]);
     for (const i of p) for (const d of i.disputeIds) expect(f.disputes.has(d)).toBe(true);
   });
 
   it("hash is stable and changes when the evidence changes", () => {
-    const a = findPatterns([fact("a", { noTracking: true, trackingNumbers: [] })]);
-    expect(insightsHash(a)).toBe(insightsHash(findPatterns([fact("a", { noTracking: true, trackingNumbers: [] })])));
-    expect(insightsHash(a)).not.toBe(insightsHash(findPatterns([fact("b", { noTracking: true, trackingNumbers: [] })])));
+    const u = (x: string) => fact(x, { noTracking: true, trackingNumbers: [] });
+    const a = findPatterns([u("a"), u("b"), fact("c")]);
+    expect(a.length).toBe(1);
+    expect(insightsHash(a)).toBe(insightsHash(findPatterns([u("a"), u("b"), fact("c")])));
+    expect(insightsHash(a)).not.toBe(insightsHash(findPatterns([u("a"), u("x"), fact("c")])));
   });
 });
 
 describe("AI seller actions", () => {
-  const patterns = findPatterns([fact("a", { noTracking: true, trackingNumbers: [] }), fact("b", { openedBeforeDelivery: true })]);
+  const patterns = findPatterns([fact("a", { noTracking: true, trackingNumbers: [] }), fact("b", { noTracking: true, trackingNumbers: [] }), fact("c", { openedBeforeDelivery: true }), fact("d", { openedBeforeDelivery: true })]);
 
   it("schema is strict and can only cite known insight ids", () => {
     const t = actionsTool(patterns.map((p) => p.id));
@@ -79,7 +90,7 @@ describe("AI seller actions", () => {
 
   it.each([
     ["no numbers", "Add tracking to every order", true],
-    ["count from the data", "1 of 2 cases had no tracking", true],
+    ["count from the data", "2 of 4 cases had no tracking", true],
     ["percentage of the counts", "50% of cases", true],
     ["invented percentage", "99% of disputes", false],
     ["invented word-free number", "Half your disputes (3)", false],
@@ -125,8 +136,8 @@ describe("reset demo", () => {
 });
 
 describe("insight actions stay on-topic and keep the human in the loop", () => {
-  const inrOnly = findPatterns([fact("a", { sku: "S" }), fact("b", { sku: "S" }), fact("c", { sku: "T", belowCostToFight: true })]);
-  const withSnad = findPatterns([fact("a", { sku: "S", reason: "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED" }), fact("b", { sku: "S" })]);
+  const inrOnly = findPatterns([fact("a", { sku: "S" }), fact("b", { sku: "S" }), fact("c", { sku: "T", belowCostToFight: true }), fact("d", { sku: "U", belowCostToFight: true })]);
+  const withSnad = findPatterns([fact("a", { sku: "S", reason: "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED" }), fact("b", { sku: "S" }), fact("c", { sku: "T" })]);
   const reply = (actions: { title: string; why: string; insight_ids: string[] }[]) => ({
     messages: { create: async () => ({ usage: { input_tokens: 1, output_tokens: 1 }, content: [{ type: "tool_use", name: "seller_actions", id: "t", input: { actions: actions.map((a) => ({ ...a, effort: "low" })) } }] }) },
   });
@@ -149,5 +160,33 @@ describe("insight actions stay on-topic and keep the human in the loop", () => {
   it("deterministic hints follow the same rules", () => {
     expect(inrOnly.find((i) => i.id === "sku_S")?.hint).toMatch(/shipping method/);
     expect(inrOnly.find((i) => i.id === "below_cost_to_fight")?.hint).toMatch(/you still approve/);
+  });
+});
+
+describe("single-case lessons", () => {
+  it("finds the incomplete-address return and the untracked shipment in the Replay store, each on its own case", async () => {
+    const { findLessons } = await import("@/lib/insights/patterns");
+    const f = loadFixtures();
+    const facts = await collectFacts(new ReplayGateway(f), new MockCarrier(f.carrier), new SampleStore(f.store));
+    const lessons = findLessons(facts);
+    expect(lessons.map((l) => [l.id, l.disputeIds])).toEqual([
+      ["address_incomplete_returned", ["PP-R-FDW-10190427"]],
+      ["shipped_without_tracking", ["PP-R-VYZ-10190425"]],
+    ]);
+    for (const l of lessons) expect(l.detail).toContain("the agent recommends a refund");
+  });
+
+  it("needs both the address note and the return; skips 'no tracking' when a pattern already covers it", async () => {
+    const { findLessons } = await import("@/lib/insights/patterns");
+    expect(findLessons([fact("a", { returnedToSender: true }), fact("b", { addressFault: true })])).toEqual([]);
+    const u = (x: string) => fact(x, { noTracking: true, noCarrierScans: true, trackingNumbers: [] });
+    expect(findLessons([u("a"), fact("b"), fact("c")]).map((l) => l.id)).toEqual(["shipped_without_tracking"]);
+    expect(findLessons([u("a"), u("b"), fact("c")]).map((l) => l.id)).toEqual([]); // the pattern shows it instead
+  });
+
+  it("never claims a refund call the rules did not make", async () => {
+    const { findLessons } = await import("@/lib/insights/patterns");
+    const l = findLessons([fact("a", { returnedToSender: true, addressFault: true, strategy: "FIGHT" }), fact("b"), fact("c")]);
+    expect(l[0].detail).not.toContain("refund");
   });
 });

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "paypal-sandbox",
-    "recorded_at": "2026-10-05T20:10:58.494Z",
+    "recorded_at": "2026-10-06T17:17:44.890Z",
     "redacted": true
   },
   "id": "0RK11107DK9353719",
@@ -31,6 +31,26 @@
           "item_total": {
             "currency_code": "USD",
             "value": "28.50"
+          },
+          "shipping": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "handling": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "insurance": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "shipping_discount": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "discount": {
+            "currency_code": "USD",
+            "value": "0.00"
           }
         }
       },
@@ -46,6 +66,10 @@
           "unit_amount": {
             "currency_code": "USD",
             "value": "28.50"
+          },
+          "tax": {
+            "currency_code": "USD",
+            "value": "0.00"
           },
           "quantity": "1",
           "sku": "KC-PLANTER",
@@ -68,7 +92,10 @@
         "captures": [
           {
             "id": "0FM53370TK692722L",
-            "status": "COMPLETED",
+            "status": "PENDING",
+            "status_details": {
+              "reason": "BUYER_COMPLAINT"
+            },
             "amount": {
               "currency_code": "USD",
               "value": "28.50"
@@ -80,20 +107,6 @@
                 "ITEM_NOT_RECEIVED",
                 "UNAUTHORIZED_TRANSACTION"
               ]
-            },
-            "seller_receivable_breakdown": {
-              "gross_amount": {
-                "currency_code": "USD",
-                "value": "28.50"
-              },
-              "paypal_fee": {
-                "currency_code": "USD",
-                "value": "1.48"
-              },
-              "net_amount": {
-                "currency_code": "USD",
-                "value": "27.02"
-              }
             },
             "invoice_id": "KC-1791230861519",
             "links": [
@@ -114,7 +127,58 @@
               }
             ],
             "create_time": "2026-10-05T20:08:14Z",
-            "update_time": "2026-10-05T20:08:35Z"
+            "update_time": "2026-10-06T17:12:33Z"
+          }
+        ],
+        "refunds": [
+          {
+            "id": "96631619446204814",
+            "amount": {
+              "currency_code": "USD",
+              "value": "27.02"
+            },
+            "seller_payable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "27.02"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.00"
+              },
+              "platform_fees": [
+                {
+                  "amount": {
+                    "currency_code": "USD",
+                    "value": "0.00"
+                  }
+                }
+              ],
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "27.02"
+              },
+              "total_refunded_amount": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            },
+            "invoice_id": "KC-1791230861519",
+            "status": "PENDING",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/refunds/96631619446204814",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/0FM53370TK692722L",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-06T10:12:33-07:00",
+            "update_time": "2026-10-06T10:12:33-07:00"
           }
         ]
       }
@@ -131,8 +195,8 @@
       "country_code": "US"
     }
   },
-  "create_time": "2026-10-05T20:08:14Z",
-  "update_time": "2026-10-05T20:08:35Z",
+  "create_time": "2026-10-05T20:07:43Z",
+  "update_time": "2026-10-05T20:08:15Z",
   "links": [
     {
       "href": "https://api.sandbox.paypal.com/v2/checkout/orders/0RK11107DK9353719",

@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-06T17:21:19.535Z",
+    "usage": {
+      "input": 3234,
+      "output": 494,
+      "costUsd": 0.005704
+    }
+  },
+  "disputeId": "PP-R-FDW-10190427",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "REFUND",
+    "action": {
+      "kind": "accept_claim",
+      "acceptClaimType": "REFUND"
+    },
+    "rationale": "The package was returned to sender on 6 Oct, 3:30 PM UTC due to an incomplete address. Our records confirm the apartment number was missing when the label was printed, which prevented delivery to the buyer.",
+    "claims": [
+      {
+        "text": "The USPS tracking shows the package was returned to sender on 6 Oct, 3:30 PM UTC because the address was insufficient for delivery.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428603#ev4",
+          "track:USPS:9405511899223197428603#ev3"
+        ]
+      },
+      {
+        "text": "Our own store records indicate the shipping label was printed with the apartment number missing from the address.",
+        "sourceRefs": [
+          "store:KC-1791230861519#line2"
+        ]
+      }
+    ],
+    "sellerNote": "This is a straightforward case where our fulfillment error—missing the apartment number in the address—caused the package to be returned by USPS as undeliverable. The buyer did not receive the ceramic planter they paid for. We are accepting the claim and refunding USD 28.50 to resolve this matter fairly.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "I sincerely apologize—our team printed your shipping label without the apartment number on your address. This caused USPS to return the package as undeliverable on 6 Oct. We're issuing you a full refund of USD 28.50 right away. We're very sorry for this mistake and the inconvenience."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": []
+  }
+}

@@ -1,39 +1,54 @@
-# Deploying the hosted demo (Render): steps for the user
+# Deploying the hosted demo (Google Cloud Run)
 
-Nothing here has been run. The Blueprint is `render.yaml`. **Deploying costs money and makes the demo public, so it needs your approval.** Budget: Starter ($7/month, prorated per second) from about 10 Nov to 21 Dec ≈ **$9.50**.
+Nothing here has been run yet. **Deploying makes the demo public, so it needs your approval.** It goes in the same Google Cloud project as Tour Scout (region `us-central1`; the project id is in the private notes) and touches none of Tour Scout's resources.
 
 ## What the hosted demo is
 
-- **Replay mode** (`DD_MODE=replay`): the recorded, redacted PayPal sandbox data. No login, and nothing is ever written to PayPal.
-- **AI drafts** are the recorded real Claude runs, so they cost $0 per visitor. The "Fresh draft with live AI" button makes a real Haiku call; it is limited per IP (3 per 10 min) and globally (`LLM_MAX_CALLS_PER_DAY=40`, at most ≈ $0.30/day).
-- **Rate limits:** runs 20/min/IP, writes 5/min/IP, reset 3/min/IP. The SQLite store is ephemeral (`/tmp`) by design.
+- **Replay mode only** (`DD_MODE=replay`): the recorded, redacted PayPal sandbox data and the recorded real Claude drafts. No login, nothing is ever written to PayPal, $0 per visitor.
+- **No secrets in the service.** No PayPal credentials; no Claude key unless you approve the optional live-AI button (`live-ai-on`, capped at 30 calls a day).
+- **Ephemeral store:** SQLite at `/tmp/dd.db` per instance; "Reset demo" and a restart rebuild it from the fixtures.
+- **Rate limits** (in the app): runs 20/min/IP, writes 5/min/IP, reset 3/min/IP.
 
-## Steps (you, in a browser; about 15 minutes)
+## How long it stays up
 
-1. **GitHub.** The code needs to be on GitHub under `xexpertai`. Render can deploy a *private* repo through its GitHub app, so the repo does not have to be public before the deploy. Making it public is a separate step you approve, and it's required for the Devpost submission.
-2. **Render account.** Sign in at dashboard.render.com, then add a payment method (needed for Starter).
-3. **New → Blueprint →** pick the `dispute-defender` repo. Render reads `render.yaml` and shows one web service, `dispute-defender` (Starter, Oregon).
-4. **Enter the secret env vars** when prompted. They are never committed:
-   - `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`: the **sandbox** app "Dispute Defender" (developer.paypal.com → Apps & Credentials → Sandbox).
-   - `CLAUDE_API_KEY`: the same key as in `.env.local`. Leave it empty to turn off live AI; recorded drafts still work.
-   - `PAYPAL_WEBHOOK_ID`: leave empty for now (step 7).
-5. **Apply.** The first build takes about 3–5 min. Then open `https://<service>.onrender.com/api/health`. It should say `{"ok":true,"mode":"replay",...}`.
-6. **Smoke test** on a phone and a laptop:
-   - dashboard → "Watch the agent defend a dispute" → trace → AI-written (recorded) draft;
-   - `/insights`;
-   - `/outcomes`;
-   - "Reset demo".
-7. **Webhook** (optional for Replay; needed if you later run Live on Render):
-   - developer.paypal.com → your sandbox app → **Add Webhook**;
-   - URL `https://<service>.onrender.com/api/webhooks/paypal`;
-   - events `CUSTOMER.DISPUTE.CREATED`, `CUSTOMER.DISPUTE.UPDATED`, `CUSTOMER.DISPUTE.RESOLVED`;
-   - copy the Webhook ID into `PAYPAL_WEBHOOK_ID` on Render and redeploy.
+**The hosted demo must stay up, unchanged and working, until the Judging Period ends: 15 Dec 2026, 8:00 am Pacific (21:30 IST)** (the rules: available "until the Judging Period ends", not just until submission). So:
+- run `judging-on` before submission and leave it on until 15 Dec; run `judging-off` (or delete the service) only after 15 Dec;
+- never delete the service, the image or the project before then; roll back (below) instead of tearing down;
+- the budget stays alert-only, never a cap, so judges never hit an error.
 
-   Please do this by hand: automation on developer.paypal.com is not allowed.
-8. **Keep it up through judging** (1–15 Dec) and the winner announcement. Then downgrade or suspend the service to stop billing.
+## Cost guard
 
-## Notes
+- An **alert-only** budget (`dispute-defender`, ₹850, label `app=dispute-defender`) emails at 50%, 90% and 100%. It is **never a cap**: judges must never hit errors, so nothing is switched off automatically.
+- Scale to zero (min 0, max 1 instance, 1 vCPU, 512 MiB; in-memory rate limits assume one instance) until judging; `judging-on` sets min instances 1 so judges never wait for a cold start, `judging-off` sets it back.
 
-- **Free tier.** Change `plan: starter` to `plan: free` to try it at $0. It sleeps after 15 min idle (about 1 min cold start for judges) and has no keep-alive ping (Render's terms don't explicitly allow one).
-- **Node version:** `NODE_VERSION=22.12.0` (the app needs ≥ 22.12). `better-sqlite3` builds natively on Render's image.
-- **Rollback:** Render keeps previous deploys, so "Rollback" in the service's Events tab.
+## Steps (`scripts/deploy-cloudrun.sh`)
+
+```bash
+gcloud auth login && gcloud config set project <PROJECT_ID>
+scripts/deploy-cloudrun.sh plan                                  # prints everything below, changes nothing
+scripts/deploy-cloudrun.sh setup                                 # APIs, build permissions, runtime service account
+BILLING_ACCOUNT=<BILLING_ACCOUNT_ID> scripts/deploy-cloudrun.sh budget
+CONFIRM_PUBLIC=1 scripts/deploy-cloudrun.sh deploy               # Cloud Build from ./Dockerfile, then the smoke test
+scripts/deploy-cloudrun.sh verify                                # /api/health, pages, one Replay agent run
+scripts/deploy-cloudrun.sh judging-on                            # before judging starts; judging-off after
+```
+
+The smoke test checks `/api/health` (`{"ok":true,"mode":"replay",...}`), `/`, `/insights`, `/outcomes`, the café case page and one agent run that streams a draft. Then check it by hand on a phone and a laptop.
+
+After the deploy: put the URL in `video/config.json` (`demoUrl`, with `repoUrl` once the repo is public), the README and `docs/SUBMISSION.md`, then render the final cut with `FINAL=1 REPLAY_TAKES=0 SKIP_VOICE=1 scripts/video/make-story.sh`.
+
+## Optional: live AI on the hosted demo
+
+`LIVE_AI=1 scripts/deploy-cloudrun.sh live-ai-on` stores `CLAUDE_API_KEY` (from `.env.local`, never printed) as the secret `dd-claude-api-key` and turns on the "Fresh draft with live AI" button, capped at 30 Claude Haiku calls a day. The key's credit is shared with other projects, so only with your OK. `live-ai-off` removes it.
+
+## Webhooks
+
+Not needed for Replay. Live mode on a host would need `/api/webhooks/paypal` registered on the sandbox app by hand on developer.paypal.com (no automation there) and `PAYPAL_WEBHOOK_ID` set.
+
+## Rollback
+
+Cloud Run keeps every revision: `gcloud run services update-traffic dispute-defender --region us-central1 --to-revisions <REVISION>=100`.
+
+## Alternative: Render
+
+`render.yaml` is the earlier Render Blueprint (Starter plan). It is kept for reference only; the plan of record is Cloud Run.

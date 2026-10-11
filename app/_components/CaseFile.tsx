@@ -5,6 +5,7 @@ import type { TraceState } from "@/lib/agent/trace-state";
 import { provenanceOf } from "@/lib/disputes/model";
 import type { EvidenceItem } from "@/lib/evidence/types";
 import { humanLabel } from "@/lib/format";
+import { VERDICT_WORD, verdictOf, type VerdictKey } from "@/lib/strategy/verdict";
 import { PROVENANCE_DOT, SourceChip } from "./SourceChip";
 import { useEvidence } from "./EvidenceContext";
 
@@ -13,11 +14,7 @@ import { useEvidence } from "./EvidenceContext";
  * validation, each claim is connected by a line to the records it cites (claims the validator
  * removed are struck through); then the verdict stamp lands. Reduced motion: no animation.
  */
-const VERDICT = {
-  FIGHT: { word: "Defend", tone: "text-win" },
-  OFFER: { word: "Offer", tone: "text-amber" },
-  REFUND: { word: "Refund", tone: "text-loss" },
-} as const;
+const VERDICT_TONE: Record<VerdictKey, string> = { FIGHT: "text-win", OFFER: "text-amber", REFUND: "text-loss", HOLD: "text-ink-2", WAIT: "text-amber" };
 
 const MAX_FILED = 10;
 
@@ -85,14 +82,24 @@ export function CaseFile({ state, disputeId, closed, stampRef }: { state: TraceS
             </p>
             {verdictReady && a && (
               <p className="mt-1 text-sm text-ink-2">
-                {closed ? "Hindsight review: this case is closed." : a.recommendation.buyerFair ? "The buyer is right." : "Verdict from the rules, with every claim tied to a record."}
+                {closed
+                  ? "Hindsight review: this case is closed."
+                  : a.recommendation.unprovable
+                    ? "You can't prove delivery: no tracking on record."
+                    : a.recommendation.buyerFair
+                    ? "The buyer is right."
+                    : a.recommendation.wait === "awaiting_delivery"
+                      ? "On hold: no delivery scan yet, so nothing is sent."
+                      : a.recommendation.wait === "no_allowed_action"
+                        ? "On hold: PayPal allows no matching response yet."
+                        : "Verdict from the rules, with every claim tied to a record."}
               </p>
             )}
           </div>
           {verdictReady && a && (
             <div ref={stampRef} className="shrink-0 py-2 pr-2">
-              <span className={`stamp stamp-xl stamp-land ${VERDICT[a.recommendation.strategy].tone}`} role="status" aria-label={`Verdict: ${VERDICT[a.recommendation.strategy].word}`}>
-                {VERDICT[a.recommendation.strategy].word}
+              <span className={`stamp stamp-xl stamp-land ${VERDICT_TONE[verdictOf(a.recommendation)]}`} role="status" aria-label={`Verdict: ${VERDICT_WORD[verdictOf(a.recommendation)]}`}>
+                {VERDICT_WORD[verdictOf(a.recommendation)]}
               </span>
             </div>
           )}
@@ -142,6 +149,7 @@ export function CaseFile({ state, disputeId, closed, stampRef }: { state: TraceS
                 </li>
               ))}
               {draft.claims.length === 0 && dropped.length === 0 && <li className="text-sm text-muted">No factual claims in this response.</li>}
+              {verdictReady && state.draftId && <CheckerTest draftId={state.draftId} />}
             </ol>
             <div aria-hidden="true" className="hidden lg:block" />
             <ul className="hidden flex-col gap-2 lg:flex">
@@ -174,5 +182,42 @@ function EvidenceCard({ e, refId, delay = 0, cited }: { e?: EvidenceItem; refId?
         {e?.text && <span className="line-clamp-2 block text-xs text-muted">{e.text}</span>}
       </span>
     </li>
+  );
+}
+
+/**
+ * "Test our checker": the server injects two claims an AI might make up into this draft and runs the
+ * same validation every real draft goes through. Read-only; the test claims are labelled as such.
+ */
+function CheckerTest({ draftId }: { draftId: string }) {
+  const [res, setRes] = useState<{ claim: string; caught: boolean; reason: string }[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function run() {
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/drafts/${draftId}/check`, { method: "POST" });
+      if (r.ok) setRes(((await r.json()) as { results: { claim: string; caught: boolean; reason: string }[] }).results);
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (!res)
+    return (
+      <li className="list-none">
+        <button type="button" onClick={run} disabled={busy} className="inline-flex min-h-11 items-center rounded-full border border-dashed border-line-strong px-4 text-xs font-semibold text-ink-2 hover:bg-surface-2 disabled:opacity-60">
+          {busy ? "Checking…" : "Test our checker: add two made-up claims"}
+        </button>
+      </li>
+    );
+  return (
+    <>
+      {res.map((t, i) => (
+        <li key={i} data-checker-test className="drop-in rounded-lg border border-loss/35 bg-loss-soft/40 p-2.5 text-sm text-loss" style={{ animationDelay: `${i * 0.25}s` }}>
+          <span className="mr-1.5 rounded bg-loss/10 px-1 text-[0.68rem] font-semibold uppercase tracking-wide no-underline">Test claim</span>
+          <span className={t.caught ? "line-through decoration-2" : ""}>{t.claim}</span>
+          <span className="mt-0.5 block text-xs">{t.caught ? `Removed by our server: ${t.reason}` : "Not caught"}</span>
+        </li>
+      ))}
+    </>
   );
 }

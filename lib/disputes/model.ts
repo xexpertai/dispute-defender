@@ -12,6 +12,7 @@ export interface DisputeRecord extends DisputeLike {
   buyer_response_due_date?: string;
   dispute_state?: string;
   dispute_outcome?: { outcome_code?: string; outcome_reason?: string; amount_refunded?: { value: string; currency_code: string } };
+  adjudications?: { type?: string; adjudication_time?: string; reason?: string }[] | null;
   allowed_response_options?: {
     make_offer?: { offer_types?: string[] };
     accept_claim?: { accept_claim_types?: string[] };
@@ -112,3 +113,23 @@ export const PROVENANCE_LABEL: Record<Provenance, string> = {
   carrier: "Carrier (mock)",
   store: "Store (sample)",
 };
+
+/**
+ * A decided case whose decision came from the sandbox test endpoint (`adjudicate`). This app only
+ * runs against the sandbox, where PayPal doesn't decide by itself: every adjudication on record was
+ * triggered by us. The UI labels these outcomes as such.
+ */
+export function sandboxDecided(d: Pick<DisputeRecord, "status"> & { adjudications?: unknown[] | null }): boolean {
+  return d.status === "RESOLVED" && Array.isArray(d.adjudications) && d.adjudications.length > 0;
+}
+
+export const SANDBOX_DECISION_LABEL = "Sandbox test decision (we triggered it)";
+
+/**
+ * PayPal's Help Center (help1083): if the seller doesn't respond in time and the buyer escalates the
+ * inquiry to a claim, PayPal resolves it in the buyer's favor. That applies while the case is an
+ * inquiry waiting on the seller, so the case header warns only then.
+ */
+export function escalationRisk(d: Pick<DisputeRecord, "status" | "dispute_life_cycle_stage">): boolean {
+  return d.status === "WAITING_FOR_SELLER_RESPONSE" && d.dispute_life_cycle_stage === "INQUIRY";
+}

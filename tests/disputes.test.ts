@@ -43,6 +43,21 @@ describe("custom dispute tools", () => {
     expect((form.get("evidence-file") as File).name).toBe("pack.pdf");
   });
 
+  it("provide supporting info → multipart notes + the pack, only while PayPal offers the link", async () => {
+    const { fn, calls } = fakeFetch({
+      ...TOKEN_ROUTE,
+      [`GET ${D}/PP-R-TEST-1`]: () => ({ json: dispute(["provide_supporting_info"]) }),
+      [`POST ${D}/PP-R-TEST-1/provide-supporting-info`]: () => ({ json: {} }),
+    });
+    const c = new PayPalClient(getPayPalConfig(), fn);
+    await runCustomDisputeTool(c, "provide_dispute_supporting_info", { dispute_id: "PP-R-TEST-1", notes: "Delivered, signed", files: [{ filename: "pack.pdf", type: "application/pdf", data: new Uint8Array([1]) }] });
+    const form = calls.at(-1)!.body as FormData;
+    expect(JSON.parse(await (form.get("input") as Blob).text())).toEqual({ notes: "Delivered, signed" });
+    expect((form.get("file1") as File).name).toBe("pack.pdf");
+    const { fn: fn2 } = fakeFetch({ ...TOKEN_ROUTE, [`GET ${D}/PP-R-TEST-1`]: () => ({ json: dispute(["accept_claim"]) }) });
+    await expect(runCustomDisputeTool(new PayPalClient(getPayPalConfig(), fn2), "provide_dispute_supporting_info", { dispute_id: "PP-R-TEST-1", notes: "x" })).rejects.toThrow(/provide_supporting_info/);
+  });
+
   it("make offer → JSON body; rejects unknown offer types and bad amounts", async () => {
     const { fn, calls } = fakeFetch({
       ...TOKEN_ROUTE,
@@ -85,7 +100,7 @@ describe("Claude tool bridge", () => {
 
   it("exposes custom tools to Claude without binary file params", () => {
     const tools = customToolsToClaude();
-    expect(tools.map((t) => t.name)).toEqual(["provide_dispute_evidence", "make_dispute_offer", "send_dispute_message", "escalate_dispute", "acknowledge_return_item", "accept_dispute_claim_with_terms"]);
+    expect(tools.map((t) => t.name)).toEqual(["provide_dispute_evidence", "provide_dispute_supporting_info", "make_dispute_offer", "send_dispute_message", "escalate_dispute", "acknowledge_return_item", "accept_dispute_claim_with_terms"]);
     const pe = tools.find((t) => t.name === "provide_dispute_evidence")!;
     expect(Object.keys((pe.input_schema as { properties: object }).properties)).toEqual(["dispute_id", "evidences"]);
   });

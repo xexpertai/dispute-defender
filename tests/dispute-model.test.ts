@@ -32,7 +32,7 @@ describe("outcomeOf", () => {
 
 describe("toContext from a recorded dispute", () => {
   it("takes allowed actions only from HATEOAS links and keeps PayPal's accept-claim types", () => {
-    const d3 = loadFixtures().disputes.get("PP-R-MQR-10190375")!;
+    const d3 = loadFixtures(undefined, { withArchive: true }).disputes.get("PP-R-MQR-10190375")!;
     expect(toContext(d3)).toMatchObject({
       disputeId: "PP-R-MQR-10190375",
       reason: "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
@@ -78,7 +78,7 @@ describe("Replay display cleanup of early fixtures", () => {
   });
 
   it("no Replay data shown to users contains 'spike'", () => {
-    const f = loadFixtures();
+    const f = loadFixtures(undefined, { withArchive: true });
     const shown = JSON.stringify([[...f.disputes.values()].map((d) => ({ ...d, _meta: undefined })), [...f.ordersByCapture.values()], f.store.orders, [...f.aiDrafts.values()].map((r) => r.draft)]);
     expect(shown).not.toMatch(/spike/i);
   });

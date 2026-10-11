@@ -7,7 +7,7 @@ import { aiEnabled } from "@/lib/agent/deps";
 import { clientKey, limiter, tooMany } from "@/lib/guard/rate-limit";
 
 /**
- * GET /api/agent/run?dispute=<id>[&pace=<0..5>][&ai=live]
+ * GET /api/agent/run?dispute=<id>[&pace=<0..5>][&ai=live][&rewind=1]
  * ai=live asks for a fresh Claude draft (needs DD_LLM=claude; per-IP limited + global daily cap).
  * Otherwise Replay uses the recorded real Claude draft for the fixture at $0.
  * Streams the agent trace as Server-Sent Events (contract: lib/agent/trace.ts).
@@ -34,8 +34,10 @@ export async function GET(request: Request) {
     if (aiWait) return tooMany(aiWait);
   }
 
+  // Replay only: work the case as it stood before PayPal's decision (the run shown in the video).
+  const rewind = url.searchParams.get("rewind") === "1" && currentMode() === "replay" ? disputeId : undefined;
   const encoder = new TextEncoder();
-  const events = persistDrafts(runAgent(disputeId, agentDeps({ pace, liveAi })), sharedDb(), { disputeId, mode: currentMode() });
+  const events = persistDrafts(runAgent(disputeId, agentDeps({ pace, liveAi, rewind })), sharedDb(), { disputeId, mode: currentMode() });
   let seq = 0;
   const stream = new ReadableStream<Uint8Array>({
     async pull(controller) {

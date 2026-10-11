@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-06T17:20:23.448Z",
+    "usage": {
+      "input": 3312,
+      "output": 682,
+      "costUsd": 0.006722
+    }
+  },
+  "disputeId": "PP-R-WEO-10190424",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "FIGHT",
+    "action": null,
+    "rationale": "The tracking evidence is clear and strong: the package was delivered with a signature to the buyer's address on 6 Oct, 3:42 PM UTC. All delivery details match the order.",
+    "claims": [
+      {
+        "text": "The item was shipped via USPS Priority Mail Express with tracking number 9405511899223197428601, recorded with PayPal at order time.",
+        "sourceRefs": [
+          "pptrack:9L7363079F074815T:9405511899223197428601",
+          "store:KC-1791230340949#line2"
+        ]
+      },
+      {
+        "text": "USPS tracking shows the package was delivered on 6 Oct, 3:42 PM UTC to ZIP 95131, with signature obtained from the individual receiving it.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428601#ev4"
+        ]
+      },
+      {
+        "text": "The delivery address ZIP 95131 matches the ship-to address on order 2CR48138SY990443K.",
+        "sourceRefs": [
+          "order:2CR48138SY990443K",
+          "track:USPS:9405511899223197428601#ev4"
+        ]
+      },
+      {
+        "text": "The item was carefully packed in a double box with signature confirmation required, as documented in our store records.",
+        "sourceRefs": [
+          "store:KC-1791230340949#line1",
+          "listing:KC-BOWL-10"
+        ]
+      }
+    ],
+    "sellerNote": "Seller respectfully disputes this claim. The hand-thrown serving bowl was shipped via USPS Priority Mail Express (tracking 9405511899223197428601) on 5 Oct and delivered with signature on 6 Oct, 3:42 PM UTC to ZIP 95131, which matches the buyer's ship-to address. Tracking is recorded with PayPal. The item was double-boxed and shipped signature-required as listed. All evidence supports on-time delivery to the correct address.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Thank you for contacting us. Our records show your hand-thrown bowl was delivered on 6 Oct, 3:42 PM UTC with a signature. USPS tracking 9405511899223197428601 confirms delivery to your ZIP 95131 address. If you haven't received it yet, please check with anyone at your address or contact USPS directly. We're happy to help—just let us know."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": [
+      {
+        "evidence_type": "PROOF_OF_FULFILLMENT",
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9405511899223197428601"
+          }
+        ],
+        "sourceRefs": [
+          "track:USPS:9405511899223197428601#ev4"
+        ]
+      },
+      {
+        "evidence_type": "OTHER",
+        "sourceRefs": [
+          "pptrack:9L7363079F074815T:9405511899223197428601",
+          "track:USPS:9405511899223197428601#ev4",
+          "order:2CR48138SY990443K"
+        ]
+      }
+    ]
+  }
+}

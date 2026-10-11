@@ -10,7 +10,7 @@ import { bucketOf, hoursUntil, urgency } from "../dashboard/guardian";
 
 export type Strategy = "FIGHT" | "OFFER" | "REFUND";
 export type StrengthLevel = "HIGH" | "MEDIUM" | "LOW";
-export type ActionKind = "provide_evidence" | "make_offer" | "accept_claim" | "send_message" | "escalate";
+export type ActionKind = "provide_evidence" | "provide_supporting_info" | "make_offer" | "accept_claim" | "send_message" | "escalate";
 
 export interface Reason {
   id: string;
@@ -18,7 +18,7 @@ export interface Reason {
   /** Who this fact supports. */
   supports: "seller" | "buyer";
   weight: number;
-  /** A buyer-fair reason that, on its own, means the buyer is right. */
+  /** A buyer-side reason that, on its own, means a refund (the buyer is right, or the seller has no proof of delivery). */
   decisive?: boolean;
   sourceRefs: string[];
 }
@@ -36,6 +36,26 @@ export interface EvidenceToSubmit {
   sourceRefs: string[];
 }
 
+/**
+ * Why the agent holds back on an open case (shown instead of a DEFEND verdict, with no Approve):
+ *  - awaiting_delivery: the package is still moving; PayPal may allow a response, but there's no
+ *    delivery proof to send yet.
+ *  - no_allowed_action: PayPal lists no seller action that fits (often: it hasn't opened a response
+ *    window yet).
+ *  - message_first: the only step now is a message to the buyer with the tracking; then wait.
+ */
+export type WaitKind = "awaiting_delivery" | "no_allowed_action" | "message_first";
+
+/** Seller-side actions PayPal can list on a dispute (the sandbox simulation rels are not seller actions). */
+const SELLER_ACTIONS = ["provide_evidence", "provide_supporting_info", "make_offer", "accept_claim", "send_message", "escalate", "acknowledge_return_item", "appeal"];
+
+/** One seller action PayPal lists on the dispute right now (a HATEOAS link), and why the rules did or didn't pick it. */
+export interface ConsideredAction {
+  kind: string;
+  chosen: boolean;
+  note: string;
+}
+
 export type DeadlineBucket = "overdue" | "due_48h" | "due_7d" | "later" | "none";
 
 export interface Assessment {
@@ -44,7 +64,20 @@ export interface Assessment {
   amount: number;
   currency: string;
   strength: { level: StrengthLevel; score: number; reasons: Reason[] };
-  recommendation: { strategy: Strategy; action: PlannedAction | null; why: string[]; buyerFair: boolean };
+  recommendation: {
+    strategy: Strategy;
+    action: PlannedAction | null;
+    why: string[];
+    /** A decisive buyer-side fact means a refund. */
+    buyerFair: boolean;
+    /**
+     * Set with buyerFair when the only decisive fact is missing proof (no tracking on record): the seller
+     * can't prove delivery. That is not proof the buyer is right, and the app never says it is.
+     */
+    unprovable?: boolean;
+    wait?: WaitKind;
+    considered?: ConsideredAction[];
+  };
   costToFight: number;
   priority: { score: number; bucket: DeadlineBucket; hoursLeft: number | null };
   evidenceToSubmit: EvidenceToSubmit[];
@@ -138,7 +171,8 @@ function sellerFaultReasons(ev: EvidenceItem[]): Reason[] {
 
 function reasonsFor(ctx: DisputeContext, ev: EvidenceItem[]): Reason[] {
   const reasons: Reason[] = [...sellerFaultReasons(ev)];
-  const buyerMsgs = ev.filter((e) => e.kind === "dispute_message" && e.facts.postedBy === "BUYER");
+  // The buyer's own words: in the PayPal case, or in the store chat (e.g. a complaint before opening it).
+  const buyerMsgs = ev.filter((e) => (e.kind === "dispute_message" && e.facts.postedBy === "BUYER") || (e.kind === "chat" && e.facts.author === "buyer"));
 
   switch (ctx.reason) {
     case "MERCHANDISE_OR_SERVICE_NOT_RECEIVED":
@@ -184,16 +218,17 @@ function planAction(strategy: Strategy, ctx: DisputeContext, cfg: StrategyConfig
 
   if (strategy === "FIGHT") {
     if (can("provide_evidence")) return { kind: "provide_evidence" };
+    // A claim already under PayPal review: the seller's evidence goes in as supporting info.
+    if (can("provide_supporting_info")) return { kind: "provide_supporting_info" };
     if (can("send_message")) return { kind: "send_message" };
     if (can("escalate")) return { kind: "escalate" };
     return null;
   }
   if (strategy === "OFFER") {
     const partial = money(ctx.amount * cfg.partialOfferRatio, ctx.currency);
-    if (can("make_offer")) {
-      const offerType = ctx.reason === "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED" && offerOk("REFUND_WITH_RETURN") ? "REFUND_WITH_RETURN" : "REFUND";
-      if (offerOk(offerType)) return { kind: "make_offer", offerType, amount: offerType === "REFUND_WITH_RETURN" ? money(ctx.amount, ctx.currency) : partial };
-    }
+    // A partial refund, no return: PayPal requires a return shipping address for REFUND_WITH_RETURN,
+    // which this app does not collect, so it never proposes one.
+    if (can("make_offer") && offerOk("REFUND")) return { kind: "make_offer", offerType: "REFUND", amount: partial };
     if (can("accept_claim") && claimOk("PARTIAL_REFUND")) return { kind: "accept_claim", acceptClaimType: "PARTIAL_REFUND", amount: partial };
     return null;
   }
@@ -203,12 +238,63 @@ function planAction(strategy: Strategy, ctx: DisputeContext, cfg: StrategyConfig
   return null;
 }
 
+/**
+ * Every seller action PayPal lists right now, with the reason the rules picked one and passed over the
+ * rest. Deterministic: it explains the choice planAction()/assess() already made; it decides nothing.
+ */
+export function consideredActions(
+  allowed: string[],
+  strategy: Strategy,
+  action: PlannedAction | null,
+  wait: WaitKind | undefined,
+  buyerFair: boolean,
+  unprovable = false,
+): ConsideredAction[] {
+  const fairRefund = unprovable ? "You can't prove delivery (no tracking on record)" : "The buyer is right";
+  const favours = unprovable ? "You can't prove delivery (no tracking on record)" : "The evidence favours the buyer";
+  const listed = SELLER_ACTIONS.filter((a) => allowed.includes(a));
+  const evidenceKinds = ["provide_evidence", "provide_supporting_info"];
+  const chosenWhy = (k: string): string => {
+    if (k === "send_message") return wait === "message_first" ? "The package is still on its way: tell the buyer with the tracking first." : "The only fitting step PayPal allows now.";
+    if (k === "provide_supporting_info") return "PayPal is already reviewing the claim, so the evidence goes in as supporting info.";
+    if (k === "provide_evidence") return "Strong evidence: send the proof PayPal asked for.";
+    if (k === "make_offer") return strategy === "REFUND" ? `${fairRefund}: refund in full through an offer.` : "Evidence is mixed: a fair partial refund usually settles it faster.";
+    if (k === "accept_claim") return strategy === "OFFER" ? "Evidence is mixed: accept with a partial refund." : buyerFair ? `${favours}: refund.` : "Refunding costs less than fighting.";
+    return "Picked by the rules.";
+  };
+  const skippedWhy = (k: string): string => {
+    if (evidenceKinds.includes(k)) {
+      if (wait === "awaiting_delivery") return "Held: there is no delivery scan yet, so nothing proves delivery.";
+      if (action && evidenceKinds.includes(action.kind)) return "Same evidence, other route: the one above fits this stage.";
+      if (strategy === "REFUND") return buyerFair ? `${favours}: nothing honest to send.` : "Not worth it: fighting costs more than the refund.";
+      if (strategy === "OFFER") return "Evidence is mixed: a claim could be lost.";
+      return "Not needed for this step.";
+    }
+    if (wait === "message_first" && (k === "accept_claim" || k === "make_offer")) return "Don't pay out yet: the package is on its way; tell the buyer first.";
+    if (k === "accept_claim") {
+      if (strategy === "FIGHT") return wait === "awaiting_delivery" ? "Don't refund yet: the package is on its way with tracking." : "Refunding would give up a case the evidence supports.";
+      if (strategy === "OFFER") return "An offer comes first; a full refund isn't needed.";
+      return "Same refund, other route: the one above fits.";
+    }
+    if (k === "make_offer") return strategy === "FIGHT" ? "No reason to give money back: the evidence supports you." : strategy === "REFUND" ? `${fairRefund}: refund in full, don't bargain.` : "Same offer, other route: the one above fits.";
+    if (k === "send_message") return action && evidenceKinds.includes(action.kind) ? "PayPal is deciding: the evidence answers its review, a message doesn't." : "The chosen action already tells the buyer.";
+    if (k === "escalate") return "Not needed: the chosen action resolves it without escalating.";
+    if (k === "acknowledge_return_item") return "No return was asked for.";
+    if (k === "appeal") return "There is no decision to appeal.";
+    return "Not part of this plan.";
+  };
+  return listed.map((k) => (action?.kind === k ? { kind: k, chosen: true, note: chosenWhy(k) } : { kind: k, chosen: false, note: skippedWhy(k) }));
+}
+
 // ---------------------------------------------------------------- main
 
 export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new Date(), cfg: StrategyConfig = DEFAULT_CONFIG): Assessment {
   const reasons = reasonsFor(ctx, evidence);
   const score = reasons.reduce((s, r) => s + (r.supports === "seller" ? r.weight : -r.weight), 0);
-  const buyerFair = reasons.some((r) => r.decisive && r.supports === "buyer");
+  const decisive = reasons.filter((r) => r.decisive && r.supports === "buyer");
+  const buyerFair = decisive.length > 0;
+  // No tracking on record: the seller can't prove delivery. That is missing proof, not proof for the buyer.
+  const unprovable = buyerFair && decisive.every((r) => r.id === "no_tracking");
   const level: StrengthLevel = buyerFair ? "LOW" : score >= HIGH_AT ? "HIGH" : score >= MEDIUM_AT ? "MEDIUM" : "LOW";
   const costToFight = Math.round((cfg.sellerHourlyValue * cfg.minutesToFight) / 60 * 100) / 100;
 
@@ -216,7 +302,11 @@ export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new 
   let strategy: Strategy;
   if (buyerFair) {
     strategy = "REFUND";
-    why.push("The evidence supports the buyer, so a refund is the fair outcome.");
+    why.push(
+      unprovable
+        ? "There is no tracking on record, so you can't prove delivery. A refund is the honest outcome."
+        : "The evidence supports the buyer, so a refund is the fair outcome.",
+    );
   } else if (level === "HIGH") {
     strategy = "FIGHT";
     why.push("Strong evidence supports the seller.");
@@ -242,13 +332,36 @@ export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new 
     strategy = "FIGHT";
     why.unshift("The package is still on its way: tell the buyer with tracking before refunding.");
   }
+  // Still moving, but messaging isn't open (e.g. PayPal is already reviewing): refunding a package
+  // that is on its way isn't the smart call unless the amount is below the cost to fight.
+  const holdForDelivery = inTransit && !buyerFair && !messageFirst && strategy === "REFUND" && ctx.amount > costToFight;
+  if (holdForDelivery) {
+    strategy = "FIGHT";
+    why.splice(0, why.length, "The package is on its way and its tracking is on file: don't refund yet. Defend with the tracking once it's delivered.");
+  }
 
-  const action = messageFirst ? { kind: "send_message" as const } : planAction(strategy, ctx, cfg);
-  if (!action) {
+  // Still in transit: nothing to send until it's delivered (the evidence isn't there yet).
+  const action = holdForDelivery ? null : messageFirst ? { kind: "send_message" as const } : planAction(strategy, ctx, cfg);
+  const open = ctx.status !== "RESOLVED";
+  const sellerActions = ctx.allowedActions.filter((a) => SELLER_ACTIONS.includes(a));
+  let wait: WaitKind | undefined;
+  if (holdForDelivery) {
+    wait = "awaiting_delivery";
     why.push(
-      ctx.status === "RESOLVED"
+      ctx.allowedActions.includes("provide_supporting_info") || ctx.allowedActions.includes("provide_evidence")
+        ? "PayPal would accept evidence now, but the agent holds it: there is no delivery scan yet, so there's nothing that proves delivery. It will build the evidence once the carrier shows the delivery."
+        : "Nothing to send yet: the agent will build the evidence once the carrier shows the delivery.",
+    );
+  } else if (messageFirst) {
+    wait = "message_first";
+  } else if (!action) {
+    if (open) wait = "no_allowed_action";
+    why.push(
+      !open
         ? "This case is closed, so there is nothing to submit; this is a hindsight review."
-        : "PayPal does not allow this action right now; we will check again when the dispute changes.",
+        : sellerActions.length === 0
+          ? "PayPal hasn't opened a response window yet: it lists no action you can take on this case. The agent will check again when the dispute changes."
+          : "PayPal does not allow this action right now; we will check again when the dispute changes.",
     );
   }
 
@@ -273,7 +386,15 @@ export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new 
     amount: ctx.amount,
     currency: ctx.currency,
     strength: { level, score, reasons },
-    recommendation: { strategy, action, why, buyerFair },
+    recommendation: {
+      strategy,
+      action,
+      why,
+      buyerFair,
+      ...(unprovable ? { unprovable } : {}),
+      ...(wait ? { wait } : {}),
+      ...(open ? { considered: consideredActions(ctx.allowedActions, strategy, action, wait, buyerFair, unprovable) } : {}),
+    },
     costToFight,
     priority: deadlinePriority(ctx.amount, ctx.sellerResponseDueDate, ctx.status, now),
     evidenceToSubmit,

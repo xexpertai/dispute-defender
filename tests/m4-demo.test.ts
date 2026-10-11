@@ -35,22 +35,22 @@ describe("recorded AI drafts (hosted demo at $0)", () => {
     expect(step.detail).toBe("AI-written draft (a real Claude run, recorded; $0 to replay)");
   });
 
-  it("the D3 recording answers the Spanish-speaking buyer in Spanish with an English gloss", async () => {
-    const d = draftOf(await run("PP-R-MQR-10190375")).draft!;
+  it("the KC mugs recording answers the Spanish-speaking buyer in Spanish with an English gloss", async () => {
+    const d = draftOf(await run("PP-R-KFL-10190426")).draft!;
     expect(d.buyerMessage).toMatchObject({ language: "es" });
     expect(d.buyerMessage?.englishGloss).toBeTruthy();
   });
 
   it("a stale recording that cites unknown evidence falls back to TEMPLATE", async () => {
-    const rec = structuredClone(f.aiDrafts.get("PP-R-PLP-10190379")!);
-    rec.draft.action = { kind: "send_message" }; // PayPal does not allow this on D4
-    const ev = await run("PP-R-PLP-10190379", new RecordedProvider(new Map([[rec.disputeId, rec]]), new FakeProvider()));
+    const rec = structuredClone(f.aiDrafts.get("PP-R-FDW-10190427")!);
+    rec.draft.action = { kind: "send_message" }; // PayPal does not allow this on the planter claim (under review)
+    const ev = await run("PP-R-FDW-10190427", new RecordedProvider(new Map([[rec.disputeId, rec]]), new FakeProvider()));
     expect(draftOf(ev)).toMatchObject({ origin: "template" });
     expect(draftOf(ev).fallbackReason).toMatch(/failed validation/);
   });
 
   it("uses the fallback provider when a dispute has no recording", async () => {
-    const ev = await run("PP-R-PLP-10190379", new RecordedProvider(new Map(), new FakeProvider()));
+    const ev = await run("PP-R-VYZ-10190425", new RecordedProvider(new Map(), new FakeProvider()));
     expect(draftOf(ev).origin).toBe("template");
   });
 });

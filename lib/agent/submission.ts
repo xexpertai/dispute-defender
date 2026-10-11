@@ -9,7 +9,7 @@ export interface SubmissionPlan {
   tool: CustomToolName;
   /** Tool arguments exactly as validated by the tool's zod schema (files are added at submit time). */
   args: Record<string, unknown> & { dispute_id: string };
-  /** Attach the evidence pack PDF as `evidence-file`. */
+  /** Attach the evidence pack PDF (as the tool's file field, e.g. `evidence-file`). */
   attachPack: boolean;
 }
 
@@ -29,6 +29,8 @@ export function planSubmission(disputeId: string, draft: Draft, packItemCount: n
       if (!evidences.length) evidences.push({ evidence_type: "OTHER", notes: note });
       return { tool: "provide_dispute_evidence", args: { dispute_id: disputeId, evidences }, attachPack: true };
     }
+    case "provide_supporting_info":
+      return { tool: "provide_dispute_supporting_info", args: { dispute_id: disputeId, notes: note }, attachPack: true };
     case "send_message": {
       const message = (draft.buyerMessage?.text || note).slice(0, 2000);
       return { tool: "send_dispute_message", args: { dispute_id: disputeId, message }, attachPack: false };
@@ -61,7 +63,7 @@ export interface RequestPreview {
   encoding: "json" | "multipart";
   /** The JSON body, or the multipart `input` part. */
   input: Record<string, unknown>;
-  files: { field: "evidence-file"; filename: string; type: "application/pdf"; bytes?: number }[];
+  files: { field: string; filename: string; type: "application/pdf"; bytes?: number }[];
 }
 
 export function previewRequest(plan: SubmissionPlan, packBytes?: number): RequestPreview {
@@ -72,6 +74,6 @@ export function previewRequest(plan: SubmissionPlan, packBytes?: number): Reques
     endpoint: `/v1/customer/disputes/${dispute_id}/${ep.path}`,
     encoding: ep.encoding,
     input,
-    files: plan.attachPack ? [{ field: "evidence-file", filename: PACK_FILENAME, type: "application/pdf", ...(packBytes ? { bytes: packBytes } : {}) }] : [],
+    files: plan.attachPack ? [{ field: ep.fileField ?? "evidence-file", filename: PACK_FILENAME, type: "application/pdf", ...(packBytes ? { bytes: packBytes } : {}) }] : [],
   };
 }

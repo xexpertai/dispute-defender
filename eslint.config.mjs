@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Throwaway M0 spike scripts.
     "spikes/**",
+    // The Remotion story video (its own package and tsconfig).
+    "video/remotion/**",
   ]),
 ]);
 

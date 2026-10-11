@@ -43,3 +43,7 @@ video/out/
 
 # internal review notes (contain local paths; never published)
 docs/DESIGN_REVIEW.md
+video/remotion/node_modules/
+video/remotion/public/footage/
+video/remotion/src/gen/
+video/remotion/out/

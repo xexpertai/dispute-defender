@@ -1,0 +1,86 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-07T15:39:23.014Z",
+    "usage": {
+      "input": 3211,
+      "output": 731,
+      "costUsd": 0.006866
+    }
+  },
+  "disputeId": "PP-R-FWW-10190477",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "FIGHT",
+    "action": null,
+    "rationale": "The tracking evidence clearly shows the package was delivered with signature confirmation to the correct ZIP code on 7 Oct, 3:05 PM UTC. This strong evidence supports the seller's position.",
+    "claims": [
+      {
+        "text": "Tracking number 9405511899223197428607 was recorded with PayPal at the time of shipment on 6 Oct, 9:07 AM UTC.",
+        "sourceRefs": [
+          "pptrack:5S991501Y76859350:9405511899223197428607"
+        ]
+      },
+      {
+        "text": "USPS tracking shows the package was delivered to ZIP 95131 on 7 Oct, 3:05 PM UTC with signature obtained from the recipient.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428607#ev4"
+        ]
+      },
+      {
+        "text": "The delivery ZIP 95131 matches the order's ship-to address.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428607#ev4",
+          "order:3WL85698SC366950L"
+        ]
+      },
+      {
+        "text": "The order was for 24 espresso cups with saucers, packed in a double-walled box and shipped via USPS Priority Mail Express with signature required.",
+        "sourceRefs": [
+          "order:3WL85698SC366950L",
+          "store:KC-1791277621225#line1",
+          "track:USPS:9405511899223197428607#ev1"
+        ]
+      },
+      {
+        "text": "Payment of USD 312.00 was completed and the seller is eligible for Seller Protection per PayPal's record.",
+        "sourceRefs": [
+          "capture:5S991501Y76859350"
+        ]
+      }
+    ],
+    "sellerNote": "Order 3WL85698SC366950L for 24 espresso cups was shipped via USPS Priority Mail Express (tracking 9405511899223197428607) with signature required. USPS tracking shows delivery on 7 Oct, 3:05 PM UTC to ZIP 95131 (matching the order's ship-to address) with signature obtained. The tracking number was recorded with PayPal at shipment. Seller fulfilled the order completely and the buyer received the package.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Thank you for your message. Our records show your order was delivered on 7 October at 3:05 PM to your address in ZIP 95131 with a signature. USPS tracking 9405511899223197428607 confirms delivery. Please check with anyone at your location or nearby, or contact USPS for further assistance."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": [
+      {
+        "evidence_type": "PROOF_OF_FULFILLMENT",
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9405511899223197428607"
+          }
+        ],
+        "sourceRefs": [
+          "track:USPS:9405511899223197428607#ev4"
+        ]
+      },
+      {
+        "evidence_type": "OTHER",
+        "sourceRefs": [
+          "pptrack:5S991501Y76859350:9405511899223197428607",
+          "track:USPS:9405511899223197428607#ev4",
+          "order:3WL85698SC366950L"
+        ]
+      }
+    ]
+  }
+}

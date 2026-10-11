@@ -14,11 +14,12 @@ export function ClockChip({ clock, hoursLeft, bucket, frozen }: Pick<GuardianRow
         : clock.owner === "seller"
           ? "border-ink/30 bg-surface text-ink"
           : "border-line-strong bg-surface-2 text-ink-2";
-  const time = clock.owner === "closed" ? null : hoursLeft === null ? "no deadline" : formatCountdown(hoursLeft);
+  // Replay freezes the clock at the snapshot; say so on the chip so it never reads as a live (or stale) deadline.
+  const time = clock.owner === "closed" ? null : hoursLeft === null ? "no deadline" : `${formatCountdown(hoursLeft)}${frozen ? " at snapshot" : ""}`;
   return (
     <span
       className={`inline-flex min-h-8 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 text-xs font-medium ${tone}`}
-      title={clock.dueAt ? `Due ${utcStamp(clock.dueAt)}${frozen ? " · countdown frozen at the Replay snapshot" : ""}` : undefined}
+      title={clock.dueAt ? `PayPal's due date for this case (seller_response_due_date): ${utcStamp(clock.dueAt)}${frozen ? " · countdown frozen at the Replay snapshot" : ""}` : undefined}
     >
       <span aria-hidden="true" className={urgent ? "pulse rounded-full" : ""}>
         {OWNER_ICON[clock.owner]}

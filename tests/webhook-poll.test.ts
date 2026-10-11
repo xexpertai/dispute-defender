@@ -53,9 +53,9 @@ describe("polling fallback", () => {
     const f = loadFixtures();
     const db = openDb(":memory:");
     const gw = new ReplayGateway(f);
-    expect((await pollOnce(gw, db)).map((c) => c.kind)).toEqual(["new", "new", "new", "new"]);
+    expect((await pollOnce(gw, db)).map((c) => c.kind)).toEqual(Array(f.disputes.size).fill("new"));
     expect(await pollOnce(gw, db)).toEqual([]);
-    upsertDispute(db, { ...f.disputes.get("PP-R-PLP-10190379")!, status: "UNDER_REVIEW" }, "replay");
-    expect(await pollOnce(gw, db)).toEqual([{ id: "PP-R-PLP-10190379", from: "UNDER_REVIEW", to: "WAITING_FOR_SELLER_RESPONSE", kind: "status" }]);
+    upsertDispute(db, { ...f.disputes.get("PP-R-VYZ-10190425")!, status: "UNDER_REVIEW" }, "replay");
+    expect(await pollOnce(gw, db)).toEqual([{ id: "PP-R-VYZ-10190425", from: "UNDER_REVIEW", to: "WAITING_FOR_SELLER_RESPONSE", kind: "status" }]);
   });
 });

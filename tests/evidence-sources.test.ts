@@ -3,7 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { fromCarrierTracking, fromChat, fromDispute, fromOrder, fromPayPalTrackers, fromStoreLog } from "@/lib/evidence/sources";
 
-const fixture = (id: string) => JSON.parse(readFileSync(path.resolve(import.meta.dirname, `../fixtures/paypal/disputes/${id}.json`), "utf8"));
+const fixture = (id: string) => JSON.parse(readFileSync(path.resolve(import.meta.dirname, `../fixtures/archive/m0/paypal/disputes/${id}.json`), "utf8"));
 
 describe("evidence sources", () => {
   it("maps a recorded sandbox dispute to a summary + messages with stable refs", () => {

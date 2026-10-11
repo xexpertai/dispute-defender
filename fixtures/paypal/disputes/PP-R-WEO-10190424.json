@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "source": "paypal-sandbox",
+    "recorded_at": "2026-10-06T18:44:08.487Z",
+    "redacted": true
+  },
+  "dispute_id": "PP-R-WEO-10190424",
+  "create_time": "2026-10-06T17:08:00.205Z",
+  "update_time": "2026-10-06T17:36:07.656Z",
+  "disputed_transactions": [
+    {
+      "buyer_transaction_id": "0L8257481T1863642",
+      "seller_transaction_id": "9L7363079F074815T",
+      "create_time": "2026-10-05T19:59:36.000Z",
+      "transaction_status": "COMPLETED",
+      "gross_amount": {
+        "currency_code": "USD",
+        "value": "89.00"
+      },
+      "invoice_number": "KC-1791230340949",
+      "buyer": {
+        "email": "[email]",
+        "payer_id": "[payer_id]",
+        "name": "[name]"
+      },
+      "seller": {
+        "email": "[email]",
+        "merchant_id": "[merchant_id]",
+        "name": "[name]"
+      },
+      "items": [
+        {
+          "item_id": "KC-BOWL-10"
+        }
+      ],
+      "seller_protection_eligible": true,
+      "seller_protection_type": "EXPANDED_SELLER_PROTECTION"
+    }
+  ],
+  "reason": "MERCHANDISE_OR_SERVICE_NOT_RECEIVED",
+  "status": "RESOLVED",
+  "dispute_amount": {
+    "currency_code": "USD",
+    "value": "89.00"
+  },
+  "dispute_state": "RESOLVED",
+  "dispute_outcome": {
+    "outcome_code": "RESOLVED_SELLER_FAVOUR",
+    "outcome_reason": "INELIGIBLE_BUYER_PROTECTION_POLICY"
+  },
+  "adjudications": [
+    {
+      "type": "DENY_BUYER",
+      "adjudication_time": "2026-10-06T17:33:57.365Z",
+      "reason": "INELIGIBLE_BUYER_PROTECTION_POLICY",
+      "dispute_life_cycle_stage": "CHARGEBACK"
+    }
+  ],
+  "fund_movements": [
+    {
+      "party": "RECEIVER",
+      "amount": {
+        "currency_code": "USD",
+        "value": "85.40"
+      },
+      "initiated_time": "2026-10-06T17:11:04.000Z",
+      "type": "DEBIT",
+      "reason": "HOLD_PLACED"
+    },
+    {
+      "party": "RECEIVER",
+      "amount": {
+        "currency_code": "USD",
+        "value": "85.40"
+      },
+      "initiated_time": "2026-10-06T17:35:04.000Z",
+      "type": "CREDIT",
+      "reason": "HOLD_RELEASED"
+    }
+  ],
+  "dispute_life_cycle_stage": "CHARGEBACK",
+  "dispute_channel": "INTERNAL",
+  "extensions": {
+    "merchant_contacted": true,
+    "merchant_contacted_outcome": "NO_RESPONSE",
+    "buyer_contacted_time": "2026-10-06T17:07:59.160Z",
+    "merchandize_dispute_properties": {
+      "issue_type": "PRODUCT"
+    }
+  },
+  "evidences": [
+    {
+      "evidence_type": "CREATE",
+      "source": "SUBMITTED_BY_BUYER",
+      "date": "2026-10-06T17:08:00.205Z",
+      "dispute_life_cycle_stage": "INQUIRY"
+    }
+  ],
+  "offer": {
+    "buyer_requested_amount": {
+      "currency_code": "USD",
+      "value": "89.00"
+    }
+  },
+  "refund_details": {
+    "allowed_refund_amount": {
+      "currency_code": "USD",
+      "value": "89.00"
+    }
+  },
+  "links": [
+    {
+      "href": "https://api-m.sandbox.paypal.com/v1/customer/disputes/PP-R-WEO-10190424",
+      "rel": "self",
+      "method": "GET"
+    }
+  ]
+}

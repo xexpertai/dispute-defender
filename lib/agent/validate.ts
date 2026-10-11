@@ -76,6 +76,7 @@ export interface ValidationIssue {
 
 const ACTION_LINK: Record<string, string> = {
   provide_evidence: "provide_evidence",
+  provide_supporting_info: "provide_supporting_info",
   make_offer: "make_offer",
   accept_claim: "accept_claim",
   send_message: "send_message",

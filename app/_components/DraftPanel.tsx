@@ -20,6 +20,8 @@ interface Props {
   issues: number;
   mode: "live" | "replay";
   closed?: boolean;
+  /** The agent holds this open case (nothing PayPal can receive yet): why, in one sentence. */
+  hold?: string | null;
 }
 
 type SubmitState =
@@ -30,13 +32,14 @@ type SubmitState =
 
 const ACTION_LABEL: Record<string, string> = {
   provide_evidence: "Approve · submit evidence",
+  provide_supporting_info: "Approve · send evidence",
   send_message: "Approve · send message",
   make_offer: "Approve · send offer",
   accept_claim: "Approve · refund buyer",
   escalate: "Approve · escalate",
 };
 
-export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbackReason, issues, mode, closed }: Props) {
+export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbackReason, issues, mode, closed, hold }: Props) {
   const ai = draft.origin === "ai";
   const { details } = useEvidence();
   const [tab, setTab] = useState<"draft" | "paypal">("draft");
@@ -94,7 +97,7 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
     <section aria-labelledby="draft-h" className="rise case">
       <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-5 sm:px-6">
         <h2 id="draft-h" className="font-display text-[1.3rem] leading-none">
-          Response to send
+          {hold ? "Draft for later" : "Response to send"}
         </h2>
         {ai ? (
           <span className="stamp shrink-0 text-ai">{draft.recorded ? "AI-written · recorded" : "AI-written"}</span>
@@ -117,13 +120,19 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
         )}
         {details && !draft.recorded && ai && draft.model && <span className="mt-1 block font-mono text-[0.68rem]">{draft.model}</span>}
       </p>
+      {hold && (
+        <p className="mx-5 mt-3 rounded-lg border border-line-strong bg-surface-2 p-2.5 text-sm text-ink-2 sm:mx-6" role="note">
+          {hold}
+        </p>
+      )}
       {fallbackReason && <p className="mx-5 mt-3 rounded-lg border border-amber/40 bg-amber-soft p-2.5 text-xs text-amber sm:mx-6">{fallbackReason}. The TEMPLATE draft is shown instead.</p>}
 
       <div role="tablist" aria-label="Draft views" className="mt-4 flex gap-1 border-b border-line px-4 sm:px-5">
         {(
           [
             ["draft", "Draft"],
-            ["paypal", "What PayPal receives"],
+            // Held cases send nothing yet, so there is no request to preview.
+            ...(hold ? [] : ([["paypal", "What PayPal receives"]] as const)),
           ] as const
         ).map(([k, label]) => (
           <button
@@ -235,7 +244,7 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
             </p>
           </>
         ) : (
-          <PayPalPreview preview={preview} draftId={draftId} edited={edited} hasAction={Boolean(draft.action)} />
+          <PayPalPreview preview={preview} draftId={draftId} edited={edited} hasAction={Boolean(draft.action)} hold={hold} />
         )}
 
         <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
@@ -245,15 +254,16 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
               I have read this draft and the evidence, and I want it sent.
             </label>
           )}
+          {closed ? (
+            <p className="text-xs text-muted">This case is closed; nothing will be sent.</p>
+          ) : hold || !draft.action ? (
+            <p className="text-xs text-muted">Nothing to approve on this case right now. Nothing is sent to PayPal.</p>
+          ) : (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-muted">
-              {closed
-                ? "This case is closed; nothing will be sent."
-                : mode === "replay"
+              {mode === "replay"
                   ? "Replay: nothing is sent from this screen. In the live sandbox, approving sends exactly the request shown under “What PayPal receives”."
-                  : !draft.action
-                    ? "PayPal allows no matching action right now."
-                    : "Sandbox only. An approval record is saved before anything is sent."}
+                  : "Sandbox only. An approval record is saved before anything is sent."}
             </p>
             <button
               type="button"
@@ -264,6 +274,7 @@ export function DraftPanel({ onSubmitted, evidence = [], draft, draftId, fallbac
               {submit.phase === "sending" ? "Sending…" : submit.phase === "done" ? "Sent" : draft.action ? (ACTION_LABEL[draft.action.kind] ?? "Approve and send") : "Approve and send"}
             </button>
           </div>
+          )}
           {submit.phase === "done" && (
             <div className="flex flex-col gap-2" role="status">
               <p className="text-sm font-semibold text-win">Sent to PayPal sandbox · {submit.status}</p>
@@ -329,7 +340,8 @@ function Diff({ before, after }: { before: string; after: string }) {
   );
 }
 
-function PayPalPreview({ preview, draftId, edited, hasAction }: { preview: RequestPreview | null; draftId?: string; edited: boolean; hasAction: boolean }) {
+function PayPalPreview({ preview, draftId, edited, hasAction, hold }: { preview: RequestPreview | null; draftId?: string; edited: boolean; hasAction: boolean; hold?: string | null }) {
+  if (hold) return <p className="text-sm text-muted">There is no PayPal request to preview: the agent is holding this case, so nothing would be sent.</p>;
   if (!hasAction) return <p className="text-sm text-muted">There is no PayPal request to preview: PayPal allows no matching action on this dispute right now.</p>;
   if (!preview) return <div className="h-40 animate-pulse rounded-xl bg-surface-2" aria-label="Loading preview" />;
   return (

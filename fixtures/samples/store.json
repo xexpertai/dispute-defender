@@ -129,7 +129,7 @@
           "text": "Order paid with PayPal, USD 89.00."
         },
         {
-          "at": "2026-10-06T15:50:00Z",
+          "at": "2026-10-05T20:30:00Z",
           "author": "seller",
           "text": "Bowl double-boxed; photo of the packed box saved. Signature confirmation added.",
           "tags": {
@@ -137,9 +137,9 @@
           }
         },
         {
-          "at": "2026-10-06T16:10:00Z",
+          "at": "2026-10-05T20:40:00Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428601 (signature required) printed and added to PayPal."
+          "text": "USPS Priority Mail Express label 9405511899223197428601 (signature required) printed and added to PayPal."
         }
       ]
     },
@@ -152,7 +152,7 @@
           "text": "Order paid with PayPal, USD 42.00."
         },
         {
-          "at": "2026-10-07T17:30:00Z",
+          "at": "2026-10-05T21:30:00Z",
           "author": "seller",
           "text": "Dropped the plates at the post office counter; did not buy tracking."
         }
@@ -167,7 +167,7 @@
           "text": "Order paid with PayPal, USD 64.00."
         },
         {
-          "at": "2026-10-06T16:05:00Z",
+          "at": "2026-10-05T20:35:00Z",
           "author": "seller",
           "text": "All 4 mugs inspected and photographed before packing; no chips.",
           "tags": {
@@ -175,21 +175,21 @@
           }
         },
         {
-          "at": "2026-10-06T16:30:00Z",
+          "at": "2026-10-05T20:45:00Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428602 printed and added to PayPal."
+          "text": "USPS Priority Mail Express label 9405511899223197428602 printed and added to PayPal."
         }
       ],
       "chat": {
         "threadId": "T-KC-0784",
         "lines": [
           {
-            "at": "2026-10-11T09:20:00Z",
+            "at": "2026-10-06T16:20:00Z",
             "author": "buyer",
             "text": "Hola, dos de las tazas llegaron con el borde astillado. ¿Me pueden ayudar?"
           },
           {
-            "at": "2026-10-11T15:05:00Z",
+            "at": "2026-10-06T16:45:00Z",
             "author": "seller",
             "text": "Sorry to hear that! Could you send a photo of the chips?"
           }
@@ -205,12 +205,12 @@
           "text": "Order paid with PayPal, USD 28.50."
         },
         {
-          "at": "2026-10-07T15:00:00Z",
+          "at": "2026-10-05T20:50:00Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428603 printed and added to PayPal."
+          "text": "USPS Priority Mail Express label 9405511899223197428603 printed and added to PayPal."
         },
         {
-          "at": "2026-10-07T15:02:00Z",
+          "at": "2026-10-05T20:52:00Z",
           "author": "seller",
           "text": "Note: label printed with the apartment number missing from the address.",
           "tags": {
@@ -228,9 +228,9 @@
           "text": "Order paid with PayPal, USD 9.50."
         },
         {
-          "at": "2026-10-07T15:20:00Z",
+          "at": "2026-10-05T20:55:00Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428604 printed and added to PayPal."
+          "text": "USPS Ground Advantage label 9405511899223197428604 printed and added to PayPal. Estimated delivery 9 Oct."
         }
       ]
     },
@@ -243,7 +243,7 @@
           "text": "Order paid with PayPal, USD 142.00."
         },
         {
-          "at": "2026-10-06T16:40:00Z",
+          "at": "2026-10-06T15:40:00Z",
           "author": "seller",
           "text": "Platters nested with foam dividers, double-boxed; photo saved.",
           "tags": {
@@ -251,9 +251,9 @@
           }
         },
         {
-          "at": "2026-10-06T17:00:00Z",
+          "at": "2026-10-06T15:50:00Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428605 printed and added to PayPal."
+          "text": "USPS Ground Advantage label 9405511899223197428605 printed and added to PayPal. Estimated delivery 9 Oct."
         }
       ]
     },
@@ -266,7 +266,7 @@
           "text": "Order paid with PayPal, USD 186.00."
         },
         {
-          "at": "2026-10-06T17:00:00Z",
+          "at": "2026-10-06T15:45:00Z",
           "author": "seller",
           "text": "All 16 pieces inspected and photographed before packing; no chips or cracks.",
           "tags": {
@@ -274,7 +274,7 @@
           }
         },
         {
-          "at": "2026-10-06T17:20:00Z",
+          "at": "2026-10-06T15:55:00Z",
           "author": "system",
           "text": "USPS label 9405511899223197428606 printed and added to PayPal."
         }
@@ -299,7 +299,7 @@
       "sku": "KC-CAFE-24",
       "store": [
         {
-          "at": "2026-10-06T09:07:40Z",
+          "at": "2026-10-06T09:07:35Z",
           "author": "system",
           "text": "Order paid with PayPal, USD 312.00. Returning wholesale customer.",
           "tags": {
@@ -307,14 +307,17 @@
           }
         },
         {
-          "at": "2026-10-06T17:40:00Z",
+          "at": "2026-10-06T15:45:00Z",
           "author": "seller",
-          "text": "24 cups + saucers packed in 2 boxes; signature required."
+          "text": "24 cups and saucers packed in one double-walled box (photo saved); signature required.",
+          "tags": {
+            "photosBeforeShipping": true
+          }
         },
         {
-          "at": "2026-10-06T18:00:00Z",
+          "at": "2026-10-06T09:07:37Z",
           "author": "system",
-          "text": "USPS label 9405511899223197428607 (signature required) printed and added to PayPal."
+          "text": "USPS Priority Mail Express label 9405511899223197428607 (signature required) printed and added to PayPal."
         }
       ]
     }

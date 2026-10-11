@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-06T17:21:57.955Z",
+    "usage": {
+      "input": 2870,
+      "output": 621,
+      "costUsd": 0.005975
+    }
+  },
+  "disputeId": "PP-R-KWQ-10190429",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "FIGHT",
+    "action": null,
+    "rationale": "The package has been accepted by USPS and is in transit with an expected delivery date of 9 Oct, not yet delivered. The tracking is recorded with PayPal, supporting seller protection eligibility. The buyer filed the dispute prematurely before the expected delivery window closed.",
+    "claims": [
+      {
+        "text": "Tracking number 9405511899223197428605 is recorded with PayPal for this transaction.",
+        "sourceRefs": [
+          "pptrack:8W4045347V434121P:9405511899223197428605"
+        ]
+      },
+      {
+        "text": "The package was accepted by USPS carrier on 6 Oct, 4:35 PM UTC with an expected delivery date of 9 Oct.",
+        "sourceRefs": [
+          "track:USPS:9405511899223197428605#ev1"
+        ]
+      },
+      {
+        "text": "Seller packed the serving platters in nested arrangement with foam dividers and double-boxed them before shipment.",
+        "sourceRefs": [
+          "store:KC-1791277401522#line1"
+        ]
+      }
+    ],
+    "sellerNote": "Order 31F29510RT758130P for USD 142.00 serving platter set shipped via USPS Ground Advantage (tracking 9405511899223197428605) on 6 Oct, 3:50 PM UTC. Package was accepted by carrier same day at 4:35 PM UTC with expected delivery 9 Oct. Tracking is on file with PayPal. Item has not yet failed to arrive; the buyer opened a dispute before the delivery window closed. Seller is eligible for Seller Protection per PayPal's record.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Thank you for your patience. Your platter set has been carefully packed and shipped via USPS Ground Advantage. The package was accepted by the carrier on 6 Oct and is on its way to you with an expected delivery of 9 Oct. You can track it using the USPS tracking number on file. Please allow the delivery window to complete. If the package doesn't arrive by the estimated date, please let us know and we'll look into it right away."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": [
+      {
+        "evidence_type": "PROOF_OF_FULFILLMENT",
+        "tracking_info": [
+          {
+            "carrier_name": "USPS",
+            "tracking_number": "9405511899223197428605"
+          }
+        ],
+        "sourceRefs": [
+          "pptrack:8W4045347V434121P:9405511899223197428605"
+        ]
+      },
+      {
+        "evidence_type": "OTHER",
+        "sourceRefs": [
+          "pptrack:8W4045347V434121P:9405511899223197428605"
+        ]
+      }
+    ]
+  }
+}

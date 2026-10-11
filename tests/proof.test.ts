@@ -6,7 +6,7 @@ describe("PayPal API response proof", () => {
   const meta = { source: "live" as const, httpStatus: 200, debugId: "f00dbabe123", fetchedAt: "2026-10-12T10:00:00Z", disputeId: "PP-R-CMR-10190364" };
 
   it("keeps only whitelisted, non-personal fields from the real response", () => {
-    const d = loadFixtures().disputes.get("PP-R-CMR-10190364")!;
+    const d = loadFixtures(undefined, { withArchive: true }).disputes.get("PP-R-CMR-10190364")!;
     const p = proofFromDispute(d as never, meta);
     expect(p).toEqual({
       source: "live",

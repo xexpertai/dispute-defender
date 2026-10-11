@@ -14,9 +14,9 @@ PAGES = [
     ("/", None),
     ("/insights", None),
     ("/outcomes", None),
-    ("/disputes/PP-R-MQR-10190375?run=1&pace=0", "text=Done in"),
-    ("/disputes/PP-R-PLP-10190379?run=1&pace=0", "text=Done in"),
-    ("/disputes/PP-R-CMR-10190364?run=1&pace=0", "text=Done in"),
+    ("/disputes/PP-R-KFL-10190426?run=1&pace=0", "text=Done in"),
+    ("/disputes/PP-R-FDW-10190427?run=1&pace=0", "text=Done in"),
+    ("/disputes/PP-R-WEO-10190424?run=1&pace=0", "text=Done in"),
 ]
 VIEWPORTS = [(1366, 768), (1366, 900), (390, 844)]
 

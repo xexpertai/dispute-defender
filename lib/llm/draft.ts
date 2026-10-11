@@ -71,7 +71,9 @@ function noteFor(input: DraftInput, claims: Claim[]): string {
     case "OFFER":
       return `We want to resolve this fairly and are offering ${currency} ${(assessment.recommendation.action?.amount?.value ?? amount.toFixed(2))}.\n${facts}`;
     case "REFUND":
-      return assessment.recommendation.buyerFair
+      return assessment.recommendation.unprovable
+        ? `We have no tracking on record for this order, so we can't prove delivery and are refunding the buyer.\n${facts}`
+        : assessment.recommendation.buyerFair
         ? `We reviewed our records and agree the buyer should be refunded.\n${facts}`
         : `We are refunding ${currency} ${amount.toFixed(2)} to resolve this quickly.`;
   }
@@ -81,12 +83,15 @@ function buyerMessageFor(input: DraftInput): Draft["buyerMessage"] {
   const kind = input.assessment.recommendation.action?.kind;
   if (kind !== "send_message" && kind !== "make_offer") return undefined;
   const tracking = input.assessment.strength.reasons.find((r) => r.id === "in_transit");
+  const notAsDescribed = input.assessment.reason === "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED";
   const text =
-    kind === "send_message" && tracking
-      ? "Hi! Thanks for reaching out. Your package is on its way. The latest carrier scan is attached to this case, and we'll keep an eye on it until it arrives."
-      : kind === "send_message"
-        ? "Hi! Thanks for reaching out. Our records show your order was delivered. Could you check with neighbours or your building's mail room? We're happy to help further."
-        : "Hi! We're sorry about the trouble with your order. We've sent an offer through PayPal to make this right.";
+    kind === "make_offer"
+      ? "Hi! We're sorry about the trouble with your order. We've sent an offer through PayPal to make this right."
+      : notAsDescribed
+        ? "Hi! Thanks for letting us know, and sorry about the trouble. Could you send a photo of the problem? We photograph every order before it ships and want to put this right."
+        : tracking
+          ? "Hi! Thanks for reaching out. Your package is on its way. The latest carrier scan is attached to this case, and we'll keep an eye on it until it arrives."
+          : "Hi! Thanks for reaching out. Our records show your order was delivered. Could you check with neighbours or your building's mail room? We're happy to help further.";
   return { language: "en", text };
 }
 

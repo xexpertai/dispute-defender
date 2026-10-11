@@ -29,6 +29,23 @@ describe("template draft (FakeProvider)", () => {
   });
 });
 
+describe("template buyer message fits the dispute reason", () => {
+  it("asks a not-as-described buyer for a photo instead of talking about delivery", () => {
+    const snad: DisputeContext = { ...ctx, reason: "MERCHANDISE_OR_SERVICE_NOT_AS_DESCRIBED", allowedActions: ["send_message"] };
+    const a = assess(snad, evidence, NOW);
+    a.recommendation.action = { kind: "send_message" };
+    const d = templateDraft({ ...input(), reason: snad.reason, assessment: a, allowedActions: snad.allowedActions });
+    expect(d.buyerMessage?.text).toMatch(/photo/);
+    expect(d.buyerMessage?.text).not.toMatch(/delivered|neighbours/);
+  });
+
+  it("keeps the delivered wording for an item-not-received message", () => {
+    const inr: DisputeContext = { ...ctx, allowedActions: ["send_message"] };
+    const d = templateDraft({ ...input(), assessment: assess(inr, evidence, NOW), allowedActions: inr.allowedActions });
+    expect(d.buyerMessage?.text).toMatch(/delivered/);
+  });
+});
+
 describe("validateDraft (server-side guard for any draft, AI or template)", () => {
   const base = (): Draft => templateDraft(input());
 
@@ -65,7 +82,7 @@ describe("validateDraft (server-side guard for any draft, AI or template)", () =
 });
 
 describe("demo adapters", () => {
-  const f = loadFixtures();
+  const f = loadFixtures(undefined, { withArchive: true });
 
   it("mock carrier only answers for the right carrier + number", async () => {
     const c = new MockCarrier(f.carrier);
@@ -100,7 +117,7 @@ describe("carrier scans respect the app clock", () => {
   it("drops mock scans dated after gateway.now()", async () => {
     const { ReplayGateway } = await import("@/lib/agent/gateway");
     const { runAgent } = await import("@/lib/agent/run");
-    const f = loadFixtures();
+    const f = loadFixtures(undefined, { withArchive: true });
     const early = { ...f, snapshotAt: "2026-10-05T18:00:00Z" }; // before D3's 18:20+ scans
     const events = [];
     for await (const e of runAgent("PP-R-MQR-10190375", { gateway: new ReplayGateway(early), carrier: new MockCarrier(f.carrier), store: new SampleStore(f.store), provider: new FakeProvider() })) events.push(e);

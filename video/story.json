@@ -1,0 +1,217 @@
+{
+  "_meta": {
+    "voice": "af_heart",
+    "note": "Story video v4 (FINAL). 'at' = voice start in seconds; section starts and musical hits sit on the bar grid (2.5 s at 96 BPM)."
+  },
+  "lines": [
+    {
+      "id": "hook1",
+      "text": "A buyer says the package never came.",
+      "at": 0.6
+    },
+    {
+      "id": "hook2",
+      "text": "You have days to prove it, or lose the sale.",
+      "at": 3.3
+    },
+    {
+      "id": "priya1",
+      "text": "Meet Priya. She runs a two-person ceramics shop.",
+      "at": 8
+    },
+    {
+      "id": "priya2",
+      "text": "Every dispute is a guess: fight it, offer something, or just refund and lose the money.",
+      "at": 11.3
+    },
+    {
+      "id": "turn",
+      "text": "Dispute Defender reads the case from PayPal and tells her which.",
+      "at": 18.3
+    },
+    {
+      "id": "board",
+      "text": "Her disputes, in one place: money at risk, and the deadline that matters most.",
+      "at": 22.9
+    },
+    {
+      "id": "calls",
+      "text": "And the agent's call on all seven cases: defend two, a fair offer on one, refund three, hold one.",
+      "at": 27.8
+    },
+    {
+      "id": "hero",
+      "text": "One click. The agent reads the dispute, the order and the tracking from PayPal, ties every claim to a record, and gives its verdict: defend.",
+      "at": 35.6
+    },
+    {
+      "id": "checker",
+      "text": "And if a draft ever cites a record that doesn't exist, our server strikes it out.",
+      "at": 45.1
+    },
+    {
+      "id": "draft",
+      "text": "Claude drafts the reply. Tap any claim to see the record behind it.",
+      "at": 50.3
+    },
+    {
+      "id": "receives",
+      "text": "Before anything is sent, she sees exactly what PayPal will receive, evidence pack included.",
+      "at": 55.4
+    },
+    {
+      "id": "live",
+      "text": "She approves. This is PayPal's live sandbox: these responses come straight from PayPal's Disputes API.",
+      "at": 62.9
+    },
+    {
+      "id": "won",
+      "text": "In the sandbox, we trigger PayPal's decision. PayPal's API records the case as won: resolved in the seller's favour.",
+      "at": 72.8
+    },
+    {
+      "id": "spanish",
+      "text": "A second case: two mugs arrived chipped, so a fair offer is smarter. The buyer wrote in Spanish, so the message to her is in Spanish too.",
+      "at": 86.8
+    },
+    {
+      "id": "fair",
+      "text": "And when the evidence says the buyer is right, it says refund. No tricks.",
+      "at": 95.4
+    },
+    {
+      "id": "unprovable",
+      "text": "Plates shipped without tracking? It won't pretend. She can't prove delivery, so it says refund.",
+      "at": 100.3
+    },
+    {
+      "id": "actions",
+      "text": "It lists every action PayPal allows right now, picks one, and says why not the others.",
+      "at": 106.5
+    },
+    {
+      "id": "split",
+      "text": "No more guessing.",
+      "at": 113.0
+    },
+    {
+      "id": "insights",
+      "text": "It even spots patterns, so the next dispute never starts.",
+      "at": 117.4
+    },
+    {
+      "id": "lessons",
+      "text": "Single cases teach too: ask for the unit number at checkout.",
+      "at": 121.3
+    },
+    {
+      "id": "mcp",
+      "text": "Any AI assistant gets the same judgement through MCP, and you can try it without keys.",
+      "at": 125.4
+    },
+    {
+      "id": "how",
+      "text": "Under the hood: PayPal's APIs and Agent Toolkit gather the facts, Claude writes, our server checks every claim, and you decide.",
+      "at": 133.1
+    },
+    {
+      "id": "close",
+      "text": "Dispute Defender. Win the disputes worth fighting. Settle the rest fairly.",
+      "at": 143.1
+    }
+  ],
+  "timeline": {
+    "bpm": 96,
+    "fps": 30,
+    "end": 152.7,
+    "sections": [
+      [
+        "hook",
+        0
+      ],
+      [
+        "persona",
+        7.5
+      ],
+      [
+        "turn",
+        17.5
+      ],
+      [
+        "board",
+        22.5
+      ],
+      [
+        "calls",
+        27.5
+      ],
+      [
+        "hero",
+        35.0
+      ],
+      [
+        "draft",
+        50.0
+      ],
+      [
+        "receives",
+        55.0
+      ],
+      [
+        "live",
+        62.5
+      ],
+      [
+        "won",
+        72.5
+      ],
+      [
+        "second",
+        85.0
+      ],
+      [
+        "fair",
+        95.0
+      ],
+      [
+        "vyz",
+        100.0
+      ],
+      [
+        "actions",
+        106.25
+      ],
+      [
+        "split",
+        112.5
+      ],
+      [
+        "insights",
+        117.0
+      ],
+      [
+        "lessons",
+        121.0
+      ],
+      [
+        "mcp",
+        125.0
+      ],
+      [
+        "how",
+        132.5
+      ],
+      [
+        "close",
+        142.5
+      ]
+    ],
+    "hits": {
+      "logo": 17.5,
+      "heroLand": 35.0,
+      "won": 77.5,
+      "howLand": 132.5,
+      "final": 147.5
+    }
+  }
+}

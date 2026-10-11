@@ -10,7 +10,7 @@ import { fixtures } from "../replay/fixtures";
 import { SampleStore } from "../samples/store";
 import { sharedDb } from "../store/shared";
 import { aiActions, insightsHash, readCache, templateActions, writeCache, type ActionsResult } from "./actions";
-import { findPatterns, reasonText, type Insight } from "./patterns";
+import { findLessons, findPatterns, reasonText, type Insight, type Lesson } from "./patterns";
 import { money } from "../format";
 import { collectFacts } from "./portfolio";
 
@@ -18,6 +18,8 @@ export interface InsightsView {
   mode: "live" | "replay";
   disputes: number;
   patterns: Insight[];
+  /** Single-case lessons (not patterns): deterministic, shown with Template suggestions. */
+  lessons: Lesson[];
   /** Friendly label per dispute id for the UI ("$12.75 · Speckled ceramic mug set (4)"). */
   caseLabels: Record<string, string>;
   actions: ActionsResult;
@@ -47,7 +49,7 @@ export async function getInsights(opts: { liveAi?: boolean } = {}): Promise<Insi
   const caseLabels = Object.fromEntries(
     facts.map((x) => [x.id, `${money(x.amount, x.currency)} · ${(x.sku && f.store.listings?.[x.sku]?.title) || reasonText(x.reason)}`]),
   );
-  const base = { mode, disputes: facts.length, patterns, caseLabels, hash };
+  const base = { mode, disputes: facts.length, patterns, lessons: findLessons(facts, patterns), caseLabels, hash };
   if (!patterns.length) return { ...base, actions: { origin: "template", actions: [] } };
 
   const db = sharedDb();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fromCarrierTracking, fromDispute, fromOrder, fromPayPalTrackers, fromStoreLog, type CarrierEvent } from "@/lib/evidence/sources";
+import { fromCarrierTracking, fromChat, fromDispute, fromOrder, fromPayPalTrackers, fromStoreLog, type CarrierEvent } from "@/lib/evidence/sources";
 import type { EvidenceItem } from "@/lib/evidence/types";
 import { assess, type DisputeContext, type Strategy } from "@/lib/strategy/rules";
 
@@ -33,11 +33,13 @@ const rows: Row[] = [
   ["INR · no tracking at all", INR, 89, order(89), ALL, "REFUND", "accept_claim", true],
   ["INR · in transit, can message", INR, 89, [...order(89), ...pp(), ...scans(["ACCEPTED"], ["IN_TRANSIT"])], ALL, "FIGHT", "send_message", false],
   ["INR · in transit, claim stage, small amount", INR, 9.5, [...order(9.5), ...pp(), ...scans(["ACCEPTED"])], ["accept_claim"], "REFUND", "accept_claim", false],
+  ["INR · in transit, PayPal reviewing (no message), worth defending", INR, 142, [...order(142), ...pp(), ...scans(["ACCEPTED"])], ["accept_claim"], "FIGHT", null, false],
   ["INR · tracking on file only (no scans), mid amount", INR, 40, [...order(40), ...pp()], ALL, "OFFER", "make_offer", false],
   ["INR · seller admits fault despite delivery", INR, 89, [...order(89), ...pp(), ...scans(["DELIVERED", "95131"]), ...store({ sellerAdmitsFault: true })], ALL, "REFUND", "accept_claim", true],
   ["INR · nothing allowed by PayPal", INR, 89, [...order(89), ...pp(), ...scans(["DELIVERED", "95131"])], [], "FIGHT", null, false],
   // not as described
   ["SNAD · photos + listing vs buyer complaint", SNAD, 64, [...order(64), ...listing(), ...store({ photosBeforeShipping: true }), ...buyerMsg()], ALL, "OFFER", "make_offer", false],
+  ["SNAD · photos + listing vs a complaint in the store chat", SNAD, 64, [...order(64), ...listing(), ...store({ photosBeforeShipping: true }), ...fromChat("T1", [{ author: "buyer", text: "Two mugs arrived chipped." }])], ALL, "OFFER", "make_offer", false],
   ["SNAD · only the buyer's complaint", SNAD, 64, [...order(64), ...buyerMsg()], ALL, "REFUND", "accept_claim", false],
   ["SNAD · small amount → refund beats fighting", SNAD, 8, [...order(8), ...listing(), ...store({ photosBeforeShipping: true }), ...buyerMsg()], ALL, "REFUND", "accept_claim", false],
   // unauthorized

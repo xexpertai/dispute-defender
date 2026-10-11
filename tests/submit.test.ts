@@ -14,7 +14,7 @@ import { SampleStore } from "@/lib/samples/store";
 import { openDb } from "@/lib/store/db";
 import { getDraft, submissionsForDispute } from "@/lib/store/drafts";
 
-const f = loadFixtures();
+const f = loadFixtures(undefined, { withArchive: true });
 
 /** Runs the agent over a fixture and stores the draft as if it came from the given mode. */
 async function storedDraft(id: string, mode: "live" | "replay") {
@@ -149,5 +149,18 @@ describe("wordDiff", () => {
       { op: "add", text: "delivered on Oct 5." },
     ]);
     expect(wordDiff("same", "same")).toEqual([{ op: "same", text: "same" }]);
+  });
+});
+
+describe("provide-supporting-info (a claim already under PayPal review)", () => {
+  it("plans the multipart call with the notes and the evidence pack under the tool's file field", async () => {
+    const { planSubmission, previewRequest, assertPlanValid } = await import("@/lib/agent/submission");
+    const draft = { origin: "template", strategy: "FIGHT", action: { kind: "provide_supporting_info" }, rationale: "r", claims: [], sellerNote: "Delivered with signature to the ship-to ZIP.", evidence: [] } as never;
+    const plan = planSubmission("PP-R-X", draft, 6)!;
+    expect(plan).toMatchObject({ tool: "provide_dispute_supporting_info", args: { dispute_id: "PP-R-X", notes: "Delivered with signature to the ship-to ZIP." }, attachPack: true });
+    assertPlanValid(plan);
+    const p = previewRequest(plan, 1234);
+    expect(p).toMatchObject({ method: "POST", endpoint: "/v1/customer/disputes/PP-R-X/provide-supporting-info", encoding: "multipart", input: { notes: "Delivered with signature to the ship-to ZIP." } });
+    expect(p.files).toEqual([{ field: "file1", filename: "evidence-pack.pdf", type: "application/pdf", bytes: 1234 }]);
   });
 });

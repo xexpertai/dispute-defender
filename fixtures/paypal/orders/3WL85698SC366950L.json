@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "paypal-sandbox",
-    "recorded_at": "2026-10-06T09:08:40.183Z",
+    "recorded_at": "2026-10-07T15:37:48.041Z",
     "redacted": true
   },
   "id": "3WL85698SC366950L",
@@ -31,6 +31,26 @@
           "item_total": {
             "currency_code": "USD",
             "value": "312.00"
+          },
+          "shipping": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "handling": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "insurance": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "shipping_discount": {
+            "currency_code": "USD",
+            "value": "0.00"
+          },
+          "discount": {
+            "currency_code": "USD",
+            "value": "0.00"
           }
         }
       },
@@ -46,6 +66,10 @@
           "unit_amount": {
             "currency_code": "USD",
             "value": "312.00"
+          },
+          "tax": {
+            "currency_code": "USD",
+            "value": "0.00"
           },
           "quantity": "1",
           "sku": "KC-CAFE-24",
@@ -114,7 +138,58 @@
               }
             ],
             "create_time": "2026-10-06T09:07:35Z",
-            "update_time": "2026-10-06T09:08:05Z"
+            "update_time": "2026-10-07T15:36:52Z"
+          }
+        ],
+        "refunds": [
+          {
+            "id": "9DA46935AF936725U",
+            "amount": {
+              "currency_code": "USD",
+              "value": "300.62"
+            },
+            "seller_payable_breakdown": {
+              "gross_amount": {
+                "currency_code": "USD",
+                "value": "300.62"
+              },
+              "paypal_fee": {
+                "currency_code": "USD",
+                "value": "0.00"
+              },
+              "platform_fees": [
+                {
+                  "amount": {
+                    "currency_code": "USD",
+                    "value": "0.00"
+                  }
+                }
+              ],
+              "net_amount": {
+                "currency_code": "USD",
+                "value": "300.62"
+              },
+              "total_refunded_amount": {
+                "currency_code": "USD",
+                "value": "0.00"
+              }
+            },
+            "invoice_id": "KC-1791277621225",
+            "status": "FAILED",
+            "links": [
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/refunds/9DA46935AF936725U",
+                "rel": "self",
+                "method": "GET"
+              },
+              {
+                "href": "https://api.sandbox.paypal.com/v2/payments/captures/5S991501Y76859350",
+                "rel": "up",
+                "method": "GET"
+              }
+            ],
+            "create_time": "2026-10-07T08:13:33-07:00",
+            "update_time": "2026-10-07T08:35:33-07:00"
           }
         ]
       }
@@ -131,8 +206,8 @@
       "country_code": "US"
     }
   },
-  "create_time": "2026-10-06T09:07:35Z",
-  "update_time": "2026-10-06T09:08:05Z",
+  "create_time": "2026-10-06T09:07:03Z",
+  "update_time": "2026-10-06T09:07:35Z",
   "links": [
     {
       "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3WL85698SC366950L",

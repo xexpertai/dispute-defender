@@ -101,6 +101,38 @@ export default async function InsightsPage() {
           </section>
         </div>
       )}
+
+      {v.lessons.length > 0 && (
+        <section aria-labelledby="lessons-h" className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 id="lessons-h" className="font-display text-[1.25rem]">
+              Lessons from single cases
+            </h2>
+            <span className="stamp text-ink-2">Template</span>
+          </div>
+          <p className="max-w-prose text-xs text-muted">Each happened in one case, so it is not a pattern yet. Found by fixed rules from the case&apos;s own records; the suggestion is a rules template, not AI.</p>
+          <div className="grid gap-x-6 gap-y-6 md:grid-cols-2">
+            {v.lessons.map((l) => (
+              <article key={l.id} id={`l-${l.id}`} className="ev-item rise case p-4 sm:p-5">
+                <h3 className="font-semibold">{l.title}</h3>
+                <p className="mt-1 text-sm text-ink-2">{l.detail}</p>
+                <p className="mt-2 text-sm">
+                  <span className="font-semibold">What to change: </span>
+                  {l.hint}
+                </p>
+                <p className="mt-1 flex flex-wrap items-center gap-x-3 text-xs text-muted">
+                  Case:
+                  {l.disputeIds.map((id) => (
+                    <Link key={id} href={`/disputes/${id}`} title={id} className="inline-flex min-h-11 items-center text-[0.78rem] text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+                      {v.caseLabels[id] ?? id}
+                    </Link>
+                  ))}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

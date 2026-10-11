@@ -2,6 +2,7 @@ import Link from "next/link";
 import { currentMode, gatewayFor } from "@/lib/agent/deps";
 import { summarize } from "@/lib/dashboard/guardian";
 import { money, utcStamp } from "@/lib/format";
+import { SANDBOX_DECISION_LABEL, sandboxDecided } from "@/lib/disputes/model";
 import { submissionsForDispute } from "@/lib/store/drafts";
 import { sharedDb } from "@/lib/store/shared";
 
@@ -36,7 +37,10 @@ export default async function Outcomes() {
           <span className="h-full bg-win" style={{ width: `${(s.won.amount / total) * 100}%` }} />
           <span className="h-full bg-loss" style={{ width: `${(s.lost.amount / total) * 100}%` }} />
         </div>
-        <p className="mt-2 text-[0.7rem] text-muted">Real PayPal sandbox outcomes. A count, not a prediction: we never show a win probability.</p>
+        <p className="mt-2 text-[0.7rem] text-muted">
+          Real PayPal sandbox records, but not real PayPal decisions: in the sandbox PayPal doesn&apos;t decide by itself, so each decision here is a sandbox test decision that we triggered
+          (the sandbox <span className="font-mono">adjudicate</span> endpoint). In production PayPal decides. A count, not a prediction: we never show a win probability.
+        </p>
       </section>
 
       <ul className="flex flex-col gap-3">
@@ -50,6 +54,7 @@ export default async function Outcomes() {
                 <span className={`stamp stamp-tilt text-[1rem] ${r.outcome === "won" ? "text-win" : r.outcome === "lost" ? "text-loss" : "text-ink-2"}`}>{r.outcome}</span>
                 <span className="font-display text-[1.5rem] leading-none tabular-nums">{money(r.outcome === "lost" ? (r.refunded ?? r.amount) : r.amount, r.currency)}</span>
                 <span className="text-sm font-medium">{r.reasonLabel}</span>
+                {d && sandboxDecided(d) && <span className="rounded border border-line-strong px-1.5 py-0.5 text-[0.72rem] font-semibold text-ink-2">{SANDBOX_DECISION_LABEL}</span>}
               </div>
               <p className="mt-2 text-sm text-ink-2">
                 <span title={d?.dispute_outcome?.outcome_code}>{reason ? (OUTCOME_REASON[reason] ?? reason) : "Resolved"}</span> · resolved by {utcStamp(d?.update_time)}

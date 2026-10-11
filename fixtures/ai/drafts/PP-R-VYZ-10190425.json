@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "source": "claude",
+    "model": "claude-haiku-4-5-20251001",
+    "recorded_at": "2026-10-06T17:20:41.780Z",
+    "usage": {
+      "input": 2390,
+      "output": 425,
+      "costUsd": 0.004515
+    }
+  },
+  "disputeId": "PP-R-VYZ-10190425",
+  "draft": {
+    "origin": "ai",
+    "model": "claude-haiku-4-5-20251001",
+    "strategy": "REFUND",
+    "action": {
+      "kind": "accept_claim",
+      "acceptClaimType": "REFUND"
+    },
+    "rationale": "The order has no tracking number or proof of shipment on file, so I cannot verify that the plates were received. I'm accepting the claim and issuing a refund.",
+    "claims": [
+      {
+        "text": "The order was placed on 5 Oct, 8:00 PM UTC and dropped at the post office counter, but no tracking number was purchased or is on file.",
+        "sourceRefs": [
+          "order:64G935169U342041P",
+          "store:KC-1791230414057#line1"
+        ]
+      }
+    ],
+    "sellerNote": "Order for matte glaze dinner plates (USD 42.00) was dropped at post office without tracking on 5 Oct, 9:30 PM UTC. No tracking or proof of delivery is available. Seller protection is eligible per PayPal's record. The seller has decided to accept the claim and issue a refund due to lack of shipment documentation.",
+    "buyerMessage": {
+      "language": "en",
+      "text": "Hi there—I'm really sorry the plates didn't arrive. I dropped them off at the post office but didn't purchase tracking, so I can't confirm delivery. I'm issuing you a full refund right now. Thanks for your patience, and I hope to work with you again."
+    },
+    "buyerLanguage": {
+      "code": "en",
+      "name": "English"
+    },
+    "evidence": []
+  }
+}

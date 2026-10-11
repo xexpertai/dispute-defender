@@ -1,18 +1,22 @@
 import { notFound } from "next/navigation";
 import { aiEnabled, currentMode, gatewayFor } from "@/lib/agent/deps";
 import { toRow } from "@/lib/dashboard/guardian";
-import { reasonLabel } from "@/lib/disputes/model";
+import { escalationRisk, reasonLabel, SANDBOX_DECISION_LABEL, sandboxDecided } from "@/lib/disputes/model";
 import { availableActions } from "@/lib/paypal/links";
 import { submissionsForDispute } from "@/lib/store/drafts";
 import { sharedDb } from "@/lib/store/shared";
 import { money, utcStamp } from "@/lib/format";
 import { redactText } from "@/lib/redact";
+import { fixtures } from "@/lib/replay/fixtures";
+import Link from "next/link";
 import { AgentTrace } from "../../_components/AgentTrace";
 import { ClockChip } from "../../_components/ClockChip";
 import { SandboxSim } from "../../_components/SandboxSim";
 import { VerifyWithPayPal } from "../../_components/ApiResponsePanel";
 
 export const dynamic = "force-dynamic";
+
+const HELP_1083 = "https://www.paypal.com/us/cshelp/article/how-do-i-respond-to-%E2%80%98item-not-received%E2%80%99-and-%E2%80%98significantly-not-as-described%E2%80%99-disputes-help1083";
 
 const ACTION_LABEL: Record<string, string> = {
   send_message: "Message buyer",
@@ -30,7 +34,10 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
   const sp = await searchParams;
   if (!/^PP-[A-Z0-9-]{3,40}$/.test(id)) notFound();
   const mode = currentMode();
-  const gateway = gatewayFor(mode);
+  // Replay can show a decided case as it stood before PayPal's decision (the run in the video).
+  const rewindSpec = mode === "replay" ? fixtures().rewinds.get(id) : undefined;
+  const rewind = Boolean(rewindSpec) && sp.rewind === "1";
+  const gateway = gatewayFor(mode, rewind ? { rewind: id } : {});
   const { data: d } = await gateway.getDispute(id);
   if (!d) notFound();
 
@@ -39,7 +46,7 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
   const pace = typeof sp.pace === "string" && /^\d(\.\d)?$/.test(sp.pace) ? sp.pace : undefined;
   const messages = d.messages ?? [];
   const rels = availableActions(d);
-  const submissions = submissionsForDispute(sharedDb(), d.dispute_id);
+  const submissions = rewind ? [] : submissionsForDispute(sharedDb(), d.dispute_id);
 
   return (
     <div className="flex flex-col gap-5 sm:gap-6">
@@ -64,8 +71,19 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
               ) : (
                 <ClockChip clock={row.clock} hoursLeft={row.hoursLeft} bucket={row.bucket} frozen={mode === "replay"} />
               )}
+              {!closed && row.clock.owner === "seller" && row.clock.dueAt && <span className="text-[0.7rem] text-muted">PayPal&apos;s due date for this case: {utcStamp(row.clock.dueAt)}</span>}
+              {closed && sandboxDecided(d) && <span className="text-xs font-semibold text-ink-2">{SANDBOX_DECISION_LABEL}</span>}
             </div>
           </div>
+          {escalationRisk(d) && (
+            <p className="mt-2 text-xs text-ink-2">
+              <span className="font-semibold text-amber">If you don&apos;t respond in time</span> and the buyer escalates it to a claim, PayPal resolves the case in the buyer&apos;s favor (
+              <a href={HELP_1083} target="_blank" rel="noopener noreferrer" className="underline decoration-line-strong underline-offset-2 hover:text-ink">
+                PayPal Help Center
+              </a>
+              ).
+            </p>
+          )}
           <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-dashed border-line-strong pt-2">
             <span className="mr-1 text-xs text-muted">PayPal allows now:</span>
             {row.actions.length ? (
@@ -96,6 +114,28 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
         </div>
       </header>
 
+      {rewind && rewindSpec && (
+        <section aria-label="Rewound view" className="rounded-xl border border-amber/40 bg-amber-soft p-4 text-sm text-ink-2">
+          <p>
+            <span className="font-semibold text-ink">Rewound to before PayPal&apos;s decision.</span> This is the case as the agent saw it just before {utcStamp(rewindSpec.before)}, before we sent anything: the run
+            shown in our video. Later events are hidden.
+          </p>
+          <p className="mt-1">
+            What happened next, in the live sandbox: we approved and sent the supporting info (200), then triggered PayPal&apos;s decision with the sandbox test endpoint. PayPal recorded it
+            as won: a sandbox test decision (we triggered it).
+          </p>
+          <Link href={`/disputes/${d.dispute_id}`} className="mt-1 inline-flex min-h-11 items-center gap-1.5 font-semibold text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+            See the case today <span aria-hidden="true">→</span>
+          </Link>
+        </section>
+      )}
+
+      {!rewind && rewindSpec && (
+        <Link href={`/disputes/${d.dispute_id}?run=1&rewind=1`} className="inline-flex min-h-11 w-fit items-center gap-1.5 text-sm font-semibold text-ink underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+          Replay this case from before PayPal&apos;s decision (the run in our video) <span aria-hidden="true">→</span>
+        </Link>
+      )}
+
       {mode === "live" && (
         <section aria-label="Verify with PayPal" className="rounded-xl border border-pp/30 bg-surface p-4">
           <p className="mb-2 text-sm text-ink-2">This is PayPal&apos;s live sandbox. Re-read this case from PayPal&apos;s Disputes API:</p>
@@ -107,7 +147,7 @@ export default async function DisputePage({ params, searchParams }: { params: Pr
         <SandboxSim disputeId={d.dispute_id} canAdjudicate={rels.includes("adjudicate")} canRequireEvidence={rels.includes("require_evidence")} />
       )}
 
-      <AgentTrace disputeId={d.dispute_id} mode={mode} autoStart={sp.run === "1"} pace={pace} closed={closed} aiAvailable={aiEnabled()} />
+      <AgentTrace disputeId={d.dispute_id} mode={mode} autoStart={sp.run === "1"} pace={pace} closed={closed} aiAvailable={aiEnabled()} rewind={rewind} />
 
       {submissions.length > 0 && (
         <section aria-labelledby="sub-h" className="rounded-xl border border-dashed border-line-strong bg-surface-2/60 p-4 sm:p-5">

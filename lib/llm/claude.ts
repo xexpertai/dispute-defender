@@ -18,8 +18,10 @@ export const CLAUDE_MODEL = process.env.DD_CLAUDE_MODEL ?? "claude-haiku-4-5-202
 const PRICE = { input: 1 / 1_000_000, output: 5 / 1_000_000 };
 export const costUsd = (input: number, output: number) => Math.round((input * PRICE.input + output * PRICE.output) * 1e6) / 1e6;
 
-const ACTIONS: ActionKind[] = ["provide_evidence", "make_offer", "accept_claim", "send_message", "escalate"];
-const OFFER_TYPES = ["REFUND", "REFUND_WITH_RETURN", "REFUND_WITH_REPLACEMENT", "REPLACEMENT_WITHOUT_REFUND"] as const;
+const ACTIONS: ActionKind[] = ["provide_evidence", "provide_supporting_info", "make_offer", "accept_claim", "send_message", "escalate"];
+// Return / replacement offers need a return shipping address (and stock), which this app does not
+// collect; the model may only propose a refund offer.
+const OFFER_TYPES = ["REFUND"] as const;
 
 export interface DraftToolInput {
   strategy: Strategy;
@@ -97,7 +99,8 @@ export function userPrompt(input: DraftInput, allowed: string[]): string {
     rules_recommendation: {
       strategy: a.recommendation.strategy,
       action: a.recommendation.action,
-      buyer_is_right: a.recommendation.buyerFair,
+      buyer_is_right: a.recommendation.buyerFair && !a.recommendation.unprovable,
+      seller_cannot_prove_delivery: Boolean(a.recommendation.unprovable),
       evidence_strength: a.strength.level,
       reasons: a.strength.reasons.map((r) => ({ text: r.text, supports: r.supports, source_refs: r.sourceRefs })),
       cost_to_fight: `${input.currency} ${a.costToFight.toFixed(2)}`,

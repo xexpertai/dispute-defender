@@ -37,6 +37,7 @@ const STRATEGY_TEXT: Record<Assessment["recommendation"]["strategy"], string> = 
 
 const ACTION_TEXT: Record<string, string> = {
   provide_evidence: "provide evidence",
+  provide_supporting_info: "send evidence to PayPal's review",
   send_message: "message the buyer",
   make_offer: "make an offer",
   accept_claim: "accept and refund",
@@ -168,7 +169,7 @@ export async function* runAgent(disputeId: string, deps: AgentDeps): AsyncGenera
     const rec = assessment.recommendation;
     yield await finish(
       "assess",
-      `Evidence ${assessment.strength.level.toLowerCase()} · recommend: ${STRATEGY_TEXT[rec.strategy]}${rec.action ? ` (${ACTION_TEXT[rec.action.kind] ?? rec.action.kind})` : ""}${rec.buyerFair ? " · buyer is right" : ""}`,
+      `Evidence ${assessment.strength.level.toLowerCase()} · recommend: ${rec.wait === "awaiting_delivery" ? "hold until the delivery scan" : rec.wait === "no_allowed_action" ? "hold (nothing PayPal allows yet)" : STRATEGY_TEXT[rec.strategy]}${rec.action ? ` (${ACTION_TEXT[rec.action.kind] ?? rec.action.kind})` : ""}${rec.unprovable ? " · can't prove delivery" : rec.buyerFair ? " · buyer is right" : ""}`,
       { sourceRefs: [...new Set(assessment.strength.reasons.flatMap((r) => r.sourceRefs))] },
     );
     yield { v: 1, type: "assessment", runId, assessment };
@@ -243,8 +244,15 @@ export async function* runAgent(disputeId: string, deps: AgentDeps): AsyncGenera
     yield start("await_approval");
     if (clock.owner === "closed") {
       yield await finish("await_approval", `Case closed (${dispute.dispute_outcome?.outcome_code ?? "RESOLVED"}). Nothing to submit; this is a hindsight review.`, { status: "skipped" });
+    } else if (assessment.recommendation.wait === "awaiting_delivery") {
+      yield await finish("await_approval", "Holding: no delivery scan yet, so nothing is sent. The agent will check again when the carrier shows the delivery.", { status: "skipped" });
     } else if (!checked.draft.action) {
-      yield await finish("await_approval", "PayPal allows no matching action right now. The agent will check again when the dispute changes.", { status: "skipped" });
+      const none = ctx.allowedActions.every((a) => a === "adjudicate" || a === "require_evidence");
+      yield await finish(
+        "await_approval",
+        none ? "PayPal hasn't opened a response window yet (it lists no seller action). The agent will check again when the dispute changes." : "PayPal allows no matching action right now. The agent will check again when the dispute changes.",
+        { status: "skipped" },
+      );
     } else {
       yield await finish("await_approval", `Ready for you to review: ${ACTION_TEXT[checked.draft.action.kind] ?? checked.draft.action.kind}. Nothing is sent without your approval.`, { status: "waiting" });
     }

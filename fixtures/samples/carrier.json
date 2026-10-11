@@ -1,7 +1,7 @@
 {
   "_meta": {
     "source": "sample",
-    "note": "Mock carrier scans for the demo store. Kiln & Clay Studio ships from Portland OR (97214) to the sandbox buyer (95131); transit 2-5 days. Scans dated after the app clock are hidden. 4285xx/4284xx entries belong to the early spike orders."
+    "note": "Mock carrier scans for the demo store (Kiln & Clay Studio ships from Portland OR 97214 to the sandbox buyer 95131). Orders paid on 5 Oct evening went out by Priority Mail Express overnight; orders paid on 6 Oct shipped that morning. Scans dated after the app clock are hidden."
   },
   "trackings": {
     "9400111899223197428490": {
@@ -150,35 +150,29 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-06T16:10:00Z",
+          "at": "2026-10-05T20:40:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-06T23:40:00Z",
+          "at": "2026-10-05T22:15:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "Priority Mail Express, accepted in Portland OR"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-07T18:20:00Z",
-          "postalCode": "95813",
-          "description": "Arrived at USPS regional facility, Sacramento CA"
-        },
-        {
-          "code": "IN_TRANSIT",
-          "at": "2026-10-08T21:05:00Z",
+          "at": "2026-10-06T06:30:00Z",
           "postalCode": "95101",
           "description": "Arrived at San Jose processing center"
         },
         {
           "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-09T13:40:00Z",
+          "at": "2026-10-06T13:10:00Z",
           "postalCode": "95131"
         },
         {
           "code": "DELIVERED",
-          "at": "2026-10-09T19:12:00Z",
+          "at": "2026-10-06T15:42:00Z",
           "postalCode": "95131",
           "description": "Delivered, left with individual",
           "signature": true
@@ -190,35 +184,29 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-06T16:30:00Z",
+          "at": "2026-10-05T20:45:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-07T00:10:00Z",
+          "at": "2026-10-05T22:15:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "Priority Mail Express, accepted in Portland OR"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-07T20:00:00Z",
-          "postalCode": "95813",
-          "description": "Arrived at USPS regional facility, Sacramento CA"
-        },
-        {
-          "code": "IN_TRANSIT",
-          "at": "2026-10-09T03:00:00Z",
+          "at": "2026-10-06T06:30:00Z",
           "postalCode": "95101",
           "description": "Arrived at San Jose processing center"
         },
         {
           "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-10T14:00:00Z",
+          "at": "2026-10-06T13:10:00Z",
           "postalCode": "95131"
         },
         {
           "code": "DELIVERED",
-          "at": "2026-10-10T18:45:00Z",
+          "at": "2026-10-06T15:58:00Z",
           "postalCode": "95131",
           "description": "Delivered, front porch",
           "signature": false
@@ -230,31 +218,31 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-07T15:00:00Z",
+          "at": "2026-10-05T20:50:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-07T23:00:00Z",
+          "at": "2026-10-05T22:15:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "Priority Mail Express, accepted in Portland OR"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-08T19:00:00Z",
-          "postalCode": "95813",
-          "description": "Arrived at USPS regional facility, Sacramento CA"
+          "at": "2026-10-06T06:30:00Z",
+          "postalCode": "95101",
+          "description": "Arrived at San Jose processing center"
         },
         {
           "code": "EXCEPTION",
-          "at": "2026-10-10T09:30:00Z",
-          "postalCode": "95101",
+          "at": "2026-10-06T14:20:00Z",
+          "postalCode": "95131",
           "description": "Insufficient address; delivery not possible"
         },
         {
           "code": "RETURNED_TO_SENDER",
-          "at": "2026-10-11T16:00:00Z",
-          "postalCode": "95101",
+          "at": "2026-10-06T15:30:00Z",
+          "postalCode": "95131",
           "description": "Return to sender processed"
         }
       ]
@@ -264,32 +252,20 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-07T15:20:00Z",
+          "at": "2026-10-05T20:55:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-08T00:00:00Z",
+          "at": "2026-10-06T00:10:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "USPS Ground Advantage, expected 9 Oct"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-09T18:00:00Z",
+          "at": "2026-10-06T09:40:00Z",
           "postalCode": "95813",
           "description": "Arrived at USPS regional facility, Sacramento CA"
-        },
-        {
-          "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-11T13:00:00Z",
-          "postalCode": "95131"
-        },
-        {
-          "code": "DELIVERED",
-          "at": "2026-10-11T17:30:00Z",
-          "postalCode": "95131",
-          "description": "Delivered, in mailbox",
-          "signature": false
         }
       ]
     },
@@ -298,38 +274,14 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-06T17:00:00Z",
+          "at": "2026-10-06T15:50:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-07T00:20:00Z",
+          "at": "2026-10-06T16:35:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
-        },
-        {
-          "code": "IN_TRANSIT",
-          "at": "2026-10-07T21:10:00Z",
-          "postalCode": "95813",
-          "description": "Arrived at USPS regional facility, Sacramento CA"
-        },
-        {
-          "code": "IN_TRANSIT",
-          "at": "2026-10-09T02:40:00Z",
-          "postalCode": "95101",
-          "description": "Arrived at San Jose processing center"
-        },
-        {
-          "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-10T13:30:00Z",
-          "postalCode": "95131"
-        },
-        {
-          "code": "DELIVERED",
-          "at": "2026-10-10T17:05:00Z",
-          "postalCode": "95131",
-          "description": "Delivered, front porch",
-          "signature": false
+          "description": "USPS Ground Advantage, expected 9 Oct"
         }
       ]
     },
@@ -338,29 +290,29 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-06T17:20:00Z",
+          "at": "2026-10-06T15:55:00Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-07T00:40:00Z",
+          "at": "2026-10-06T16:35:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "USPS Ground Advantage"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-08T01:00:00Z",
+          "at": "2026-10-07T21:00:00Z",
           "postalCode": "95813",
           "description": "Arrived at USPS regional facility, Sacramento CA"
         },
         {
           "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-10T13:10:00Z",
+          "at": "2026-10-09T13:10:00Z",
           "postalCode": "95131"
         },
         {
           "code": "DELIVERED",
-          "at": "2026-10-10T16:40:00Z",
+          "at": "2026-10-09T16:40:00Z",
           "postalCode": "95131",
           "description": "Delivered, left with individual",
           "signature": true
@@ -372,31 +324,31 @@
       "events": [
         {
           "code": "LABEL_CREATED",
-          "at": "2026-10-06T18:00:00Z",
+          "at": "2026-10-06T09:07:37Z",
           "postalCode": "97214"
         },
         {
           "code": "ACCEPTED",
-          "at": "2026-10-07T01:00:00Z",
+          "at": "2026-10-06T16:40:00Z",
           "postalCode": "97214",
-          "description": "Accepted at USPS origin facility, Portland OR"
+          "description": "Priority Mail Express, signature required"
         },
         {
           "code": "IN_TRANSIT",
-          "at": "2026-10-08T00:15:00Z",
-          "postalCode": "95813",
-          "description": "Arrived at USPS regional facility, Sacramento CA"
+          "at": "2026-10-07T06:30:00Z",
+          "postalCode": "95101",
+          "description": "Arrived at San Jose processing center"
         },
         {
           "code": "OUT_FOR_DELIVERY",
-          "at": "2026-10-09T13:45:00Z",
+          "at": "2026-10-07T13:10:00Z",
           "postalCode": "95131"
         },
         {
           "code": "DELIVERED",
-          "at": "2026-10-09T18:20:00Z",
+          "at": "2026-10-07T15:05:00Z",
           "postalCode": "95131",
-          "description": "Delivered, signed for at front desk",
+          "description": "Delivered, left with individual (signature on file)",
           "signature": true
         }
       ]

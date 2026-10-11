@@ -2,6 +2,7 @@ import type { OrderLike, PayPalTrackerLike } from "../evidence/sources";
 import type { DisputeRecord } from "../disputes/model";
 import type { PayPalClient } from "../paypal/client";
 import { redactObject } from "../redact";
+import { rewindDispute, rewindOrder, type RewindSpec } from "../replay/rewind";
 import type { PayPalCallBadge } from "./trace";
 
 /**
@@ -43,18 +44,27 @@ export interface ReplayData {
   ordersByCapture: Map<string, OrderLike>;
   trackersByCapture: Map<string, PayPalTrackerLike[]>;
   snapshotAt: string;
+  rewinds?: Map<string, RewindSpec>;
 }
 
 export class ReplayGateway implements DisputeGateway {
   readonly mode = "replay" as const;
-  constructor(private readonly data: ReplayData) {}
+  /** With `rewind`, a case that has a rewind spec is served as it stood before PayPal's decision. */
+  constructor(
+    private readonly data: ReplayData,
+    private readonly opts: { rewind?: string } = {},
+  ) {}
+
+  private rewound(): RewindSpec | undefined {
+    return this.opts.rewind ? this.data.rewinds?.get(this.opts.rewind) : undefined;
+  }
 
   private call(ep: Ep, found: boolean): PayPalCallBadge {
     return { ...ENDPOINTS[ep], status: found ? 200 : 404, source: "replay" };
   }
 
   now() {
-    return new Date(this.data.snapshotAt);
+    return new Date(this.rewound()?.before ?? this.data.snapshotAt);
   }
 
   async listDisputes() {
@@ -62,12 +72,16 @@ export class ReplayGateway implements DisputeGateway {
   }
 
   async getDispute(id: string) {
-    const d = this.data.disputes.get(id) ?? null;
+    const rec = this.data.disputes.get(id) ?? null;
+    const spec = this.rewound();
+    const d = rec && spec?.dispute_id === id ? rewindDispute(rec, spec) : rec;
     return { data: d, calls: [this.call("getDispute", Boolean(d))] };
   }
 
   async findOrderByCapture(captureId: string) {
-    const o = this.data.ordersByCapture.get(captureId) ?? null;
+    const rec = this.data.ordersByCapture.get(captureId) ?? null;
+    const spec = this.rewound();
+    const o = rec && spec?.capture?.id === captureId ? rewindOrder(rec, spec) : rec;
     return { data: o, calls: [this.call("getCapture", Boolean(o)), ...(o ? [this.call("getOrder", true)] : [])] };
   }
 

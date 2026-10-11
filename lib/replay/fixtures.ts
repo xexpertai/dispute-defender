@@ -5,6 +5,7 @@ import type { DisputeRecord } from "../disputes/model";
 import type { CarrierSampleFile } from "../carrier/mock";
 import type { StoreSampleFile } from "../samples/store";
 import type { RecordedDraft } from "../llm/recorded";
+import type { RewindSpec } from "./rewind";
 
 /**
  * Replay data: recorded, redacted sandbox responses (fixtures/paypal/*) plus the demo store's
@@ -19,6 +20,8 @@ export interface FixtureSet {
   store: StoreSampleFile;
   /** Real Claude drafts captured once per fixture (fixtures/ai/drafts). */
   aiDrafts: Map<string, RecordedDraft>;
+  /** Cases that can be replayed from before PayPal's decision (fixtures/paypal/rewind). */
+  rewinds: Map<string, RewindSpec>;
   /** Replay clock: the moment the newest dispute snapshot was recorded. Countdowns are frozen here. */
   snapshotAt: string;
 }
@@ -52,10 +55,16 @@ export function cleanDisplay<T>(value: T): T {
   return value;
 }
 
-export function loadFixtures(root = path.join(process.cwd(), "fixtures")): FixtureSet {
-  const disputes = readDir<DisputeRecord>(path.join(root, "paypal/disputes"));
-  const orders = readDir<OrderLike>(path.join(root, "paypal/orders"));
-  const trackers = readDir<{ trackers?: PayPalTrackerLike[] }>(path.join(root, "paypal/trackers"));
+/** The M0 lifecycle disputes (D1–D4): real sandbox records kept for tests and the README proof table,
+ * but retired from the demo (their test setup reused one tracking number, which would surface as a
+ * misleading "pattern"). Replay shows only the Kiln & Clay store. */
+export const ARCHIVE_M0 = "archive/m0";
+
+export function loadFixtures(root = path.join(process.cwd(), "fixtures"), opts: { withArchive?: boolean } = {}): FixtureSet {
+  const all = <T>(sub: string) => [...readDir<T>(path.join(root, sub)), ...(opts.withArchive ? readDir<T>(path.join(root, ARCHIVE_M0, sub)) : [])];
+  const disputes = all<DisputeRecord>("paypal/disputes");
+  const orders = all<OrderLike>("paypal/orders");
+  const trackers = all<{ trackers?: PayPalTrackerLike[] }>("paypal/trackers");
 
   const ordersByCapture = new Map<string, OrderLike>();
   for (const o of orders) for (const c of o.purchase_units?.[0]?.payments?.captures ?? []) ordersByCapture.set(c.id, o);
@@ -66,8 +75,10 @@ export function loadFixtures(root = path.join(process.cwd(), "fixtures")): Fixtu
   const snapshotAt = disputes.map((d) => d._meta?.recorded_at ?? "").sort().at(-1) || new Date(0).toISOString();
   const json = <T>(p: string, fallback: T): T => (existsSync(p) ? cleanDisplay(JSON.parse(readFileSync(p, "utf8")) as T) : fallback);
 
-  const aiDrafts = readDir<RecordedDraft>(path.join(root, "ai/drafts"));
+  const aiDrafts = all<RecordedDraft>("ai/drafts");
+  const rewinds = readDir<RewindSpec>(path.join(root, "paypal/rewind")).filter((r) => disputes.some((d) => d.dispute_id === r.dispute_id));
   return {
+    rewinds: new Map(rewinds.map((r) => [r.dispute_id, r])),
     aiDrafts: new Map(aiDrafts.map((r) => [r.disputeId, r])),
     disputes: new Map(disputes.map((d) => [d.dispute_id, d])),
     ordersByCapture,

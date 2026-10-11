@@ -1,0 +1,18 @@
+# Never send secrets, local state or the video build into the image build context.
+.env*
+!.env.example
+.git
+.next
+node_modules
+data
+*.db
+*.db-*
+video
+spikes
+graphify-out
+tests
+docs
+BRIEF.md
+AGENTS.md
+CLAUDE.md
+*.tsbuildinfo

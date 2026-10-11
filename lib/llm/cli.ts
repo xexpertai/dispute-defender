@@ -25,7 +25,7 @@ export const runClaudeCli: CliRunner = (prompt) =>
   );
 
 const FORMAT = `Reply with ONLY one JSON object (no prose, no code fence) with exactly these keys:
-{"strategy":"FIGHT|OFFER|REFUND","action":"<one of allowed_actions or none>","offer_type":"REFUND|REFUND_WITH_RETURN|REFUND_WITH_REPLACEMENT|REPLACEMENT_WITHOUT_REFUND|none","amount":"","rationale":"","claims":[{"text":"","source_refs":["<evidence ref>"]}],"seller_note_to_paypal":"","buyer_message":{"language":"","text":"","english_gloss":""}}`;
+{"strategy":"FIGHT|OFFER|REFUND","action":"<one of allowed_actions or none>","offer_type":"REFUND|none","amount":"","rationale":"","claims":[{"text":"","source_refs":["<evidence ref>"]}],"seller_note_to_paypal":"","buyer_message":{"language":"","text":"","english_gloss":""}}`;
 
 export function parseCliDraft(stdout: string): DraftToolInput {
   const outer = JSON.parse(stdout) as { result?: string };

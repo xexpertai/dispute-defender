@@ -22,6 +22,14 @@ export interface DisputeFacts {
   openedBeforeDelivery: boolean;
   noTracking: boolean;
   belowCostToFight: boolean;
+  /** The carrier's last scan says the package went back to the seller. */
+  returnedToSender?: boolean;
+  /** The seller's own store log admits an address error on the label (e.g. a missing apartment number). */
+  addressFault?: boolean;
+  /** No carrier scans at all were found for the order. */
+  noCarrierScans?: boolean;
+  /** The rules' call on the case. */
+  strategy?: string;
 }
 
 export interface Insight {
@@ -39,6 +47,7 @@ export interface Insight {
 }
 
 const INR = "MERCHANDISE_OR_SERVICE_NOT_RECEIVED";
+const ADDRESS_NOTE = /\b(apartment|apt|unit|suite|address)\b/i;
 const HIGH_VALUE = 75;
 
 export function factsFrom(id: string, outcome: DisputeFacts["outcome"], evidence: EvidenceItem[], a: Assessment): DisputeFacts {
@@ -60,9 +69,14 @@ export function factsFrom(id: string, outcome: DisputeFacts["outcome"], evidence
     trackingNumbers: [...new Set(tracking)],
     delivered: Boolean(delivered),
     signature: Boolean(delivered?.facts.signatureObtained),
-    openedBeforeDelivery: a.strength.reasons.some((r) => r.id === "opened_before_delivery"),
+    // Opened before the package arrived: delivered afterwards, or still in transit when the case was opened.
+    openedBeforeDelivery: a.strength.reasons.some((r) => r.id === "opened_before_delivery" || (r.id === "in_transit" && !delivered)),
     noTracking: tracking.length === 0,
     belowCostToFight: a.amount <= a.costToFight,
+    returnedToSender: scans.at(-1)?.facts.eventCode === "RETURNED_TO_SENDER",
+    addressFault: evidence.some((e) => e.kind === "store_log" && e.facts.sellerAdmitsFault && ADDRESS_NOTE.test(e.text)),
+    noCarrierScans: scans.length === 0,
+    strategy: a.recommendation.strategy,
   };
 }
 
@@ -175,7 +189,59 @@ export function findPatterns(all: DisputeFacts[]): Insight[] {
     });
 
   const rank = { high: 0, medium: 1, low: 2 };
-  return out.map((i): Insight => ({ ...i, reasons: reasonsOf(all, i.disputeIds) })).sort((a, b) => rank[a.severity] - rank[b.severity] || b.count / b.total - a.count / a.total);
+  return out
+    .filter(isMeaningful)
+    .map((i): Insight => ({ ...i, reasons: reasonsOf(all, i.disputeIds) })).sort((a, b) => rank[a.severity] - rank[b.severity] || b.count / b.total - a.count / a.total);
+}
+
+/**
+ * A pattern needs a minimum sample: at least MIN_CASES cases and MIN_SHARE of its base. A pattern that
+ * matches every case of a small portfolio has no contrast, so it says more about how the cases were
+ * gathered (e.g. all opened the same week) than about buyers, and is dropped until the portfolio grows.
+ */
+export const MIN_CASES = 2;
+export const MIN_SHARE = 0.2;
+export const CONTRAST_BELOW = 10;
+function isMeaningful(i: Omit<Insight, "reasons">): boolean {
+  return i.count >= MIN_CASES && i.count / i.total >= MIN_SHARE && (i.count < i.total || i.total >= CONTRAST_BELOW);
+}
+
+/**
+ * Lessons from a single case: something that went wrong once and that a fixed rule can point at,
+ * but that is not (yet) a pattern because it happened in only one case. Shown apart from the
+ * patterns, with a deterministic suggestion (labelled Template), and never mixed into the AI input.
+ * A lesson is skipped when a pattern already covers the same signal.
+ */
+export interface Lesson {
+  id: string;
+  title: string;
+  detail: string;
+  disputeIds: string[];
+  hint: string;
+}
+
+export function findLessons(all: DisputeFacts[], patterns: Pick<Insight, "id">[] = findPatterns(all)): Lesson[] {
+  const has = new Set(patterns.map((p) => p.id));
+  const out: Lesson[] = [];
+  const returned = all.filter((d) => d.returnedToSender && d.addressFault);
+  if (returned.length)
+    out.push({
+      id: "address_incomplete_returned",
+      title: "Incomplete address on the label, package returned to you",
+      detail: `Your store log notes an address error on the label, and the (mock) carrier's last scan is "returned to sender". The buyer never had a chance to receive it${returned.every((d) => d.strategy === "REFUND") ? ", so the agent recommends a refund" : ""}.`,
+      disputeIds: returned.map((d) => d.id),
+      hint: "Ask for the apartment or unit line at checkout and check the address before printing the label.",
+    });
+  const untracked = all.filter((d) => d.noTracking && d.noCarrierScans && d.reason === INR);
+  if (untracked.length && !has.has("no_tracking_at_paypal"))
+    out.push({
+      id: "shipped_without_tracking",
+      title: "Shipped without tracking: nothing can prove delivery",
+      detail: `No tracking number is on file at PayPal and there are no carrier scans, so there is no proof of delivery to send${untracked.every((d) => d.strategy === "REFUND") ? "; the agent recommends a refund" : ""}.`,
+      disputeIds: untracked.map((d) => d.id),
+      hint: "Buy tracking for every shipment and add it to the PayPal order when you print the label.",
+    });
+  return out;
 }
 
 export const reasonText = (r: string) => REASON_LABEL[r] ?? r;

@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "what": "Rewind of the recorded case to the moment before we sent supporting info (the state the agent worked in the video). Replay applies it to the recorded response in fixtures/paypal/disputes: it drops every event at or after `before` and sets the status and links PayPal showed then. No other field changes.",
+    "status_source": "The pre-decision Replay take (video board take) shows this case as 'PayPal claim · PayPal reviewing · no deadline', allowing 'Accept claim' and 'Supporting info'. The sandbox simulation rels (adjudicate, require_evidence) were on the case from about 6 minutes after it opened (handoff log), as on the platter recording.",
+    "after": "Supporting info sent 15:33:30 UTC (200, debug_id f1143964ab522); sandbox decision triggered by us 15:34 UTC (adjudicate 200, debug_id ca46df7dd6ffe); RESOLVED · SELLER_FAVOUR.",
+    "capture_source": "PayPal placed a hold at 15:13:34 and released it at 15:35:34 (fund_movements in the recording). While held, the capture read PENDING / BUYER_COMPLAINT: shown in the pre-decision Replay take, and the same as the other held captures we recorded (e.g. the platter's)."
+  },
+  "dispute_id": "PP-R-FWW-10190477",
+  "before": "2026-10-07T15:33:30.192Z",
+  "status": "UNDER_REVIEW",
+  "dispute_state": "UNDER_PAYPAL_REVIEW",
+  "rels": [
+    "accept_claim",
+    "adjudicate",
+    "require_evidence",
+    "provide_supporting_info"
+  ],
+  "capture": {
+    "id": "5S991501Y76859350",
+    "status": "PENDING",
+    "status_details": {
+      "reason": "BUYER_COMPLAINT"
+    }
+  },
+  "aiDraft": {
+    "_meta": {
+      "source": "claude",
+      "model": "claude-haiku-4-5-20251001",
+      "recorded_at": "2026-10-07T15:18:21.954Z",
+      "usage": {
+        "input": 3297,
+        "output": 679,
+        "costUsd": 0.006692
+      }
+    },
+    "disputeId": "PP-R-FWW-10190477",
+    "draft": {
+      "origin": "ai",
+      "model": "claude-haiku-4-5-20251001",
+      "strategy": "FIGHT",
+      "action": {
+        "kind": "provide_supporting_info"
+      },
+      "rationale": "The tracking evidence shows the package was delivered with signature to the correct ZIP code on 7 Oct, 3:05 PM UTC. We have strong carrier confirmation and Seller Protection eligibility to support our response.",
+      "claims": [
+        {
+          "text": "The order for 24 espresso cups was shipped via USPS Priority Mail Express with tracking 9405511899223197428607, recorded with PayPal at order placement.",
+          "sourceRefs": [
+            "order:3WL85698SC366950L",
+            "pptrack:5S991501Y76859350:9405511899223197428607",
+            "store:KC-1791277621225#line2"
+          ]
+        },
+        {
+          "text": "USPS tracking confirms delivery with signature on 7 Oct, 3:05 PM UTC to ZIP 95131, which matches the ship-to address on the order.",
+          "sourceRefs": [
+            "track:USPS:9405511899223197428607#ev4",
+            "order:3WL85698SC366950L"
+          ]
+        },
+        {
+          "text": "The package was left with an individual and signature was obtained at delivery.",
+          "sourceRefs": [
+            "track:USPS:9405511899223197428607#ev4"
+          ]
+        },
+        {
+          "text": "We are eligible for Seller Protection per PayPal's record.",
+          "sourceRefs": [
+            "capture:5S991501Y76859350"
+          ]
+        }
+      ],
+      "sellerNote": "This is a wholesale order of 24 handmade espresso cups for USD 312.00. The package was shipped via USPS Priority Mail Express on 6 Oct with signature required. Tracking 9405511899223197428607 shows delivery with signature on 7 Oct, 3:05 PM to ZIP 95131, matching the order's ship-to address. The buyer received the package as evidenced by carrier confirmation of delivery with signature obtained. We believe this claim should be resolved in our favor based on the clear delivery confirmation.",
+      "buyerMessage": {
+        "language": "en",
+        "text": "Thank you for your order. Our tracking shows your package was delivered with a signature on 7 Oct, 3:05 PM to your address in ZIP 95131. The carrier confirmed delivery and an individual signed for it. Please check with anyone at your location who may have received it, or contact USPS for additional details. We're happy to help resolve this."
+      },
+      "buyerLanguage": {
+        "code": "en",
+        "name": "English"
+      },
+      "evidence": [
+        {
+          "evidence_type": "PROOF_OF_FULFILLMENT",
+          "tracking_info": [
+            {
+              "carrier_name": "USPS",
+              "tracking_number": "9405511899223197428607"
+            }
+          ],
+          "sourceRefs": [
+            "track:USPS:9405511899223197428607#ev4"
+          ]
+        },
+        {
+          "evidence_type": "OTHER",
+          "sourceRefs": [
+            "pptrack:5S991501Y76859350:9405511899223197428607",
+            "track:USPS:9405511899223197428607#ev4",
+            "order:3WL85698SC366950L"
+          ]
+        }
+      ]
+    }
+  }
+}

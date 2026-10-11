@@ -37,7 +37,7 @@ function fakeClient(reply: Partial<DraftToolInput> | null, opts: { stop?: string
   return { client: client as unknown as ConstructorParameters<typeof ClaudeProvider>[0]["client"], requests };
 }
 
-const f = loadFixtures();
+const f = loadFixtures(undefined, { withArchive: true });
 async function run(id: string, provider: ClaudeProvider) {
   const events: TraceEvent[] = [];
   for await (const e of runAgent(id, { gateway: new ReplayGateway(f), carrier: new MockCarrier(f.carrier), store: new SampleStore(f.store), provider, runId: "r" })) events.push(e);

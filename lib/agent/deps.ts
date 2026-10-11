@@ -26,8 +26,9 @@ export type Mode = "live" | "replay";
 
 export const currentMode = (): Mode => (process.env.DD_MODE === "live" ? "live" : "replay");
 
-export function gatewayFor(mode: Mode = currentMode()): DisputeGateway {
-  if (mode === "replay") return new ReplayGateway(fixtures());
+/** `rewind`: in Replay, serve that case as it stood before PayPal's decision (if it has a rewind spec). */
+export function gatewayFor(mode: Mode = currentMode(), opts: { rewind?: string } = {}): DisputeGateway {
+  if (mode === "replay") return new ReplayGateway(fixtures(), opts);
   const client = getPayPalClient();
   // Reads go through PayPal's Agent Toolkit (sandbox-forced, re-checked per call; token cached).
   return new LiveGateway(client, undefined, async (method, args) => String(await createSandboxToolkit(await client.getAccessToken()).run(method, args)));
@@ -46,15 +47,15 @@ export const REPLAY_PACE_MS: Record<StepKey, number> = {
   await_approval: 300,
 };
 
-export function agentDeps(opts: { mode?: Mode; pace?: number; liveAi?: boolean } = {}): AgentDeps {
+export function agentDeps(opts: { mode?: Mode; pace?: number; liveAi?: boolean; rewind?: string } = {}): AgentDeps {
   const mode = opts.mode ?? currentMode();
   const f = fixtures();
   const pace = Math.max(0, Math.min(opts.pace ?? (mode === "replay" ? 1 : 0), 5));
   return {
-    gateway: gatewayFor(mode),
+    gateway: gatewayFor(mode, { rewind: opts.rewind }),
     carrier: new MockCarrier(f.carrier),
     store: new SampleStore(f.store),
-    provider: draftProvider(mode, opts.liveAi ?? false),
+    provider: draftProvider(mode, opts.liveAi ?? false, opts.rewind),
     pace: pace > 0 ? (key) => new Promise((r) => setTimeout(r, REPLAY_PACE_MS[key] * pace)) : undefined,
   };
 }
@@ -67,10 +68,14 @@ export const aiEnabled = () => process.env.DD_LLM === "claude" && Boolean(proces
  *  - Replay → the recorded real Claude draft for that fixture ($0), else TEMPLATE
  *  - Live sandbox → Claude when enabled, else TEMPLATE
  */
-export function draftProvider(mode: Mode = currentMode(), liveAi = false): DraftProvider {
+export function draftProvider(mode: Mode = currentMode(), liveAi = false, rewind?: string): DraftProvider {
   if (process.env.DD_LLM === "cli") return new CliProvider(); // dev only; throws in production builds
   if (liveAi && aiEnabled()) return claudeProvider();
-  if (mode === "replay") return new RecordedProvider(fixtures().aiDrafts, new FakeProvider());
+  if (mode === "replay") {
+    const f = fixtures();
+    const early = rewind ? f.rewinds.get(rewind)?.aiDraft : undefined;
+    return new RecordedProvider(early ? new Map([...f.aiDrafts, [early.disputeId, early]]) : f.aiDrafts, new FakeProvider());
+  }
   return aiEnabled() ? claudeProvider() : new FakeProvider();
 }
 

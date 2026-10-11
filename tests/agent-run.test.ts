@@ -10,7 +10,7 @@ import { loadFixtures } from "@/lib/replay/fixtures";
 import { SampleStore } from "@/lib/samples/store";
 import { TraceEventSchema } from "./helpers/trace-schema";
 
-const f = loadFixtures();
+const f = loadFixtures(undefined, { withArchive: true });
 const deps = (): AgentDeps => ({ gateway: new ReplayGateway(f), carrier: new MockCarrier(f.carrier), store: new SampleStore(f.store), provider: new FakeProvider(), runId: "r_test" });
 
 async function collect(id: string) {
@@ -119,7 +119,7 @@ describe("agent run over recorded disputes (Replay, FakeProvider)", () => {
 
 describe("GET /api/agent/run (SSE)", () => {
   it("streams text/event-stream frames that decode to the full trace", async () => {
-    const res = await GET(new Request("http://local/api/agent/run?dispute=PP-R-MQR-10190375&pace=0"));
+    const res = await GET(new Request("http://local/api/agent/run?dispute=PP-R-KFL-10190426&pace=0"));
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toMatch(/^text\/event-stream/);
     const wire = await res.text();

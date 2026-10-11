@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { buildMcpServer } from "@/lib/mcp/server";
@@ -30,11 +30,11 @@ async function connect(allowWrites: boolean) {
 const textOf = (r: unknown) => ((r as { content: { text: string }[] }).content[0].text);
 
 describe("MCP server (PayPal Agent Toolkit extension)", () => {
-  it("exposes read tools and the 6 custom dispute tools, writes marked destructive", async () => {
+  it("exposes read tools and the 7 custom dispute tools, writes marked destructive", async () => {
     const { client } = await connect(false);
     const { tools } = await client.listTools();
     expect(tools.map((t) => t.name).sort()).toEqual(
-      ["accept_dispute_claim_with_terms", "acknowledge_return_item", "escalate_dispute", "get_dispute", "list_disputes", "make_dispute_offer", "provide_dispute_evidence", "send_dispute_message"].sort(),
+      ["accept_dispute_claim_with_terms", "acknowledge_return_item", "escalate_dispute", "get_dispute", "list_disputes", "make_dispute_offer", "provide_dispute_evidence", "provide_dispute_supporting_info", "send_dispute_message"].sort(),
     );
     expect(tools.find((t) => t.name === "send_dispute_message")?.annotations?.destructiveHint).toBe(true);
     expect(tools.find((t) => t.name === "get_dispute")?.annotations?.readOnlyHint).toBe(true);
@@ -67,8 +67,14 @@ describe("MCP server (PayPal Agent Toolkit extension)", () => {
 });
 
 describe("MCP server with the PayPal Agent Toolkit's tools", () => {
-  it("serves the toolkit's read tools (redacted) next to our 6 custom tools; never its write tools", async () => {
-    const { createSandboxToolkit } = await import("@/lib/paypal/toolkit");
+  // The Agent Toolkit is a large module: a cold import can take seconds on a busy machine. Load it once here,
+  // with its own timeout, so the test's 5 s budget covers only the behaviour under test.
+  let createSandboxToolkit: typeof import("@/lib/paypal/toolkit").createSandboxToolkit;
+  beforeAll(async () => {
+    ({ createSandboxToolkit } = await import("@/lib/paypal/toolkit"));
+  }, 60_000);
+
+  it("serves the toolkit's read tools (redacted) next to our 7 custom tools; never its write tools", async () => {
     const real = createSandboxToolkit("dummy-token-not-used"); // builds tool definitions only, no network
     const ran: string[] = [];
     const toolkit = {

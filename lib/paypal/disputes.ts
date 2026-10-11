@@ -61,6 +61,13 @@ export const customDisputeTools = {
     parameters: z.object({ dispute_id: id, evidences: z.array(Evidence).min(1), files: z.array(EvidenceFile).optional() }),
     action: "provide_evidence",
   },
+  provide_dispute_supporting_info: {
+    method: "provide_dispute_supporting_info",
+    name: "Provide dispute supporting info",
+    description: "Add the seller's notes and documents to a claim that PayPal is already reviewing (UNDER_REVIEW).",
+    parameters: z.object({ dispute_id: id, notes: z.string().min(1).max(2000), files: z.array(EvidenceFile).optional() }),
+    action: "provide_supporting_info",
+  },
   make_dispute_offer: {
     method: "make_dispute_offer",
     name: "Make dispute offer",
@@ -111,8 +118,9 @@ export const customDisputeTools = {
 export type CustomToolName = keyof typeof customDisputeTools;
 
 /** Endpoint and body encoding per action (verified in sandbox M0 where noted). */
-export const TOOL_ENDPOINTS: Record<CustomToolName, { path: string; encoding: "json" | "multipart" }> = {
-  provide_dispute_evidence: { path: "provide-evidence", encoding: "multipart" }, // M0 ✅
+export const TOOL_ENDPOINTS: Record<CustomToolName, { path: string; encoding: "json" | "multipart"; fileField?: string }> = {
+  provide_dispute_evidence: { path: "provide-evidence", encoding: "multipart", fileField: "evidence-file" }, // M0 ✅
+  provide_dispute_supporting_info: { path: "provide-supporting-info", encoding: "multipart", fileField: "file1" }, // PayPal docs example: -F input={notes} -F file1=@doc.pdf
   make_dispute_offer: { path: "make-offer", encoding: "json" },
   send_dispute_message: { path: "send-message", encoding: "multipart" }, // M0 ✅
   escalate_dispute: { path: "escalate", encoding: "json" }, // M0 ✅
@@ -136,7 +144,7 @@ export async function runCustomDisputeTool(
   assertAllowed(dispute, def.action);
 
   const { dispute_id, files, ...input } = args;
-  const { path, encoding } = TOOL_ENDPOINTS[tool];
+  const { path, encoding, fileField = "evidence-file" } = TOOL_ENDPOINTS[tool];
   const url = `/v1/customer/disputes/${dispute_id}/${path}`;
 
   if (files?.length) {
@@ -151,7 +159,7 @@ export async function runCustomDisputeTool(
       idempotencyKey: opts.idempotencyKey,
       multipart: {
         input,
-        files: files?.map((f) => ({ field: "evidence-file", filename: f.filename, type: f.type, data: f.data })),
+        files: files?.map((f) => ({ field: fileField, filename: f.filename, type: f.type, data: f.data })),
       },
     });
   }

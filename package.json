@@ -19,7 +19,8 @@
     "poll": "tsx --env-file=.env.local scripts/poll.mts",
     "seed:disputes": "zsh spikes/m0/seed-disputes.sh",
     "ai:record": "tsx --env-file=.env.local scripts/record-ai.mts",
-    "mcp": "tsx --env-file=.env.local scripts/mcp-server.mts",
+    "mcp": "tsx scripts/mcp-server.mts",
+    "mcp:replay": "tsx scripts/mcp-replay.mts",
     "check:layout": "python3 scripts/checks/layout_check.py",
     "spend": "tsx scripts/spend.mts"
   },
