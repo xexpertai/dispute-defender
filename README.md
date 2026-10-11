@@ -43,13 +43,15 @@ npm ci && npm run build && npm start      # http://localhost:3000, Replay mode, 
 4. **Response:** an AI-written draft (labelled *recorded*: a real Claude run, replayed at $0). Tap a source ("USPS scan · Delivered 7 Oct") to jump to the record. The button reads **Approve · send evidence** (in Replay nothing is sent).
 5. **"What PayPal receives":** the exact request (`POST …/provide-supporting-info`, the JSON) and the evidence-pack PDF (Open PDF).
 6. **"…and one where a fair offer is the smart call ($64.00)":** chipped mugs. The agent offers a partial refund, and the buyer wrote in Spanish, so the message to her is in Spanish with an English gloss.
-7. **Insights:** patterns across your cases, each with its cases, and what to change, plus lessons from single cases (an incomplete address that sent a package back; a shipment without tracking), labelled Template. You approve everything.
+7. **Verify (`/verify`):** a 5-minute path for judges: the evidence behind each of the 7 calls (proof on file, score arithmetic, the deciding fact), links to the cases where the agent does not just defend, and the safety gates with the test file that proves each.
+8. **Insights:** patterns across your cases, each with its cases, and what to change, plus lessons from single cases (an incomplete address that sent a package back; a shipment without tracking), labelled Template. You approve everything.
 
 Replay uses recorded, redacted responses from the real PayPal sandbox. Carrier scans come from a mock carrier and store logs are sample data; both are labelled wherever they appear.
 
 ## What's different
 
 - **It argues against its own user when the evidence says so.** If the buyer is right, or the seller can't prove delivery (no tracking on record), it recommends a refund (REFUND); if there is nothing PayPal can receive yet, it holds (HOLD) instead of sending weak evidence.
+- **It maps each PayPal reason code to the proof that answers it, and shows its arithmetic.** For "item not received" that is proof of shipment, a delivery scan, delivery to the order's address and (optional) a signature; for "not as described", the listing and photos before shipping. Each proof is marked on file, missing, not yet, or *shows the opposite*, with its record and the Disputes API `evidence_type` it would be filed under. The evidence score is shown as a sum (e.g. `+1 +3 +1 +1 = +6`), not a made-up win percentage. See **Proof for this claim** on any case, or all 7 at once on `/verify`.
 - **Its options are exactly the actions PayPal allows on the case right now.** They come from the dispute's own HATEOAS links, and the app shows why each other allowed action was not picked.
 - **A server-side checker removes AI claims it can't back up.** A claim with no record behind it, or one that predicts PayPal's decision, is struck before the seller sees the draft. Try it with **"Test our checker"** on the featured case.
 - **Any AI assistant gets the same judgement, not just the raw API.** The MCP server's `assess_dispute` tool returns the agent's verdict with its reasons, each tied to a record, so an assistant can hear "refund, you can't prove delivery" before it calls a write tool. Try it with no keys: `npm run mcp:replay` (below).
@@ -102,7 +104,7 @@ Or use the MCP Inspector: `npx @modelcontextprotocol/inspector npm run -s mcp:re
 
 Tools:
 
-- **`assess_dispute`:** the agent's own verdict on a case (Defend / Offer / Refund / Hold / Wait), from the fixed rules with no AI call and no writes. It returns the evidence strength, each reason with its source record (labelled PayPal, Carrier (mock) or Store (sample)), the actions PayPal allows right now with why each was or wasn't picked, and the cost to fight.
+- **`assess_dispute`:** the agent's own verdict on a case (Defend / Offer / Refund / Hold / Wait), from the fixed rules with no AI call and no writes. It returns the evidence strength with its score arithmetic, the proof checklist for the case's PayPal reason code, each reason with its source record (labelled PayPal, Carrier (mock) or Store (sample)), the actions PayPal allows right now with why each was or wasn't picked, and the cost to fight.
 - **Read tools:** `list_disputes`, `get_dispute` (plus the actions PayPal allows right now). With real credentials these come from the PayPal Agent Toolkit, which adds `get_order`, `get_shipment_tracking` and `list_transactions`. Outputs are redacted.
 - **Our seven dispute tools:** `provide_dispute_evidence`, `provide_dispute_supporting_info`, `make_dispute_offer`, `send_dispute_message`, `escalate_dispute`, `accept_dispute_claim_with_terms`, `acknowledge_return_item`. Each runs only if PayPal currently offers that action on the dispute (HATEOAS).
 
@@ -132,7 +134,7 @@ Claude API spend is logged per call. The totals are in [docs/SPEND.md](docs/SPEN
 
 - **No invented evidence.** Every claim cites a `sourceRef` (e.g. `track:USPS:9400…#ev4`), and the UI shows a chip for it.
 - **Buyer-fair rules.** If the carrier returned the package, the item went to another ZIP, or the seller's own records admit a fault, the buyer is right and the agent recommends a refund. If there is no tracking on record, the seller can't prove delivery, and the agent recommends a refund too; it says exactly that, not "the buyer is right".
-- **Confidence, not a fake "win %".** Evidence strength is High, Medium or Low, with reasons.
+- **Confidence, not a fake "win %".** Evidence strength is High, Medium or Low, with reasons and the score arithmetic (each fact's weight, for or against).
 - **Labels everywhere:**
   - drafts are *AI-written*, *AI-written · recorded*, or *TEMPLATE*;
   - data is *Replay* or *Live sandbox*;
@@ -154,7 +156,7 @@ Next.js 16 (App Router, TypeScript, Tailwind)
 │                          webhooks/paypal · disputes · demo/reset · health
 ├─ lib/agent/              9-step loop, trace contract, gateway (Replay | Live), validation, approval
 ├─ lib/paypal/             sandbox-forced client, Agent Toolkit (Live reads + MCP), 7 custom tools, HATEOAS, webhooks
-├─ lib/strategy/           rules: evidence strength, buyer-fair, cost to fight, deadline priority
+├─ lib/strategy/           rules: evidence strength, proof checklist per reason code, buyer-fair, cost to fight, deadline priority
 ├─ lib/llm/                Claude provider (strict tool), recorded provider, budget + daily cap
 ├─ lib/insights/           deterministic patterns + one cached AI call
 ├─ lib/pdf/                evidence pack (pdf-lib)

@@ -47,3 +47,6 @@ video/remotion/node_modules/
 video/remotion/public/footage/
 video/remotion/src/gen/
 video/remotion/out/
+
+# local scratch
+/.scratch/

@@ -1,5 +1,6 @@
 import type { EvidenceItem } from "../evidence/types";
 import { bucketOf, hoursUntil, urgency } from "../dashboard/guardian";
+import { proofChecklist, type ProofChecklist } from "./checklist";
 
 /**
  * Deterministic strategy engine (no LLM). It explains its evidence strength with reasons that each
@@ -81,6 +82,8 @@ export interface Assessment {
   costToFight: number;
   priority: { score: number; bucket: DeadlineBucket; hoursLeft: number | null };
   evidenceToSubmit: EvidenceToSubmit[];
+  /** The proof that answers this reason code, and which of it the records have (lib/strategy/checklist.ts). */
+  checklist: ProofChecklist;
 }
 
 export interface DisputeContext {
@@ -398,5 +401,6 @@ export function assess(ctx: DisputeContext, evidence: EvidenceItem[], now = new 
     costToFight,
     priority: deadlinePriority(ctx.amount, ctx.sellerResponseDueDate, ctx.status, now),
     evidenceToSubmit,
+    checklist: proofChecklist(ctx.reason, evidence, reasons),
   };
 }

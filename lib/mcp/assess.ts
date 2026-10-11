@@ -5,6 +5,7 @@ import type { CarrierAdapter } from "../evidence/sources";
 import type { EvidenceItem } from "../evidence/types";
 import { FakeProvider } from "../llm/draft";
 import type { StoreAdapter } from "../samples/store";
+import { scoreMath, STRENGTH_RULE } from "../strategy/checklist";
 import { DEFAULT_CONFIG, type Assessment } from "../strategy/rules";
 import { VERDICT_WORD, verdictOf, verdictTitle } from "../strategy/verdict";
 
@@ -52,6 +53,20 @@ export async function assessDispute(disputeId: string, deps: AssessDeps) {
       decisive: Boolean(r.decisive),
       sources: r.sourceRefs.map((ref) => ({ ref, from: source.get(ref) ?? "PayPal" })),
     })),
+    evidence_score: { math: scoreMath(a.strength.reasons), rule: STRENGTH_RULE },
+    proof_checklist: {
+      paypal_reason: a.checklist.reason,
+      buyer_claims: a.checklist.claim,
+      required_on_file: `${a.checklist.have} of ${a.checklist.of}`,
+      items: a.checklist.items.map((i) => ({
+        proof: i.label,
+        status: i.status,
+        note: i.note,
+        paypal_evidence_type: i.paypalType,
+        ...(i.optional ? { optional: true } : {}),
+        sources: i.sourceRefs.map((ref) => ({ ref, from: source.get(ref) ?? "PayPal" })),
+      })),
+    },
     recommended_action: rec.action,
     actions_paypal_allows_now: (rec.considered ?? []).map((c) => ({ action: c.kind, picked: c.chosen, why: c.note })),
     ...(rec.wait ? { on_hold: rec.wait } : {}),

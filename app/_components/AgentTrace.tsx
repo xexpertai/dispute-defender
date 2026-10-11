@@ -6,6 +6,7 @@ import { initialTraceState, reduceTrace, type StepView, type TraceState } from "
 import { PROVENANCE_LABEL, provenanceOf } from "@/lib/disputes/model";
 import type { EvidenceItem } from "@/lib/evidence/types";
 import { evidenceAnchor, humanLabel, money, utcStamp } from "@/lib/format";
+import { scoreMath, STRENGTH_RULE, type ProofChecklist, type ProofStatus } from "@/lib/strategy/checklist";
 import type { Assessment, Reason } from "@/lib/strategy/rules";
 import { holdNote, verdictOf, verdictTitle, type VerdictKey } from "@/lib/strategy/verdict";
 import { CaseFile } from "./CaseFile";
@@ -327,8 +328,14 @@ function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
               <ReasonRow key={r.id} r={r} />
             ))}
           </ul>
+          <p className="mt-1 text-xs text-muted" title={STRENGTH_RULE}>
+            Evidence score <span className="font-mono tabular-nums text-ink-2">{scoreMath(a.strength.reasons)}</span>
+            {rec.buyerFair ? " · a decisive fact for the buyer overrides the score" : " · strong at +3, mixed at +1 to +2"}. Fixed rules, no AI.
+          </p>
         </>
       )}
+
+      {a.checklist && <Checklist c={a.checklist} />}
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-lg bg-surface-2 p-3">
@@ -382,6 +389,53 @@ function Recommendation({ a, closed }: { a: Assessment; closed?: boolean }) {
         </div>
       )}
     </section>
+  );
+}
+
+const PROOF_MARK: Record<ProofStatus, { glyph: string; tone: string; label: string }> = {
+  have: { glyph: "✓", tone: "bg-win-soft text-win", label: "On file" },
+  against: { glyph: "✕", tone: "bg-loss-soft text-loss", label: "Shows the opposite" },
+  pending: { glyph: "…", tone: "bg-amber-soft text-amber", label: "Not yet" },
+  missing: { glyph: "○", tone: "bg-surface-2 text-muted", label: "Not on file" },
+};
+
+/** The proof that answers this PayPal reason code, and which of it the gathered records have. */
+function Checklist({ c }: { c: ProofChecklist }) {
+  return (
+    <div className="mt-5">
+      <h3 className="text-sm font-semibold">Proof for this claim</h3>
+      <p className="text-[0.75rem] text-muted">
+        {c.claim} <span className="break-all font-mono text-[0.68rem]">{c.reason}</span> · {c.have} of {c.of} required on file
+      </p>
+      <ul className="mt-1 flex flex-col divide-y divide-line" aria-label="Proof checklist">
+        {c.items.map((i) => {
+          const m = PROOF_MARK[i.status];
+          return (
+            <li key={i.id} className="flex flex-col gap-0.5 py-2">
+              <span className="flex min-w-0 items-start gap-2 text-sm">
+                <span className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full text-[0.7rem] font-bold ${m.tone}`} aria-label={m.label} title={m.label}>
+                  {m.glyph}
+                </span>
+                <span className="min-w-0">
+                  <span className={i.status === "have" ? "font-medium" : "text-ink-2"}>{i.label}</span>
+                  {i.optional && <span className="ml-1.5 text-xs text-muted">optional</span>}
+                  <span className="block text-xs text-muted">
+                    {i.note} · <span className="font-mono text-[0.66rem]" title="The Disputes API evidence_type this proof is filed under">{i.paypalType}</span>
+                  </span>
+                </span>
+              </span>
+              {i.sourceRefs.length > 0 && (
+                <span className="flex flex-wrap gap-x-1 pl-7">
+                  {i.sourceRefs.map((ref) => (
+                    <SourceChip key={ref} sourceRef={ref} />
+                  ))}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 

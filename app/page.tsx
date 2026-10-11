@@ -246,7 +246,10 @@ function CallsCard({ calls, replay, sandboxWon }: { calls: ReturnType<typeof por
       </ul>
       <p className="mt-3 text-xs leading-snug text-muted">
         By hand, all {calls.total} cases would take about {calls.total} × {DEFAULT_CONFIG.minutesToFight} min ≈ {fmtHours((calls.total * DEFAULT_CONFIG.minutesToFight) / 60)}.{" "}
-        <span className="italic">An assumption (the app&apos;s cost-to-fight figure), not a measured time.</span>
+        <span className="italic">An assumption (the app&apos;s cost-to-fight figure), not a measured time.</span>{" "}
+        <Link href="/verify" className="font-semibold text-ink-2 underline decoration-line-strong underline-offset-4 hover:text-ink">
+          The evidence behind each call →
+        </Link>
       </p>
     </section>
   );

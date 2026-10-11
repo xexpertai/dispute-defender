@@ -78,7 +78,7 @@ function registerAssessTool(server: McpServer, deps: AssessDeps) {
     {
       title: "The agent's verdict on a dispute (fixed rules, no AI)",
       description:
-        "Gathers the dispute, order, PayPal tracking, carrier scans and store logs, then returns Dispute Defender's verdict (Defend / Offer / Refund / Hold / Wait) with the evidence strength, each reason and its source record, the actions PayPal allows right now with why each was or wasn't picked, and the cost to fight. Deterministic rules, no AI call, no writes. Use it as a second opinion before calling a write tool: it says when the seller should refund instead of fighting.",
+        "Gathers the dispute, order, PayPal tracking, carrier scans and store logs, then returns Dispute Defender's verdict (Defend / Offer / Refund / Hold / Wait) with the evidence strength and its score arithmetic, each reason and its source record, a proof checklist for the PayPal reason code (which proof is on file, missing, pending or shows the opposite, with the Disputes API evidence_type), the actions PayPal allows right now with why each was or wasn't picked, and the cost to fight. Deterministic rules, no AI call, no writes. Use it as a second opinion before calling a write tool: it says when the seller should refund instead of fighting.",
       inputSchema: { dispute_id: z.string().regex(/^PP-[A-Z0-9-]{3,40}$/) },
       annotations: { readOnlyHint: true },
     },

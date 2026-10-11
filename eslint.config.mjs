@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     "spikes/**",
     // The Remotion story video (its own package and tsconfig).
     "video/remotion/**",
+    // Local scratch (gitignored).
+    ".scratch/**",
   ]),
 ]);
 
